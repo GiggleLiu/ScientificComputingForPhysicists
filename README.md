@@ -1,5 +1,3 @@
-# Example
+# Scientific Computing for Physicists, with Julia
 
-Example book
-
-See <https://booktemplate.huijzer.xyz/> for more information.
+See <https://book.jinguo-group.science/> for more information.

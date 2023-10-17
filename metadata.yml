@@ -1,9 +1,9 @@
 ---
-title: Your Awesome Book
-subtitle: A Template to Get Your Book Started
+title: Scientific Computing for Phycists
+subtitle: with Julia programming language
 author:
-  - Example author 1
-  - Example author 2
+  - Jin-Guo Liu
+  - Yu-Sheng Zhao
 
 html-license: <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
 tex-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
@@ -13,14 +13,14 @@ bibliography: files/bibliography.bib
 # Only used in PDF.
 titlepage-top: >
   \begin{tabular}{l}
-  Example author 1\\
-  Example institute 1\\
+  Jin-Guo Liu\\
+  Hong-Kong University of Science and Technology (Guangzhou)\\
   \\
-  Example author 2\\
-  Example institute 2\\
+  Yu-Sheng Zhao\\
+  Hong-Kong University of Science and Technology (Guangzhou)\\
   \\
   \end{tabular}
 
 titlepage-bottom: >
-  \url{https://booktemplate.huijzer.xyz}
+  \url{https://book.jinguo-group.science}
 ---

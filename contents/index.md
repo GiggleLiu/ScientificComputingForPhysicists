@@ -28,6 +28,8 @@ all physicists to abandon their previous way of computation and learn how to use
 Linux. A middle ground is taken. We will teach you how to take command of a
 powerful server that runs Linux from any operating system in @sec:shell.
 
+Then we need to help you setup julia (there seems to have been one).
+
 
 
 This website is also available as [**PDF**](/sci2phys.pdf){target="_blank"}.

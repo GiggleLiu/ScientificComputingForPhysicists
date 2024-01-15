@@ -1,5 +1,7 @@
 JL = julia
 
+default: init build serve
+
 init:
 	$(JL) -e 'using Pkg; Pkg.activate("."); Pkg.instantiate(); Pkg.precompile()'
 
@@ -12,3 +14,5 @@ serve:
 clean:
 	rm -rf _build
 	rm -rf _gen
+
+.PHONY: init build serve

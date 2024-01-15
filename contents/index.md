@@ -1,16 +1,16 @@
 # Welcome {-}
 
-
-
 This website is also available as [**PDF**](/sci2phys.pdf){target="_blank"}.
 
 **Developer note**
 
-To build the website, run the following command in the terminal:
+In order to build and deploy the website, you will need to run the following
+commands in the terminal:
 
 ```bash
-julia --project -e 'using Pkg; Pkg.instantiate()'
-julia --project -e 'using Books;  serve()'
+make init
+make build
+make serve
 ```
 For more information about the `Books.jl`, see <https://huijzer.xyz/Books.jl/>.
 

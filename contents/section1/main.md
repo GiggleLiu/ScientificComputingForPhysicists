@@ -1,6 +1,6 @@
 # The open source workflow
 
-Scientific computing is a combination of **scientific applications**, **mathematical modeling** and **high performance computing**. The first lecture focuses on understanding our computing devices and understand how to get high performance from them.
+Scientific computing is a combination of **scientific applications**, **mathematical modeling** and **high performance computing**. The first lecture focuses on understanding the open source workflow, which is the foundation of scientific computing. It is a summary of the [MIT open course: Missing Semester](https://missing.csail.mit.edu/2020/).
 
 ## Why open sourcing?
 [Open-source](https://en.wikipedia.org/wiki/Open_source) software is software with source code that anyone can inspect, modify, and enhance. Open source software are incresingly popular for many reasons, having better control, easier to train programmers, **better data security**, stability and **collaborative community**.
@@ -15,13 +15,13 @@ Scientific computing is a combination of **scientific applications**, **mathemat
 In the past, scientific computing was dominated by commercial software, such as Matlab, Mathematica, Maple, and Magma. To maintain a commercial software, the company must hire a large team of programmers and marketing staffs. The cost of maintaining a commercial software is very high.
 Nowadays, the open source software, such as Python, Julia, R, and SageMath, are becoming more and more popular in scientific computing. The open source scientific software can be maintained by a small group of scientists, benefiting from the **mature open source software stack**.
 
-## Open source campaign and Linux
+### Open source campaign and Linux
 
 Just like Windows, IOS, and Mac OS, Linux is an operating system. In fact, one of the most popular platforms on the planet, Android, is powered by the Linux operating system.
 It is free to use, [open source](https://opensource.com/resources/what-open-source), widely used on clusters and good at automating your works.
 Linux kernel, Linux operating system and Linux distribution are different concepts.
  A **Linux distribution** is an [operating system](https://en.wikipedia.org/wiki/Operating_system) made from a software collection that includes the [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and, often, a [package management system](https://en.wikipedia.org/wiki/Package_management_system)
-    
+ 
 - 1991, by [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds)
 - Linux is typically [packaged](https://en.wikipedia.org/wiki/Package_manager) as a [Linux distribution](https://en.wikipedia.org/wiki/Linux_distribution)
 - GNU's Not Unix! (GNU) (1983 by Richard Stallman)
@@ -38,7 +38,7 @@ Linux kernel, Linux operating system and Linux distribution are different concep
 
 
 
-## What is a software developing stack?
+## The open source workflow
 ```mermaid
 graph LR
 I[Idea in your mind] -->|programming| A[Source code]
@@ -46,14 +46,14 @@ A -->|compiling| B[Executable]
 B -->|tests| C[New Release]
 ```
 
-## Tools are important
+### Tools
 
 |  | Documentation | Version control | Unit tests | Release | Collaboration |
 | --- | --- | --- | --- | --- | --- |
-| Old days | txt file contained in a zip/iso | an office process that recorded the work and managed the versioning task | capture and replay testing tools | CD-ROM | in an office |
-| Modern | Markdown + Github Pages | Git | test toolkit + continuous integration (with test coverage) built on top of cloud machines | Github | Github |
+| **Old days** | txt file contained in a zip/iso | an office process that recorded the work and managed the versioning task | capture and replay testing tools | CD-ROM | in an office |
+| **Modern** | [Markdown](https://www.markdownguide.org/basic-syntax/) ([tutorial](https://www.markdowntutorial.com/)) + [GitHub Pages](https://pages.github.com/) | [Git](https://www.atlassian.com/git) | [unit test](https://en.wikipedia.org/wiki/Unit_testing) + [continuous integration](https://en.wikipedia.org/wiki/CI/CD) (with test coverage report) built on top of cloud machines | [GitHub](https://github.com/) | GitHub/[GitLab](https://gitlab.com/) |
 
-## AMAT5315 open source stack
+### AMAT5315 open source stack
 - programming
   - Operating system: the [Ubuntu](https://ubuntu.com/desktop) distribution of the [Linux](https://en.wikipedia.org/wiki/Linux) operating system.
   - Editor: the [VSCode](https://www.julia-vscode.org/) editor as the IDE to program in Julia.
@@ -61,29 +61,16 @@ B -->|tests| C[New Release]
   - Compiler: the [Julia](https://julialang.org/) programming language and its compiler.
 - tests
   - Unit test: the [Test](https://docs.julialang.org/en/v1/stdlib/Test/) module in Julia.
-  - Version control: the [Git](https://git-scm.com/) as the version control software and the [Github](https://github.com/) website as the place to store your code.
-- others
-  - Documentation
-  - Continuous integration
+- Version control: the [Git](https://git-scm.com/) as the version control software and the [GitHub](https://github.com/) website as the place to store your code. Our homework will be submitted through a [locally deployed GitLab](https://code.hkust-gz.edu.cn/).
 
-Except the Github website, all of the above mentioned software are open-source.
+Except the GitHub website, all the above tools are open-source.
 
-### SSH
-[SSH](https://en.wikipedia.org/wiki/Secure_Shell) is a cryptographic network protocol for operating network services securely over an unsecured network. Its most notable applications are remote login and command-line execution.
-To learn more about SSH and two factor authentication, please check [this lecture](https://missing.csail.mit.edu/2020/security/).
-
-With a host name (the IP of the target machine to login) and a user name, one can use the following command to login,
-```bash
-ssh <username>@<hostname>
-```
-You will get logged in after inputting the password.
-
-## What is a Linux operating system?
+## Linux operating system
 Just like Windows, iOS, and Mac OS, Linux is an operating system. In fact, one of the most popular platforms on the planet, Android, is powered by the Linux operating system.
 It is free to use, [open source](https://opensource.com/resources/what-open-source), widely used on clusters and good at automating your works.
 The Ubuntu system is one of the most popular [Linux distributions](https://en.wikipedia.org/wiki/Linux_distribution).
 
-## Why a scientific computing scientist must learn Linux?
+### Why a scientific computing scientist must learn Linux?
 Citing [linux statistics](https://truelist.co/blog/linux-statistics/),
 - 47% of professional developers use Linux-based operating systems. (Statista)
 - Linux powers 39.2% of websites whose operating system is known. (W3Techs)
@@ -95,17 +82,26 @@ Citing [linux statistics](https://truelist.co/blog/linux-statistics/),
 - Today, there are over 600 active Linux distros. (Tecmint)
 - Linux runs 90 percent of the public cloud workload
 
-## Here is the installation guide!
-[TBD]
+### Access a Linux cloud machine through SSH
+[SSH](https://en.wikipedia.org/wiki/Secure_Shell) is a cryptographic network protocol for operating network services securely over an unsecured network. Its most notable applications are remote login and command-line execution.
+To learn more about SSH and two factor authentication, please check [this lecture](https://missing.csail.mit.edu/2020/security/).
 
-## A cheatsheet for Bash scripting
-Bash is a Unix shell and command language written by Brian Fox for the GNU Project.
-in Ubuntu, one can use `Ctrl` + `Alt` + `T` to open a bash shell.
-In a bash shell, we use `man command_name` to get help information related to a command,
-use `CTRL-C` to break a program and `CTRL-D` to exit a shell or an REPL.
+With a host name (the IP of the target machine to login) and a user name, one can use the following command to login,
+```bash
+ssh <username>@<hostname>
+```
+You will get logged in after inputting the password.
 
-The bash grammar is well summarized in [this cheatsheet](https://devhints.io/bash).
-The following is a short list for commands that will be used in this course.
+
+### Platform specific installation guide
+- **Windows**: [How to install Linux on Windows with WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+- **MacOS**: MacOS is a Unix-like operating system, so you can use the built-in terminal to access a Linux shell.
+- **From scratch**: [How to install Ubuntu](https://ubuntu.com/tutorials/install-ubuntu-desktop#1-overview).
+
+### A cheatsheet for Bash scripting
+Bash is a Unix shell and command language written by Brian Fox for the GNU Project. In Ubuntu, one can use `Ctrl` + `Alt` + `T` to open a bash shell. In a bash shell, we use `man command_name` to get help information related to a command, use `CTRL-C` to break a program and `CTRL-D` to exit a shell or an REPL.
+
+The bash grammar is well summarized in [this cheatsheet](https://devhints.io/bash). The following is a short list for commands that will be used in this course.
 
 ```
 man     # an interface to the system reference manuals
@@ -135,10 +131,10 @@ passwd  # change user password
 tar     # an archiving utility
 ```
 
-A more detailed [cheat sheet](https://cheatography.com/davechild/cheat-sheets/linux-command-line/) and a [lecture](https://missing.csail.mit.edu/2020/shell-tools/) are available online.
+A more detailed [cheat sheet](https://cheatography.com/davechild/cheat-sheets/linux-command-line/) and a [lecture](https://missing.csail.mit.edu/2020/shell-tools/) are available online. The website [Learn Bash Shell](https://www.learnshell.org/) is also a good place to start.
 
 
-### Vim editor
+### Vim Editor
 A vim editor can be found in any Linux distribution, with or without a graphical user interface. To edit a file, just type `vim file_name`.
 
 ```
@@ -151,28 +147,34 @@ u       # undo
 CTRL-R  # redo
 ```
 All the commands must be executed in the command mode (the default mode when you start a vim editor),
-If you are currently in the input mode, you can alway type `ESC` to go back to the command mode.
+If you are currently in the input mode, you can always type `ESC` to go back to the command mode. To learn more about Vim, please check the [MIT open course: Missing semester - Editors](https://missing.csail.mit.edu/2020/editors/).
 
 
-## Resources
-* [Learn Bash Shell](https://www.learnshell.org/)
-* [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install)
-* [MIT open course: Missing semester - Editors](https://missing.csail.mit.edu/2020/editors/).
-* [Markdown Tutorial](https://www.markdowntutorial.com/)
 
-## Version Control
+## Version Control: Git
 
 Version control, also known as source control, is the practice of tracking and managing changes to software code. Install `git` with
 ```bash
 sudo apt install git
 ```
 
-## Keep the main branch stable
-- Source code on the main branch is always usable.
-- Changes are made on a separate branch, they are merged back to the main branch when they are ready.
-
 ## How does Git work?
-1. Case one: develop a new feature
+### Tier 1: Single branch
+- You start with a working directory, then use `git init` to make it a git repository.
+- You can use `git add` to add files to the staging area, and use `git commit` to commit the changes to the repository.
+- You can use `git checkout` to switch between commits.
+- You can use `git diff` to see the changes between commits.
+- You can use `git reset` to reset the current HEAD to the specified state.
+- You can use `git status` to see the status of the working directory, staging area, and repository.
+- You can use `git log` to see the history of commits.
+
+### Tier 2: Multiple branches
+- You can use `git branch` to create, list, rename, and delete branches. The source code on the `main` branch is always usable, which serves as the stable version of the software.
+- You can use `git merge` to merge branches.
+- You can use `git checkout` to switch between branches.
+- You can use `git diff` to see the changes between branches.
+
+Example 1: develop a new feature
 ```mermaid
 graph LR;
 A[main] --- MID[ ];
@@ -185,7 +187,7 @@ style MID height:0px, width:0px;
 style MID2 height:0px, width:0px;
 ```
 
-2. Case two: develop two features
+Example 2: develop two features
 
 ```mermaid
 graph LR;
@@ -206,7 +208,18 @@ style MID3 height:0px, width:0px;
 
 Question: what if the two features are not compatible?
 
-3. Case three: collaborate with others
+
+
+### Tier 3: Working with remote repositories
+- You can use `git remote add <remote-name> <url>` to add a remote repository.
+- You can use `git push <remote-name> <branch>` to push commits to a remote repository.
+- You can use `git pull <remote-name> <branch>` to fetch from and integrate with another repo or a local branch.
+
+### Tier 4: Collaborating with others
+- You can open an issue on GitHub/[GitLab](https://en.wikipedia.org/wiki/GitLab) to report a bug or request a feature.
+- You can create [a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) on GitHub/GitLab to propose changes to a repository and discuss them with others.
+
+Example: collaborate with others
 
 ```mermaid
 graph LR;
@@ -220,11 +233,8 @@ style MID1 height:0px, width:0px;
 style MID2 height:0px, width:0px;
 ```
 
-## A cheatsheet for Git and Github
+### A cheat sheet for Git and GitHub
 
-Git is a tool for version control.
-It is an important tool for programmers to keep track of the different versions of a program and collaborate with others.
-GitHub is a website and cloud-based service that helps developers store and manage their code, as well as track and control changes to their code.
 There are more than 100 git sub-commands, and the following is a short list to keep in mind.
 
 ```
@@ -258,17 +268,11 @@ git fetch   # Download objects and refs from another repository
 git push    # Update remote refs along with associated objects
 ```
 
-## Resources
+### More resources
 * [Learn Git](https://learngitbranching.js.org/)
 * [Github Manual](https://githubtraining.github.io/training-manual/book.pdf)
 * [How to create a new github repo](https://docs.github.com/en/get-started/quickstart/create-a-repo)
-* [How to create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 * [MIT open course: Missing Semester - Version Control](https://missing.csail.mit.edu/2020/version-control/).
 
 ## Unit Test
 Unit tests are typically [automated tests](https://en.wikipedia.org/wiki/Automated_test) written and run by [software developers](https://en.wikipedia.org/wiki/Software_developer) to ensure that a section of an application (known as the "unit") meets its [design](https://en.wikipedia.org/wiki/Software_design) and behaves as intended.
-
-
-## Resources
-
-* MIT online course [missing semester](https://missing.csail.mit.edu/2020/).

@@ -1,4 +1,146 @@
-# The workflow to complete homework
+
+
+## The workflow to complete homework 
+
+Yidai ZHANG
+
+---
+
+```mermaid
+graph TD
+A[Login to a remote server with `ssh`] --> B[Create a GitHub account, and configure the git environment with your GitHub account]
+B --> C[Fork the homework Github repository, and clone the forked repository `github-username/AMAT5315HW` to the machine you are working on]
+```
+
+---
+
+## Install wsl
+###### https://learn.microsoft.com/en-us/windows/wsl/install 
+install wsl by typing 
+
+```bash
+wsl --install
+```
+
+in the powershell.
+
+Restart the computer after installation.
+
+---
+
+ After install WSL in your windows prompt, you must restart your computer, so remember to save your files and data before this action. After you restart your computer, a pop-up window will automatically appear that says welcome to Ubuntu, and you need to follow the steps to set your new UNIX username and new password, and retry your password again.
+Installation successful.
+
+![](2024-01-17-14-26-08.png)
+![](2024-01-17-14-31-27.png)
+![](2024-01-17-14-31-38.png)
+
+---
+
+~~~bash
+Ubuntu 已安装。
+正在启动 Ubuntu...
+Installing, this may take a few minutes...
+Please create a default UNIX user account. The username does not 
+For more information visit: https://aka.ms/wslusers
+Enter new UNIX username: yidai
+New password:
+Retype new password:
+passwd: password updated successfully
+Installation successful!
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.133....)
+~~~
+
+
+~~~bash
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+yidai@DELL:~$
+~~~
+
+
+---
+
+## Set up the SSH
+```bash
+yidai@DELL:~$ ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/yidai/.ssh/id_rsa):
+Created directory '/home/yidai/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/yidai/.ssh/id_rsa
+Your public key has been saved in /home/yidai/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:+RLizEJBI6oD0UOcgKfhU1qlS1GQSkw6CnOs+V4DYvA yidai@DELL
+The key's randomart image is:
++---[RSA 3072]----+
+...
+
+```
+
+
+---
+
+```bash
+yidai@DELL:~$ cd /home/yidai/.ssh
+yidai@DELL:~/.ssh$ ls
+id_rsa  id_rsa.pub
+yidai@DELL:~/.ssh$ cat id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDUzOvlhZc8LZn6EaFyo6RZ6Xy4DZSgdS5oZ
+``` 
+
+
+
+```bash
+yidai@DELL:~/.ssh$ ssh user01@10.100.0.179
+The authenticity of host '10.100.0.179 (10.100.0.179)' can't be establish
+ED25519 key fingerprint is SHA256:FIBX4TxQ61700g0bRrUh3Qu/60cc
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.100.0.179' (ED25519) to the list 
+user01@10.100.0.179's password:
+Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.19.0-45-generic x86_64)
+```
+
+
+---
+
+~~~bash
+user01@amat-course-site:~$ ls
+user01@amat-course-site:~$ lscpu
+user01@amat-course-site:~$ lscpu > hw1.txt
+user01@amat-course-site:~$ ls
+user01@amat-course-site:~$ cat hw1.txt
+~~~
+ctrl + D to exit/quit
+
+~~~bash
+yidai@DELL:~/.ssh$ touch ~/.ssh/config
+yidai@DELL:~/.ssh$ chmod 600 ~/.ssh/config
+yidai@DELL:~/.ssh$ vim config
+~~~
+
+In vim, type `i` to enter the insert mode, and type the following content:
+```bash
+Host amat5315
+    HostName 10.100.0.179
+    User <user01> # replace <user01> with your username
+```
+Then type `Esc` to exit the insert mode, `:wq` to save and quit.
+``:q!`` to quit without saving
+
+```
+
+---
+
+Fork
+
+---
 
 ## Install a suitable Linux distribution
 1. Please check the [homepage](https://www.ubuntu.com/) for the latest version of Ubuntu Linux.
@@ -11,6 +153,8 @@ Here, we use `ssh` to connect to a remote server with Ubuntu Linux installed. Th
 ssh username@server
 ```
 where `username` is your username and `server` is the server address.
+
+---
 
 ### Using cluster interactively
 1. You can login to the cluster with

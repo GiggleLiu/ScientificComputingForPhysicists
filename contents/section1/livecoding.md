@@ -1,15 +1,46 @@
+---
+theme : "black"
+transition: "fade"
+center: false
+height: 800
+---
+<style>
+    .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5 {
+                  text-transform: none;
+		  }
+    .reveal p {
+        text-align: left;
+    }
+    .reveal ul {
+        display: block;
+    }
+    .reveal ol {
+        display: block;
+    }
+    .reveal p:has(> img){
+        text-align: center;
+    }
+    h3 {
+        border-bottom: 2px solid yellow;
+        padding: 10px;
+    }
+</style>
+
+
 
 
 ## The workflow to complete homework 
 
-Yidai ZHANG
+#### Yidai ZHANG 
 
 ---
 
 ```mermaid
-graph TD
-A[Login to a remote server with `ssh`] --> B[Create a GitHub account, and configure the git environment with your GitHub account]
-B --> C[Fork the homework Github repository, and clone the forked repository `github-username/AMAT5315HW` to the machine you are working on]
+%%{init: {'theme':'dark'}}%%
+graph LR;
+    A[Install WSL]-->B[Set up the SSH];
+    B-->C[Set up the Gitlab];
+    C-->D[How to submit your homework];
 ```
 
 ---

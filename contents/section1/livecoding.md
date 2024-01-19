@@ -29,7 +29,7 @@ height: 800
 
 
 
-## The workflow to complete homework 
+## The workflow to set up the environment and complete homework 
 
 #### Yidai ZHANG 
 
@@ -39,7 +39,7 @@ height: 800
 %%{init: {'theme':'dark'}}%%
 graph LR;
     A[Install WSL]-->B[Set up the SSH];
-    B-->C[Set up the Gitlab];
+    B-->C[Set up the Gitlab&Github];
     C-->D[How to submit your homework];
 ```
 
@@ -47,15 +47,15 @@ graph LR;
 
 ## Install wsl
 ###### https://learn.microsoft.com/en-us/windows/wsl/install 
-install wsl by typing 
+#### install wsl by typing 
 
 ```bash
 wsl --install
 ```
 
-in the powershell.
+#### in the powershell.
 
-Restart the computer after installation.
+#### Restart the computer after installation.
 
 ---
 
@@ -169,45 +169,15 @@ Then type `Esc` to exit the insert mode, `:wq` to save and quit.
 
 ---
 
-Fork
+# Github&Gitlab
 
 ---
 
-## Install a suitable Linux distribution
-1. Please check the [homepage](https://www.ubuntu.com/) for the latest version of Ubuntu Linux.
-2. Install required packages, e.g. to install git:
-    1. Open a terminal with `Ctrl-Alt-T`
-    2. Type `sudo apt-get install git`
-
-Here, we use `ssh` to connect to a remote server with Ubuntu Linux installed. The `ssh` is a secure shell protocol to connect to a remote server. The `ssh` is a default package in Ubuntu Linux, so you do not need to install it. In a terminal, type
-```
-ssh username@server
-```
-where `username` is your username and `server` is the server address.
+#### https://github.com
+#### https://code.hkust-gz.edu.cn
 
 ---
 
-### Using cluster interactively
-1. You can login to the cluster with
-    ```bash
-    ssh username@server
-    ```
-    where `username` is your username and `server` is the server address. At HKUST-GZ, the server address is `login1.hpc.ust.hk` and the account can be applied from the Dingtalk.
-3. It is "criminal" to run programs on the login node, you need to submit a job to the cluster or start an interactive session. To start an interactive session on a virtual machine with 1 GPU for 1 hour, you can run
-    ```bash
-    module load slurm
-
-    srun --nodes=1 --gres=gpu:a800 --ntasks-per-node=1 --time=01:00:00 -i
-    ```
-    where `--nodes=1` means you want to use 1 node, `--gres=gpu:a800` means you want to use 1 GPU, `--ntasks-per-node=1` means you want to use 1 CPU core, `--time=01:00:00` means you want to use 1 hour, `-i` means you want to start an interactive session. You need to wait for a while before the interactive session is started.
-
-4. If you are a Julia CUDA users, you might want to specify the run time version of CUDA with
-    ```julia
-    julia> CUDA.set_runtime_version!(; local_toolkit=true)
-    ```
-    and then RESTART the Julia session.
-
-## How to submit homework?
 ### Git concepts
 - **repository**: a repository is a collection of files and folders. A repository can be local or remote. A local repository is a folder on your local machine. A remote repository is a folder on a remote server. A remote repository can be accessed with a URL, e.g.
     Our course repository is
@@ -219,11 +189,19 @@ where `username` is your username and `server` is the server address.
     https://github.com/CodingThrust/AMAT5315HW.git
     ```
     You can clone a remote repository with `git clone remote-url`. You can check the current remote repository with `git remote -v`.
+
+---
+
 - **commit**: a commit is a snapshot of the repository. You can create a commit with `git commit -m 'commit message'`. You can check the commit history with `git log`.
-- **branch**: a branch is a pointer to a commit. The default branch is `master`. You can create a new branch with `git branch new-branch-name`. You can switch to a branch with `git checkout new-branch-name`. You can check the current branch with `git branch`.
+- **branch**: a branch is a pointer to a commit. The default branch is `master/main`. You can create a new branch with `git branch new-branch-name`. You can switch to a branch with `git checkout new-branch-name / git switch new-branch-name`. You can check the current branch with `git branch`.
 - **remote**: a remote is a pointer to a remote repository. You can check the current remote with `git remote -v`. You can add a new remote with `git remote add remote-name remote-url`. You can remove a remote with `git remote remove remote-name`.
+
+---
+
 - **fork**: a fork is a copy of a remote repository. You can fork a remote repository with `git fork remote-url`. You can check the current fork with `git remote -v`. You can add a new fork with `git remote add fork-name fork-url`. You can remove a fork with `git remote remove fork-name`.
 - **rebasing**: rebasing is a way to update your local repository with the remote repository. You can rebase your local repository with `git pull --rebase`. You can rebase a branch with `git pull --rebase remote-name branch-name`. You can rebase a fork with `git pull --rebase fork-name branch-name`.
+
+---
 
 Create a GitHub account, please check the [GitHub homepage](https://github.com/).
 

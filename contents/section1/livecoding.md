@@ -203,8 +203,7 @@ Then type `Esc` to exit the insert mode, `:wq` to save and quit.
 
 ---
 
-Create a GitHub account, please check the [GitHub homepage](https://github.com/).
-
+### How to submit your homework
 1. Fork the homework Github repository. Open the GitHub repository [CodingThrust/AMAT5315HW](), click the fork button. Then you will have a new copy of the original repository with the write permission. Clone the repo to the local host with
     ```bash
     git clone https://github.com/GiggleLiu/AMAT5315HW.git
@@ -214,6 +213,8 @@ Create a GitHub account, please check the [GitHub homepage](https://github.com/)
 2. Edit the homework.
     1. Type `cd ~/jcode/AMAT5315HW` to open the homework directory
     2. Type `git pull` to get the latest version of the homework.
+
+---
 
 3. Commit the changes. Type
    ```bash
@@ -230,6 +231,9 @@ Create a GitHub account, please check the [GitHub homepage](https://github.com/)
 
 4. Open your forked GitHub repo, you will see a suggested action of creating a pull request (PR). If you missed this hint, you can create a PR manually by checking the "pull request" tab.
 
-5. My teaching assistant will either comment on your PR to request for some change or merge your PR directly. You need to implement the requested changes and commit again. The PR will be udpated automatically on new commit.
+---
 
-The remote repository can be.
+ I will either comment on your PR to request for some change or merge your PR directly. You need to implement the requested changes and commit again. The PR will be udpated automatically on new commit.
+
+---
+

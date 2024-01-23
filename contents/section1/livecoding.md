@@ -35,13 +35,11 @@ height: 800
 
 ---
 
-```mermaid
-%%{init: {'theme':'dark'}}%%
-graph LR;
-    A[Install WSL]-->B[Set up the SSH];
-    B-->C[Set up the Gitlab&Github];
-    C-->D[How to submit your homework];
-```
+##  Install WSL
+##  Set up the SSH
+##  Github&Gitlab
+##  Submit homework
+
 
 ---
 
@@ -176,6 +174,8 @@ Then type `Esc` to exit the insert mode, `:wq` to save and quit.
 #### https://github.com
 #### https://code.hkust-gz.edu.cn
 
+Remember to set up your SSH key in your github and gitlab account, or you will not be able to push/pull your homework to the remote repository.
+
 ---
 
 ### Git concepts
@@ -206,17 +206,27 @@ Then type `Esc` to exit the insert mode, `:wq` to save and quit.
 ### How to submit your homework
 1. Fork the homework Github repository. Open the GitHub repository [CodingThrust/AMAT5315HW](), click the fork button. Then you will have a new copy of the original repository with the write permission. Clone the repo to the local host with
     ```bash
-    git clone https://github.com/GiggleLiu/AMAT5315HW.git
+    git clone git@code.hkust-gz.edu.cn:yzhang958/amat5315courseworks2024.git
     ```
-    where `GiggleLiu` is my GitHub handle.
+    where `yzhang958` is my GitHub handle.
+
 
 2. Edit the homework.
-    1. Type `cd ~/jcode/AMAT5315HW` to open the homework directory
-    2. Type `git pull` to get the latest version of the homework.
+    1. Type `cd amat5315courseworks2024/` to open the homework directory
 
 ---
 
-3. Commit the changes. Type
+3. In gitlab,you can update your fork repo by find this button and click it:
+![](2024-01-23-14-24-44.png)
+
+4. In your local host, (wsl or mac) you can update your fork repo by typing:
+```bash
+git pull --rebase 
+```
+
+---
+
+3. Do homework and Commit the changes. Type
    ```bash
    git add -A
    git commit -m 'this is my homework for review'
@@ -229,7 +239,10 @@ Then type `Esc` to exit the insert mode, `:wq` to save and quit.
    ```
    to the `.gitignore` file.
 
-4. Open your forked GitHub repo, you will see a suggested action of creating a pull request (PR). If you missed this hint, you can create a PR manually by checking the "pull request" tab.
+---
+
+4. Open your forked GitHub repo, you will see a suggested action of creating a merge request:
+   ![](2024-01-23-14-36-38.png)
 
 ---
 

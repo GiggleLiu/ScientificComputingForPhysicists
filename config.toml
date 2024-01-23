@@ -3,7 +3,7 @@
   [projects.default]
   contents = [
     "about",
-    "julia-setup",
+    "lecture1/opensource_scientist",
     "appendix",
     "references",
   ]
@@ -13,7 +13,7 @@
 
 
   # Extra directories to be copied.
-  extra_directories = []
+  extra_directories = ["assets"]
 
   # Port used by serve()
   port = 8004

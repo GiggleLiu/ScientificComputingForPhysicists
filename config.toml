@@ -3,13 +3,14 @@
   [projects.default]
   contents = [
     "about",
-    "1.julia-setup",
+    "julia-setup",
     "appendix",
     "references",
   ]
 
   # Full URL, required for the sitemap and robots.txt.
   online_url = "https://book.jinguo-group.science"
+
 
   # Extra directories to be copied.
   extra_directories = []

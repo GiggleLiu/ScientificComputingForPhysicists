@@ -1,19 +1,24 @@
-# The open source workflow
+# Becoming an Open-Source Scientific Computing Scientist 
+
+This section is about the *tool chain* that will help you become a good open source scientific computing programmer ( scientist) 
+
+
+
+## The open source workflow
+```mermaid
+graph LR
+I[Idea in your mind] -->|programming| A[Source code]
+A -->|compiling| B[Executable]
+B -->|tests| C[New Release]
+```
+follow items in this flow chart 
+
+what tools you need for each step in the work flow
 
 Scientific computing is a combination of **scientific applications**, **mathematical modeling** and **high performance computing**. The first lecture focuses on understanding the open source workflow, which is the foundation of scientific computing. It is a summary of the [MIT open course: Missing Semester](https://missing.csail.mit.edu/2020/).
 
 ## Why open sourcing?
 [Open-source](https://en.wikipedia.org/wiki/Open_source) software is software with source code that anyone can inspect, modify, and enhance. Open source software are incresingly popular for many reasons, having better control, easier to train programmers, **better data security**, stability and **collaborative community**.
-
-### Case study: Doc and Docx
-
-[Reading: What Is a .DOCX File, and How Is It Different from a .DOC File in Microsoft Word?](https://www.howtogeek.com/304622/what-is-a-.docx-file-and-how-is-it-different-from-a-.doc-file-in-microsoft-word/)
-
-> Under pressure from the rising competition of the free and open-source Open Office and its competing Open Document Format (ODF), Microsoft pushed for the adoption of an even broader open standard in the early 2000s. This culminated in the development of the DOCX file format, along with its companions like XLSX for spreadsheets and PPTX for presentations.
-
-
-In the past, scientific computing was dominated by commercial software, such as Matlab, Mathematica, Maple, and Magma. To maintain a commercial software, the company must hire a large team of programmers and marketing staffs. The cost of maintaining a commercial software is very high.
-Nowadays, the open source software, such as Python, Julia, R, and SageMath, are becoming more and more popular in scientific computing. The open source scientific software can be maintained by a small group of scientists, benefiting from the **mature open source software stack**.
 
 ### Open source campaign and Linux
 
@@ -38,13 +43,6 @@ Linux kernel, Linux operating system and Linux distribution are different concep
 
 
 
-## The open source workflow
-```mermaid
-graph LR
-I[Idea in your mind] -->|programming| A[Source code]
-A -->|compiling| B[Executable]
-B -->|tests| C[New Release]
-```
 
 ### Tools
 

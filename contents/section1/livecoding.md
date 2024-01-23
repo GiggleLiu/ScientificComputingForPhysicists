@@ -219,29 +219,31 @@ Remember to set up your SSH key in your github and gitlab account, or you will n
 3. In gitlab,you can update your fork repo by find this button and click it:
 ![](2024-01-23-14-24-44.png)
 
-4. In your local host, (wsl or mac) you can update your fork repo by typing:
+4. In your local host, (wsl or mac), before you submit your homework, you must update your fork repo by typing:
 ```bash
 git pull --rebase 
 ```
 
 ---
 
-3. Do homework and Commit the changes. Type
+5. Do homework and Commit the changes. Type
    ```bash
    git add -A
-   git commit -m 'this is my homework for review'
+   git commit -m 'yidai submission'
    git push
    ```
    The `git add -A` will add all changes to the list of changes to commit.
-   If you want to avoid adding some files to your commit history, please edit the `.gitignore` file. For example, to avoid syncing the `data` folder, you could add a new line
+   If you want to avoid adding some files to your commit history, please edit the `.gitignore` file. For example, to avoid syncing the `data` folder, you could add a new line to the `.gitignore` file.
    ```
    data/
    ```
-   to the `.gitignore` file.
+
+   The assignment should be named in your last two words. For example, my name is Yidai Zhang, then the assignment should be named `yidai.txt`.
 
 ---
 
-4. Open your forked GitHub repo, you will see a suggested action of creating a merge request:
+6. Every time you want to submit your homework, you need to add your homework file to the ''SubmitHomework'' directory
+7. Open your forked GitHub repo, you will see a suggested action of creating a merge request:
    ![](2024-01-23-14-36-38.png)
 
 ---

@@ -4,7 +4,6 @@
   contents = [
     "about",
     "lecture1/opensource_scientist",
-    "julia-setup",
     "appendix",
     "references",
   ]

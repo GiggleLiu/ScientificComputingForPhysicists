@@ -1,16 +1,3 @@
-# Purpose
-
--   Setup environments
--   Help find solution to your coding problems
--   &#x2026;
-
-
-# Git
-
-
-## Basics
-
-
 ### Before Starting: Configuring git
 
 -   Configs
@@ -93,28 +80,6 @@ that once a branch has been deleted, you cannot restore its commit history.
 
 
 ## Shells
-
-Shell, zsh and bash are all command-line interface (CLI) interpreters used in
-Unix-like operating systems.
-
--   Shell is the simplest and most basic interpreter. Its primary function is to
-    provide a command-line interface to the system. It can execute scripts, launch
-    programs, manage files and directories, and perform basic system
-    administrative tasks.
-
--   Bash (Bourne-Again SHell) is the default shell on most Linux distributions. It
-    is backward-compatible with the original Bourne shell and includes many
-    additional features, such as command-line editing, job control, and shell
-    scripting capabilities. Bash is widely used as it is both easy to use and has
-    a large user community, resulting in a plethora of available resources
-    (tutorials, scripts, etc.) online.
-
--   Zsh (Z shell) is an extended version of the shell, with a more powerful
-    command-line editing and completion system. It includes features like spelling
-    correction and tab-completion, and it also supports plugins and themes. Zsh is
-    commonly used by power users who require more productivity and efficiency from
-    their command-line interface.
-
 
 ## Path Variable
 

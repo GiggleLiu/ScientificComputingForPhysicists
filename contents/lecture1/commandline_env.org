@@ -1,13 +1,3 @@
-
-:PROPERTIES:
-:ID:       7090589b-7d02-4012-846d-d9b70ad3281e
-:END:
-#+title: Command-line Environment
-#+HUGO_BASE_DIR: ./
-#+filetags: programming
-#+LATEX_HEADER: \usepackage{bm}
-#+LATEX_HEADER: \usepackage{esdiff}
-#+LATEX_HEADER: \usepackage{braket}
 * Reference:
 - [[https://missing.csail.mit.edu/2020/command-line/]]
 * Job Control

@@ -1,6 +1,6 @@
 # Welcome {-}
 
-This website is also available as [**PDF**](/sci2phys.pdf){target="_blank"}.
+This website is also available as [**PDF**](/sci4phys.pdf){target="_blank"}.
 
 **Developer note**
 
@@ -12,6 +12,7 @@ make init
 make build
 make serve
 ```
+When you add new sections to the book, don't forget to edit the `config.toml` file.
 For more information about the `Books.jl`, see <https://huijzer.xyz/Books.jl/>.
 
-The source for this template can be found at <https://github.com/GiggleLiu/ScientificComputingForPhysicists>.
+The source code for this template can be found at <https://github.com/GiggleLiu/ScientificComputingForPhysicists>.

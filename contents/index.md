@@ -14,8 +14,4 @@ make serve
 ```
 For more information about the `Books.jl`, see <https://huijzer.xyz/Books.jl/>.
 
-Note, the `Books.jl` package may not work on your M1 Mac. 
-I have made a fork at <https://github.com/exAClior/Books.jl>.
-The branch  `ys/versionbump` contains a working version.
-
 The source for this template can be found at <https://github.com/GiggleLiu/ScientificComputingForPhysicists>.

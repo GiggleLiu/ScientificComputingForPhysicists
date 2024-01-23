@@ -4,6 +4,7 @@
   contents = [
     "about",
     "julia-setup",
+    "lecture1/linux_workflow",
     "appendix",
     "references",
   ]

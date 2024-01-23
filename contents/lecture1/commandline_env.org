@@ -1,0 +1,60 @@
+
+:PROPERTIES:
+:ID:       7090589b-7d02-4012-846d-d9b70ad3281e
+:END:
+#+title: Command-line Environment
+#+HUGO_BASE_DIR: ./
+#+filetags: programming
+#+LATEX_HEADER: \usepackage{bm}
+#+LATEX_HEADER: \usepackage{esdiff}
+#+LATEX_HEADER: \usepackage{braket}
+* Reference:
+- [[https://missing.csail.mit.edu/2020/command-line/]]
+* Job Control
+- ~ctl-C~ stops execution of process by sending a ~SIGINT~ signal
+** Signals
+- ~man signal~
+** Handle Signal in python
+- When you want to do something non-default with ~ctl-C~ etc
+  #+begin_src python
+#!/usr/bin/env python
+import signal, time
+
+def handler(signum, time):
+    print("\nI got a SIGINT, but I am not stopping")
+
+signal.signal(signal.SIGINT, handler)
+i = 0
+while True:
+    time.sleep(.1)
+    print("\r{}".format(i), end="")
+    i += 1
+  #+end_src
+** Run job in background
+- ~sleep 200 &~
+- Could make a game using this, hide the cooking process in the background
+
+** Continue job in background
+- ~bg~
+
+** View command spawn by current shell
+- ~jobs~
+- It will tell you the identifier you need for bringing command back or continue
+  them in background in the first column.
+
+** Send signal to job
+- ~kill -<signal> %<command index>~
+* [[id:0578f507-a299-4040-b599-f7acfb594a64][Tmux]]
+* Dotfiles
+** Alias
+- ~alias <command>~ query what's ~<command>~ alias for
+- ~alias <command>=<command>~ assign alias
+** GNU Stow
+- Creates a symlink to store your config files in a git repo other than under
+  home directory.
+* Remote machines
+- ~ssh username@ip.address~
+- ~ssh-keygen~ generate public and private key pair
+- ~ssh-copy-id~ copies the public key to a server
+- ~scp~ copy to server
+- ~rsync~ copy to server which is more versatile than scp

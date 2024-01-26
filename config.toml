@@ -2,8 +2,12 @@
 
   [projects.default]
   contents = [
-    "about",
-    "lecture1/opensource_scientist",
+    "chap1/opensource_scientist",
+    "chap1/terminal",
+    "chap1/git",
+    "chap1/ci",
+    "chap1/collaborate",
+    "chap2/julia-setup",
     "appendix",
     "references",
   ]

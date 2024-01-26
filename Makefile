@@ -1,4 +1,4 @@
-JL = julia
+JL = julia --project
 
 default: init build serve
 

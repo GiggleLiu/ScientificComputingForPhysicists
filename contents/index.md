@@ -1,18 +1,7 @@
-# Welcome {-}
+# Who should read this book? {-}
 
-This website is also available as [**PDF**](/sci4phys.pdf){target="_blank"}.
+I am a book about scientific computing with the Julia programming language. I am supposed to be read by people who aim to become professional scientific computing programmers. 
+Before reading me, please make sure
 
-**Developer note**
-
-In order to build and deploy the website, you will need to run the following
-commands in the terminal:
-
-```bash
-make init
-make build
-make serve
-```
-When you add new sections to the book, don't forget to edit the `config.toml` file.
-For more information about the `Books.jl`, see <https://huijzer.xyz/Books.jl/>.
-
-The source code for this template can be found at <https://github.com/GiggleLiu/ScientificComputingForPhysicists>.
+* the problem you are trying to solve runs more than 10min.
+* you are not satisfied with any existing tools.

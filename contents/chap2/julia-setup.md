@@ -1,6 +1,21 @@
-# Setup Julia {#sec:setup}
+# Julia{#sec:julia}
 
-This setup guide is adapted with the mainland China users in mind. If you are not in mainland China, you may skip some steps.
+`Julia` is a high-level, high-performance, dynamic programming language. From
+the designing stage, `Julia` is intended to address the needs of
+high-performance numerical analysis and computational science, without the
+typical need of separate compilation to be fast, while also being effective for
+general-purpose programming, web use or as a specification language. `Julia` is
+also a free and open-source language, with a [large
+community](https://julialang.org/community/) and a [rich
+ecosystem](https://juliahub.com/).
+
+We will devlve deeper into `Julia` later in the chapter. For now, we will just
+install `Julia` and setup the environment.
+
+## Setup Julia {#sec:setup}
+
+This setup guide is adapted with the mainland China users in mind. If you are
+not in mainland China, you may skip some steps.
 
 ### Step 1: Installing Julia 
 For Linux/Mac users, please open a terminal and type the following command to install [Julia](https://julialang.org/) with [juliaup](https://github.com/JuliaLang/juliaup). `Juliaup` is a tool to manage Julia versions and installations. It allows you to install multiple versions of Julia and switch between them easily.
@@ -16,7 +31,7 @@ winget install julia -s msstore # Windows
 You can also install Juliaup directly from [Windows Store](https://www.microsoft.com/store/apps/9NJNWW8PVKMN).
 
 
-#### For users suffering from the slow download speed
+### For users suffering from the slow download speed
             
 You may need to specify another server for installing Juliaup. To do so, execute the following command in your terminal before running the script above.
 
@@ -32,13 +47,13 @@ An alternative approach is downloading the corresponding Julia binary from the [
 After installing the binary, please set the Julia binary path properly if you want to start a Julia REPL from a terminal, check this [manual page](https://julialang.org/downloads/platform/) to learn more.
 
 
-#### Installing Julia
+### Installing Julia
 To verify that Julia is installed, please open a **new** terminal and run the following command in your terminal.
   ```bash
   julia
   ```
 - It should start a Julia REPL(Read-Eval-Print-Loop) session like this
-![REPL Session](https://miro.medium.com/v2/resize:fit:4800/format:webp/1*lxjWRvH3EzSa1N3Pg4iNag.png)
+<!-- ![REPL Session](https://miro.medium.com/v2/resize:fit:4800/format:webp/1*lxjWRvH3EzSa1N3Pg4iNag.png) -->
 - If you wish to install a specific version of Julia, please refer to the [documentation](https://github.com/JuliaLang/juliaup).
 
 ### Step 2: Package Management
@@ -51,7 +66,7 @@ To verify that Julia is installed, please open a **new** terminal and run the fo
 - To exit the package manager press `backspace` key
 - [Read More](https://pkgdocs.julialang.org/v1/managing-packages/)
 
-### Step 3. Configure the startup file and add `Revise`
+### Step 3. Configure the startup file
 First create a new file `~/.julia/config/startup.jl` by executing the following commands 
 
 `mkdir -r ~/.julia/config`
@@ -74,9 +89,9 @@ Then you need to install [Revise](https://github.com/timholy/Revise.jl), which i
 julia> using Pkg; Pkg.add("Revise")
 ```
 
-If you don't know about `startup.jl` and where to find it, [here](https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file) is a good place for further information. Windows users can find their Julia config file in `JULIA_INSTALL_FOLDERtc\julia\startup.jl`
+If you don't know about `startup.jl` and where to find it, [here](https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file) is a good place for further information. 
 
-#### More Packages
+### More Packages
 - You may find more Julia packages [here](https://juliahub.com/).
 
 
@@ -98,12 +113,12 @@ Environment:
   JULIA_PKG_SERVER = http://cn-southeast.pkg.juliacn.com/ 
 ```
 
-#### Step 3. Download an editor: VSCode
+### Step 4. Download an editor: VSCode
 
 Install VSCode by downloading the correct binary for your platform from [here](https://code.visualstudio.com/download).
 Open VSCode and open the `Extensions` tab on the left side-bar of the window, search `Julia` and install the most popular extension.
 [read more...](https://github.com/julia-vscode/julia-vscode)
-![VSCode Julia Layout](https://code.visualstudio.com/assets/docs/languages/julia/overview.png)
+<!-- ![VSCode Julia Layout](https://code.visualstudio.com/assets/docs/languages/julia/overview.png) -->
 
 You are ready to go, cheers!
 

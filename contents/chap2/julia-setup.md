@@ -14,9 +14,6 @@ install `Julia` and setup the environment.
 
 ## Setup Julia {#sec:setup}
 
-This setup guide is adapted with the mainland China users in mind. If you are
-not in mainland China, you may skip some steps.
-
 ### Step 1: Installing Julia 
 For Linux/Mac users, please open a terminal and type the following command to install [Julia](https://julialang.org/) with [juliaup](https://github.com/JuliaLang/juliaup). `Juliaup` is a tool to manage Julia versions and installations. It allows you to install multiple versions of Julia and switch between them easily.
 
@@ -32,16 +29,18 @@ You can also install Juliaup directly from [Windows Store](https://www.microsoft
 
 
 ### For users suffering from the slow download speed
-            
-You may need to specify another server for installing Juliaup. To do so, execute the following command in your terminal before running the script above.
+Network connectivity can be an issue for some users, especially for those who are in China.
+You may need to specify another server for installing Juliaup and Julia packages. To do so, execute the following command in your terminal before running the script above.
 
 **Linux and macOS**
 ```bash
 export JULIAUP_SERVER=https://mirror.nju.edu.cn/julia-releases/ # Linux & macOS
+export JULIA_PKG_SERVER=https://mirrors.nju.edu.cn/julia
 ```
 **Windows**
 ```PowerShell
 $env:JULIAUP_SERVER="https://mirror.nju.edu.cn/julia-releases/" # Windows
+$env:JULIA_PKG_SERVER="https://mirrors.nju.edu.cn/julia"
 ```
 An alternative approach is downloading the corresponding Julia binary from the [Nanjing university mirror website](https://mirror.nju.edu.cn/julia-releases/).
 After installing the binary, please set the Julia binary path properly if you want to start a Julia REPL from a terminal, check this [manual page](https://julialang.org/downloads/platform/) to learn more.
@@ -74,7 +73,6 @@ First create a new file `~/.julia/config/startup.jl` by executing the following 
 
 You could open the file with your favourite editor and add the following content
 ```julia
-ENV["JULIA_PKG_SERVER"] = "http://cn-southeast.pkg.juliacn.com/"
 try
     using Revise
 catch e

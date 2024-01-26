@@ -1,10 +1,10 @@
 ## Get a Terminal!
 
-You need to get a working terminal to follow the instructions in this book.
+You need to get a working terminal to follow the instructions in this book, because everyone who thinks he is cool uses a terminal.
 
 ### Linux operating system{#sec:linux}
 
-Just like Windows, IOS, and Mac OS, Linux is an operating system. In fact,
+Using Linux is the most straight-forward way to get a terminal. Just like Windows, IOS, and Mac OS, Linux is an operating system. In fact,
 Android, one of the most popular platforms on the planet, is powered by the
 Linux operating system. It is free to use, [open
 source](https://opensource.com/resources/what-open-source), widely used on
@@ -21,11 +21,11 @@ The Linux distribution we will use for demoing and live-coding is the
 [Ubuntu](https://ubuntu.com/desktop) distribution of the
 [Linux](https://en.wikipedia.org/wiki/Linux) operating system.
 
-### Shell{#sec:shell}
+### Shell (or Terminal){#sec:shell}
 
 Although you can use a **graphical user interface** (GUI) to interact with your
 Linux distribution, you will find that the **command line interface** (CLI) is
-more efficient and powerful. The CLI is also known as the **shell**.
+more efficient and powerful. The CLI is also known as the **shell** or **terminal**.
 
 The shell is a program that takes commands from the keyboard and gives them to
 the operating system to perform. [Zsh](https://zsh.org/) and
@@ -50,11 +50,7 @@ We will be using `Bash` during this course. In Ubuntu, one can use `Ctrl` +
 to get help information related to a command, use `CTRL-C` to break a program
 and `CTRL-D` to exit a shell or an REPL.
 
-The bash grammar is well summarized in [this
-cheatsheet](https://devhints.io/bash). The following is a short list for
-commands that are often used.
-
-A cheatsheet for Bash scripting
+The following is a short list of bash commands that will be used frequently in this book.
 
 ```
 man     # an interface to the system reference manuals
@@ -78,50 +74,18 @@ ssh     # the OpenSSH remote login client
 vim     # Vi IMproved, a programmer's text editor
 git     # the stupid content tracker
 
-useradd # create a new user or update default new user information
-passwd  # change user password
-
 tar     # an archiving utility
 ```
 
 The power and convinence provided by `Bash` far exceeds what this list can
-express. A more detailed [cheat
-sheet](https://cheatography.com/davechild/cheat-sheets/linux-command-line/) and
-a [lecture](https://missing.csail.mit.edu/2020/shell-tools/) are available
-online. The website [Learn Bash Shell](https://www.learnshell.org/) is also a
-good place to start. More advanced readers will find the [lecture on Shell
-language](https://missing.csail.mit.edu/2020/shell-tools/) and [Shell Scripting
-Tutorial](https://www.shellscript.sh/) themselves more useful.
+express.
 
-We will provide two detailed examination of a command that will be used
-frequently during the career of a scientific computing programmer.
+**Resources**
 
-### SSH{#sec:ssh}
-
-The programmer may not always have access to a powerful machine for both running
-and development of his code. He/she may "borrow" the power of a remote machine
-with the help of `ssh` command. The underlying work force of `ssh` is **Secure
-Shell**. **Secure Shell** is a network protocol that allows the user to take
-command of a remote server securely. After establishing the **Secure Shell**
-connection, the user can take command of a server via sending it shell commands.
-
-With a host name (the IP of the target machine to login) and a user name, one
-can use the following command to login,
-
-```bash
-ssh <username>@<hostname>
-```
-You will get logged in after inputting the password.
-
-It will be tedious to type the host name and user name everytime you want to
-login to the remote machine. You can setup the `~/.ssh/config` file to make your
-life easier. The following is an example of the `~/.ssh/config` file.
-
-```
-Host amat5315
-  HostName 10.100.0.179
-  User user01
-```
+* [MIT Open course: Missing semester](https://missing.csail.mit.edu/2020/shell-tools/)
+* [Learn Bash Shell](https://www.learnshell.org/)
+* [Shell Scripting Tutorial](https://www.shellscript.sh/)
+* [Bash scripting cheatsheet](https://devhints.io/bash)
 
 ### Vim Editor{#sec:editor}
 In order to write code, you need an editor. There are many editors available for 
@@ -163,3 +127,57 @@ To learn more about Vim, please check this [lecture](https://missing.csail.mit.e
  As an example, to edit the config file `~/.ssh/config` just type
 `vim ~/.ssh/config`.
 
+### SSH{#sec:ssh}
+
+The programmer may not always have access to a powerful machine for both running
+and development of his code. He/she may "borrow" the power of a remote machine
+with the help of `ssh` command. The underlying work force of `ssh` is **Secure
+Shell**. **Secure Shell** is a network protocol that allows the user to take
+command of a remote server securely. After establishing the **Secure Shell**
+connection, the user can take command of a server via sending it shell commands.
+
+With a host name (the IP of the target machine to login) and a user name, one
+can use the following command to login,
+
+```bash
+ssh <username>@<hostname>
+```
+where `<username>` is the user name and `<hostname>` is the host name or IP of the target machine.
+You will get logged in after inputting the password.
+
+**Tips to make your life easier**
+
+It will be tedious to type the host name and user name everytime you want to
+login to the remote machine. You can setup the `~/.ssh/config` file to make your
+life easier. The following is an example of the `~/.ssh/config` file.
+
+```
+Host amat5315
+  HostName <hostname>
+  User <username>
+```
+
+where `amat5315` is the alias of the host. After setting up the `~/.ssh/config`, you can login to the remote machine by typing
+
+```bash
+ssh amat5315
+```
+
+If you want to avoid typing the password everytime you login, you can use the command 
+```bash
+ssh-keygen
+```
+to generate a pair of public and private keys, which will be stored in the `~/.ssh` folder on the local machine.
+After setting up the keys, you can copy the public key to the remote machine by typing
+```bash
+ssh-copy-id amat5315
+```
+Try connecting to the remote machine again, you will find that you don't need to type the password anymore.
+
+**How does SSH key pair work?**
+The SSH key pair is a pair of asymmetric keys, one is the public key and the other is the private key.
+In the above example, the public key is uploaded to the remote machine and the private key is stored on the local machine. The public key can be shared with anyone, but the private key must be kept secret.
+
+To connect to a server, the server needs to know that you are the one who with the right to access it. To do so, the server will need to check if you have the private key that corresponds to the public key stored on the server. If you have the private key, you will be granted access to the server.
+
+The secret of the SSH key pair is that **the public key can be used to encrypt a message that can only be decrypted by the private key**, i.e. the public key is more like a lock and the private key is the key to unlock the lock. This is the foundation of the SSH protocol. So server can send you a message encrypted by your public key, and only you can decrypt it with your private key. This is how the server knows that you are the one who has the private key without actually sending the private key to the server.

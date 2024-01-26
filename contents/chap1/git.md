@@ -1,29 +1,15 @@
-## Code must be Managed: Version Control{#sec:version-control} 
+## Code MUST be Maintained: Version Control{#sec:version-control} 
 
-[Open-source](https://en.wikipedia.org/wiki/Open_source) software is software
-with source code that anyone can inspect, modify, and enhance. Open source
-software are incresingly popular for many reasons, having better control, easier
-to train programmers, **better data security**, stability and **collaborative
-community**. A crucial part of open-source software development is
-**version-control**.
+Maintaining a software project is not easy. You may
+encounter the following problems:
 
-The default tool for doing version-control is **Git**. Git originated because
-bitkeeper refused to give linux the free of charge use case. Linus Torvalds
-(remember him, the creator of Linux kernel), wrote his own version-control
-system.
+- New code breaks an existing feature
+- Conflicts between two changes
+- No working code!
+- Bug fixes at a wrong version
+- Code lost
 
-Git is distributed in the sense that every user's computer has a full copy of
-the project. At the failure of one machine, the project is still around.
-
-### Configuring git
-
-Before using, you will need to create a setup file. This can be done with the following few possibilities.
-    1.  If you would like the configuration to apply globally, use `/.gitconfig`
-    2.  If you would like the configuration to be project (repository) specific
-        use `.git/config`
-        
-Keep in mind that repository specific config file will overwrite the global one. You can always view your current config with 
-    `$ git config --list --show-origin`
+A crucial part of maintaining an open-source software is **version-control**. In the following, we will introduce the best tool for doing version-control: **Git**.
 
 ### What is a repo?
 
@@ -38,7 +24,7 @@ lives and git keeps track of your file's history.
 - You can use `git status` to see the status of the working directory, staging area, and repository.
 - You can use `git log` to see the history of commits.
 
-### What is remote?
+### Working with remote repositories
 
 Now that you have configuration all setup, we will get you familiarized with a
 few concepts. In Git terminology, **Remote** refers to a repository that is
@@ -56,7 +42,7 @@ together.
 - You can use `git pull <remote-name> <branch>` to fetch from and integrate with another repo or a local branch.
 
 
-### What is branch?
+### Developing a feature safely
 
 A branch in Git is a lightweight pointer to a specific commit. It allows
 developers to work on new features or make changes to the codebase without
@@ -162,20 +148,3 @@ A more detailed introduction could be found in this [lecture](https://missing.cs
 * [Learn Git with Game](https://learngitbranching.js.org/?locale=zh_CN)
 * [Command Visualization](https://dev.to/lydiahallie/cs-visualized-useful-git-commands-37p1)
 * [Git Panic](https://ohshitgit.com/)
-
-
-### Publish{#sec:publish}
-Now that you have an amazing package, it's time to make it available to the
-public. Before that, there is one final task to be done which is to choose a license. 
-
-- GNU's Not Unix! (GNU) (1983 by Richard Stallman)
-    
-    Its goal is to give computer users freedom and control in their use of their computers and [computing devices](https://en.wikipedia.org/wiki/Computer_hardware) by collaboratively developing and publishing software that gives everyone the rights to freely run the software, copy and distribute it, study it, and modify it. GNU software grants these rights in its [license](https://en.wikipedia.org/wiki/GNU_General_Public_License).
-    
-    ![](./assets/images/gnu.png)
-    
-- The problem of GPL Lisense: The GPL and licenses modeled on it impose the restriction that source code must be distributed or made available for all works that are derivatives of the GNU copyrighted code.
-    
-    Case study: [Free Software fundation v.s. Cisco Systems](https://www.notion.so/Wiki-53dd9dafd57b40f6b253d6605667a472)
-    
-    Modern Licenses are: [MIT](https://en.wikipedia.org/wiki/MIT_License) and [Apache](https://en.wikipedia.org/wiki/Apache_License).

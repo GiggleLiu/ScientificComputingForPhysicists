@@ -2,8 +2,9 @@
 title: Scientific Computing for Physicist
 subtitle: with Julia programming language
 author:
-  - Jin-Guo Liu
   - Yu-Sheng Zhao
+  - Yi-Dai Zhang
+  - Jin-Guo Liu
 
 html-license: <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
 tex-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
@@ -13,10 +14,13 @@ bibliography: files/bibliography.bib
 # Only used in PDF.
 titlepage-top: >
   \begin{tabular}{l}
-  Jin-Guo Liu\\
+  Yu-Sheng Zhao\\
   Hong-Kong University of Science and Technology (Guangzhou)\\
   \\
-  Yu-Sheng Zhao\\
+  Yi-Dai Zhang\\
+  Hong-Kong University of Science and Technology (Guangzhou)\\
+  \\
+  Jin-Guo Liu\\
   Hong-Kong University of Science and Technology (Guangzhou)\\
   \\
   \end{tabular}

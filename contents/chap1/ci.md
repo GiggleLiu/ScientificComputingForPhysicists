@@ -1,4 +1,4 @@
-## Code must be Tested!{#sec:ci-cd}
+## Code MUST be Tested!{#sec:ci-cd}
 
 In terms of scientific computing, accuracy of your result is most certainly more
 important than anything else. To ensure the correctness of the code, we employ

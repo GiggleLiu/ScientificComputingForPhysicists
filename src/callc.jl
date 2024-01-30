@@ -1,3 +1,3 @@
 function do_the_fucking_print()
-    println("Hello World！")
+	return println("Hello World！")
 end

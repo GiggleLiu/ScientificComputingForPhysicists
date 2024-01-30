@@ -13,7 +13,9 @@ using Reexport: @reexport
 
 export M, example_dataframe
 
+export do_the_fucking_print
 include("data.jl")
+include("callc.jl")
 
 """
     build()

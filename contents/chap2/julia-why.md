@@ -354,36 +354,137 @@ sco("""
 """)
 ```
 
+```jl
+sco("""
+	typeof(vany)
+""")
+```
 
+```jl
+sco("""
+	push!(vany, "a")
+""")
+```
 
-
+```jl
+sco("""
+	push!(vany, 1)
+""")
+```
 
 
 **Fixed typed vector is more restrictive.**
 
+```jl
+sco("""
+	vfloat64 = Float64[]
+""")
+```
 
-**But type stable vectors are faster!**
+```jl
+sco("""
+	vfloat64 |> typeof
+""")
+```
 
 ### Multiple dispatch
 
+```jl
+sco("""
+	abstract type AbstractAnimal{L} end
+""")
+```
+
+```jl
+sco("""
+	struct Dog <: AbstractAnimal{4}
+	color::String
+end
+""")
+```
+
 <: is the symbol for sybtyping， A <: B means A is a subtype of B.
+
+```jl
+sco("""
+	struct Cat <: AbstractAnimal{4}
+	color::String
+end
+""")
+```
+
+```jl
+sco("""
+	abstract type AbstractAnimal{L} end
+""")
+```
+
 
 **One can implement the same function on different types**
 
 The most general one as the fall back method
 
+```jl
+sco("""
+	fight(a::AbstractAnimal, b::AbstractAnimal) = "draw"
+""")
+```
+
+
 **The most concrete method is called**
 
-**Be careful about the ambiguity error!**
+```jl
+sco("""
+	fight(dog::Dog, cat::Cat) = "win"
+""")
+```
 
-The combination of two types.
+```jl
+sco("""
+	fight(Dog("blue"), Cat("white"))
+""")
+```
 
-Quiz: How many method instances are generated for fight so far?
 
 **A final comment: do not abuse the type system, otherwise the main memory might explode for generating too many functions.**
 
+```jl
+sco("""
+	fib(x::Int) = x <= 2 ? 1 : fib(x-1) + fib(x-2)
+""")
+```
 
-A "zero" cost implementation
+**A "zero" cost implementation**
+
+```jl
+sco("""
+	Val(3.0)
+""")
+```
+
+```jl
+sco("""
+	addup(::Val{x}, ::Val{y}) where {x, y} = Val(x + y)
+""")
+```
+
+```jl
+sco("""
+	f(::Val{x}) where x = addup(f(Val(x-1)), f(Val(x-2)))
+""")
+```
+
+```jl
+sco("""
+	f(::Val{1}) = Val(1)
+""")
+```
+
+```jl
+sco("""
+	f(::Val{2}) = Val(1)
+""")
+```
 
 However, this violates the Performance Tips, since it transfers the run-time to compile time.
 
@@ -391,16 +492,175 @@ However, this violates the Performance Tips, since it transfers the run-time to 
 
 Implement addition in Python.
 
+```
+class X:
+  def __init__(self, num):
+    self.num = num
+
+  def __add__(self, other_obj):
+    return X(self.num+other_obj.num)
+
+  def __radd__(self, other_obj):
+    return X(other_obj.num + self.num)
+
+  def __str__(self):
+    return "X = " + str(self.num)
+
+class Y:
+  def __init__(self, num):
+    self.num = num
+
+  def __radd__(self, other_obj):
+    return Y(self.num+other_obj.num)
+
+  def __str__(self):
+    return "Y = " + str(self.num)
+
+print(X(3) + Y(5))
+
+
+print(Y(3) + X(5))
+```
+
 Implement addition in Julia
+
+```jl
+sco("""
+	struct X{T}
+	num::T
+end
+""")
+```
+
+```jl
+sco("""
+	struct Y{T}
+	num::T
+end
+""")
+```
+
+```jl
+sco("""
+	Base.:(+)(a::X, b::Y) = X(a.num + b.num)
+""")
+```
+
+```jl
+sco("""
+	Base.:(+)(a::Y, b::X) = X(a.num + b.num)
+""")
+```
+
+```jl
+sco("""
+	Base.:(+)(a::X, b::X) = X(a.num + b.num)
+""")
+```
+
+```jl
+sco("""
+	Base.:(+)(a::Y, b::Y) = Y(a.num + b.num)
+""")
+```
 
 **Multiple dispatch is easier to extend!**
 
 If C wants to extend this method to a new type Z.
+```
+class Z:
+  def __init__(self, num):
+    self.num = num
+
+  def __add__(self, other_obj):
+    return Z(self.num+other_obj.num)
+
+  def __radd__(self, other_obj):
+    return Z(other_obj.num + self.num)
+
+  def __str__(self):
+    return "Z = " + str(self.num)
+
+print(X(3) + Z(5))
+
+print(Z(3) + X(5))
+```
+
+```jl
+sco("""
+	struct Z{T}
+	num::T
+end
+""")
+```
+
+```jl
+sco("""
+	Base.:(+)(a::X, b::Z) = Z(a.num + b.num)
+""")
+```
+
+```jl
+sco("""
+	Base.:(+)(a::Z, b::X) = Z(a.num + b.num)
+""")
+```
+
+```jl
+sco("""
+	Base.:(+)(a::Y, b::Z) = Z(a.num + b.num)
+""")
+```
+
+```jl
+sco("""
+	Base.:(+)(a::Z, b::Y) = Z(a.num + b.num)
+""")
+```
+
+```jl
+sco("""
+	Base.:(+)(a::Z, b::Z) = Z(a.num + b.num)
+""")
+```
+
+```jl
+sco("""
+	X(3) + Y(5)
+""")
+```
+
+```jl
+sco("""
+	Y(3) + X(5)
+""")
+```
+
+```jl
+sco("""
+	X(3) + Z(5)
+""")
+```
+
+```jl
+sco("""
+	Z(3) + Y(5)
+""")
+```
 
 **Julia function space is exponetially large!**
 Quiz: If a function has parameters, and the module has types, how many different functions can be generated?
 
+```
+f(x::T1, y::T2, z::T3...)
+```
 If it is an object-oriented language like Python？
+
+```
+class T1:
+    def f(self, y, z, ...):
+        self.num = num
+```
 
 **Summary**
 - Multiple dispatch is a feature of some programming languages in which a function or method can be dynamically dispatched based on the run-time type.
@@ -413,13 +673,104 @@ If it is an object-oriented language like Python？
 
 **Tuple has fixed memory layout, but array does not.**
 
+```jl
+sco("""
+	tp = (1, 2.0, 'c')
+""")
+```
+
+```jl
+sco("""
+	typeof(tp)
+""")
+```
+
+```jl
+sco("""
+	isbitstype(typeof(tp))
+""")
+```
+
+```jl
+sco("""
+	arr = [1, 2.0, 'c']
+""")
+```
+
+```jl
+sco("""
+	typeof(arr)
+""")
+```
+
+```jl
+sco("""
+	isbitstype(typeof(arr))
+""")
+```
 
 
 **Boardcasting**
 
-**Broadcasting is fast (loop fusing)!**
+```jl
+sco("""
+	x = 0:0.1:π
+""")
+```
+
+```jl
+sco("""
+	y = sin.(x)
+""")
+```
+
+```jl
+sco("""
+	using Plots
+""")
+```
+
+```jl
+sco("""
+	plot(x, y; label="sin")
+""")
+```
+
+```jl
+sco("""
+	mesh = (1:100)'
+""")
+```
+
+```jl
+sco("""
+	let
+	X, Y = 0:0.1:5, 0:0.1:5
+	heatmap(X, Y, sin.(X .+ Y'))
+end
+""")
+```
+
 
 **Broadcasting over non-concrete element types may be type unstable.**
+
+```jl
+sco("""
+	eltype(arr)
+""")
+```
+
+```jl
+sco("""
+	arr .+ 1
+""")
+```
+
+```jl
+sco("""
+	eltype(tp)
+""")
+```
 
 ### Julia package development
 

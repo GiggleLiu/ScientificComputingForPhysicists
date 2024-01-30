@@ -83,13 +83,8 @@ Method instance is a compiled binary of a function for specific input types. Whe
 
 **2. When calling a function, the Julia compiler infers types of variables on an intermediate representation (IR)**
 
-```mermaid
-flowchart LR
-    A("Call a Julia function") -->|has method instance?| B
-    B -->|no| N["infer types & compile"] --> C("binary")
-    C -->|execute| Z("result")
-    B -->|yes| C
-```
+<img src="./assets/images/calling function.png" alt="image" width="500" height="auto">
+
 
 
 **One can use `@code_warntype` or `@code_typed` to show this intermediate representation.**
@@ -224,15 +219,17 @@ If it is an object-oriented language like Python？
 
 The file structure of a package
 
-```mermaid
-graph TD;
-A["pkg> add Yao"] --> B["Update registries from GitHub"] --> C["Resolve version and generate Manifest.toml"] --> D["Download the package from GitHub"]
-D --> E["Install and precompile"]
-```
+<img src="./assets/images/julia_dev.png" alt="image" width="500" height="auto">
+
 
 
 **Unit Test**
 
+### Case study: Create a package like HappyMolecules
+
+With `PkgTemplates`.
+
+[https://github.com/CodingThrust/HappyMolecules.jl](https://github.com/CodingThrust/HappyMolecules.jl)
 
 
 

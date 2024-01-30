@@ -20,7 +20,3 @@ Choosing a programming language is always subjective. The following characterist
 
 Julia is a unique programming language because it solves the so-called "two languages problem." No other programming language is needed to write high-performance code. This does not mean it happens automatically. It is the responsibility of the programmer to optimize the code that forms a bottleneck, but this can done in Julia itself.
 
-
-
-
-

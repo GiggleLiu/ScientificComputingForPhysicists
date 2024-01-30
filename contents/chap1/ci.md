@@ -5,11 +5,11 @@ important than anything else. To ensure the correctness of the code, we employ
 two methods: **Unit Testing** and **CI/CD**.
 
 ### Unit Test
-Unit tests are typically [automated
+Unit tests are typically [automated
 tests](https://en.wikipedia.org/wiki/Automated_test) written and run
-by [software developers](https://en.wikipedia.org/wiki/Software_developer) to
+by [software developers](https://en.wikipedia.org/wiki/Software_developer) to
 ensure that a section of an application (known as the "unit") meets
-its [design](https://en.wikipedia.org/wiki/Software_design) and behaves as
+its [design](https://en.wikipedia.org/wiki/Software_design) and behaves as
 intended. In `Julia`, there exists a helpful module called
 [Test](https://docs.julialang.org/en/v1/stdlib/Test/) to help you do Unit
 Testing.

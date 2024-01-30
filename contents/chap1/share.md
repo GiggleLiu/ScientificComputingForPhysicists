@@ -5,9 +5,7 @@ public. Before that, there is one final task to be done which is to choose a lic
 - GNU's Not Unix! (GNU) (1983 by Richard Stallman)
     
     Its goal is to give computer users freedom and control in their use of their computers and [computing devices](https://en.wikipedia.org/wiki/Computer_hardware) by collaboratively developing and publishing software that gives everyone the rights to freely run the software, copy and distribute it, study it, and modify it. GNU software grants these rights in its [license](https://en.wikipedia.org/wiki/GNU_General_Public_License).
-    
-    ![](./assets/images/gnu.png)
-    
+    <img src="./assets/images/gnu.png" alt="image" width="300" height="auto">
 - The problem of GPL Lisense: The GPL and licenses modeled on it impose the restriction that source code must be distributed or made available for all works that are derivatives of the GNU copyrighted code.
     
     Case study: [Free Software fundation v.s. Cisco Systems](https://www.notion.so/Wiki-53dd9dafd57b40f6b253d6605667a472)

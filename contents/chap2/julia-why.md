@@ -140,7 +140,99 @@ Dynamically generating method instances is also called Just-in-time compiling (J
 **A type contains two parts: type name and type parameters**
 
 **ComplexF64 is a bits type, it has fixed size**
+
 The size of Complex{BigFloat} is not true! It returns the pointer size!
+
+**A type can be neither abstract nor concrete.**
+
+To represent a complex number with its real and imaginary parts being floating point numbers
+
+
+**We use Union to represent the union of two types**
+
+NOTE: it is similar to multiple inheritance, but Union can not have subtype!
+
+**You can make an alias for a type name if you think it is too long**
+
+### Case study: Vector element type and speed
+
+**Any type vector is flexible. You can add any element into it.**
+
+**Fixed typed vector is more restrictive.**
+
+
+**But type stable vectors are faster!**
+
+### Multiple dispatch
+
+<: is the symbol for sybtyping， A <: B means A is a subtype of B.
+
+**One can implement the same function on different types**
+
+The most general one as the fall back method
+
+**The most concrete method is called**
+
+**Be careful about the ambiguity error!**
+
+The combination of two types.
+
+Quiz: How many method instances are generated for fight so far?
+
+**A final comment: do not abuse the type system, otherwise the main memory might explode for generating too many functions.**
+
+
+A "zero" cost implementation
+
+However, this violates the Performance Tips, since it transfers the run-time to compile time.
+
+### Multiple dispatch is more powerful than object-oriented programming!
+
+Implement addition in Python.
+
+Implement addition in Julia
+
+**Multiple dispatch is easier to extend!**
+
+If C wants to extend this method to a new type Z.
+
+**Julia function space is exponetially large!**
+Quiz: If a function has parameters, and the module has types, how many different functions can be generated?
+
+If it is an object-oriented language like Python？
+
+**Summary**
+- Multiple dispatch is a feature of some programming languages in which a function or method can be dynamically dispatched based on the run-time type.
+
+- Julia's mutiple dispatch provides exponential abstraction power comparing with an object-oriented language.
+
+- By carefully designed type system, we can program in an exponentially large function space.
+
+### Tuple, Array and broadcasting
+
+**Tuple has fixed memory layout, but array does not.**
+
+
+
+**Boardcasting**
+
+**Broadcasting is fast (loop fusing)!**
+
+**Broadcasting over non-concrete element types may be type unstable.**
+
+### Julia package development
+
+The file structure of a package
+
+```mermaid
+graph TD;
+A["pkg> add Yao"] --> B["Update registries from GitHub"] --> C["Resolve version and generate Manifest.toml"] --> D["Download the package from GitHub"]
+D --> E["Install and precompile"]
+```
+
+
+**Unit Test**
+
 
 
 

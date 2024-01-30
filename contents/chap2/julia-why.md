@@ -774,13 +774,62 @@ sco("""
 
 ### Julia package development
 
+```jl
+sco("""
+	using TropicalNumbers
+""")
+```
+
 The file structure of a package
+
+```jl
+sco("""
+	project_folder = dirname(dirname(pathof(TropicalNumbers)))
+""")
+```
 
 <img src="./assets/images/julia_dev.png" alt="image" width="500" height="auto">
 
 
 
 **Unit Test**
+
+```jl
+sco("""
+	using Test
+""")
+```
+
+```jl
+sco("""
+	@test Tropical(3.0) + Tropical(2.0) == Tropical(3.0)
+""")
+```
+
+```jl
+sco("""
+	@test_throws BoundsError [1,2][3]
+""")
+```
+
+```jl
+sco("""
+	@test_broken 3 == 2
+""")
+```
+
+```jl
+sco("""
+	@testset "Tropical Number addition" begin
+	@test Tropical(3.0) + Tropical(2.0) == Tropical(3.0)
+	@test_throws BoundsError [1][2]
+	@test_broken 3 == 2
+end
+""")
+```
+
+
+
 
 ### Case study: Create a package like HappyMolecules
 

@@ -32,7 +32,7 @@ It is designed for speed.
 
 
 ### The two language problem
-#### Executing a C program
+**Executing a C program**
 
 ```jl
 # A notebook utility to run code in a terminal style
@@ -51,7 +51,7 @@ end# compile to a shared library by piping C_code to gcc;
 
 [learn more about calling C code in Julia](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)
 
-#### Executing a Pyhton Program
+**Executing a Pyhton Program**
 
 **Dynamic programming language does not require compiling"**
 **Dynamic typed language is more flexible, but slow!**
@@ -96,6 +96,12 @@ flowchart LR
 
 **Sometimes, type can not be uniquely determined at the runtime. This is called "type unstable".**
 
+```jl
+sco("""
+	supertype(Float64)
+""")
+```
+
 **3. The typed program is then compiled to LLVM IR**
 <img src="./assets/images/dragon.png" alt="image" width="300" height="auto">
 
@@ -122,7 +128,7 @@ Dynamically generating method instances is also called Just-in-time compiling (J
 4. Tuples, immutable ordered collections of values 
 5. Union types, abstract types constructed from other types via set union
 
-#### Numbers
+**Numbers**
 **Type hierachy in Julia is a tree (without multiple inheritance)**
 
 **Abstract types does not have fields, while composite types have**

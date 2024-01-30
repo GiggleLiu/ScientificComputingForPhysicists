@@ -13,7 +13,7 @@ Julia packages can be found on [JuliaHub](https://juliahub.com/ui/Packages), mos
 
 It is designed for speed.
 
-    <img src="./assets/images/benchmark.svg" alt="image" width="300" height="auto">
+ <img src="./assets/images/benchmark.png" alt="image" width="500" height="auto">
 
 ### Reference
 [arXiv:1209.5145](https://arxiv.org/abs/1209.5145)
@@ -34,30 +34,61 @@ It is designed for speed.
 ### The two language problem
 **Executing a C program**
 
-```jl
-# A notebook utility to run code in a terminal style
-with_terminal() do
-	# display the file
-	run(`cat clib/demo.c`)
-end# compile to a shared library by piping C_code to gcc;
-```
+- C code is typed.
 
-**C code needs to be compiled**
+- C code needs to be compiled
 
 **One can use `Libdl` package to open a shared library**
+
+```jl
+sco("""
+	using Libdl
+   
+""")
+```
+
+```jl
+sco("""
+	c_factorial(x) = Libdl.@ccall "clib/demo".c_factorial(x::Csize_t)::Int
+""")
+```
 
 
 **Typed code may overflow, but is fast!**
 
+
+```jl
+sco("""
+	using BenchmarkTools
+""")
+```
+
+
+
 [learn more about calling C code in Julia](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)
+
+Discussion: not all type specifications are nessesary.
+
 
 **Executing a Pyhton Program**
 
 **Dynamic programming language does not require compiling"**
+
 **Dynamic typed language is more flexible, but slow!**
 
+```jl
+sco("""
+	typemax(Int)
+""")
+```
+
 **The reason why dynamic typed language is slow is related to caching.**
+
 Dynamic typed language uses `Box(type, *data)` to represent an object.
+
+<img src="./assets/images/data.png" alt="image" width="300" height="auto">
+
+
 
 Cache miss!
 
@@ -72,14 +103,41 @@ Cache miss!
 - Monte Carlo method and simulated annealing method,
 - Generic Tensor Network method: the tensor elements has tropical algebra or finite field algebra,
 - Branching and bound.
-<img src="./assets/images/pythonc.png" alt="image" width="300" height="auto">
+<img src="./assets/images/pythonc.png" alt="image" width="500" height="auto">
 
 ### Julia's solution
 NOTE: I should open a Julia REPL now!
 
 **1. Your computer gets a Julia program**
 
+```jl
+sco("""
+	function jlfactorial(n)
+	x = 1
+	for i in 1:n
+    	x = x * i
+	end
+	return x
+end
+""")
+```
+
+
 Method instance is a compiled binary of a function for specific input types. When the function is written, the binary is not yet generated.
+
+```jl
+sco("""
+	using MethodAnalysis
+""")
+```
+
+
+```jl
+sco("""
+	methodinstances(jlfactorial)
+""")
+```
+
 
 **2. When calling a function, the Julia compiler infers types of variables on an intermediate representation (IR)**
 
@@ -87,27 +145,38 @@ Method instance is a compiled binary of a function for specific input types. Whe
 
 
 
-**One can use `@code_warntype` or `@code_typed` to show this intermediate representation.**
-
-**Sometimes, type can not be uniquely determined at the runtime. This is called "type unstable".**
-
-```jl
-sco("""
-	supertype(Float64)
-""")
-```
-
 **3. The typed program is then compiled to LLVM IR**
 <img src="./assets/images/dragon.png" alt="image" width="300" height="auto">
 
 LLVM is a set of compiler and toolchain technologies that can be used to develop a front end for any programming language and a back end for any instruction set architecture. LLVM is the backend of multiple languages, including Julia, Rust, Swift and Kotlin.
 
 
+
 **4. LLVM IR does some optimization, and then compiled to binary code.**
 
-Aftering calling a function, a method instance will be generated.
+```
+with_terminal() do
+	@code_native jlfactorial(10)
+end
+```
 
-A new method will be generatd whenever there is a new type as the input.
+**Aftering calling a function, a method instance will be generated.**
+
+
+**A new method will be generatd whenever there is a new type as the input.**
+
+
+```jl
+sco("""
+	jlfactorial(UInt32(10))
+""")
+```
+
+```jl
+sco("""
+	methodinstances(jlfactorial)
+""")
+```
 
 Dynamically generating method instances is also called Just-in-time compiling (JIT), the secret why Julia is fast!
 
@@ -126,15 +195,97 @@ Dynamically generating method instances is also called Just-in-time compiling (J
 **Numbers**
 **Type hierachy in Julia is a tree (without multiple inheritance)**
 
+```jl
+sco("""
+	AbstractFloat <: Real
+""")
+```
+
 **Abstract types does not have fields, while composite types have**
+
+```jl
+sco("""
+	Base.isabstracttype(Number)
+""")
+```
+
+```jl
+sco("""
+	Base.isconcretetype(Complex{Float64})
+""")
+```
+
+```jl
+sco("""
+	fieldnames(Complex)
+""")
+```
+
 
 **We have only finite primitive types on a machine, they are those supported natively by computer instruction.**
 
+```jl
+sco("""
+	Base.isprimitivetype(Float64)
+""")
+```
+
+
 **`Any` is a super type of any other type**
+
+
+```jl
+sco("""
+	Number <: Any
+""")
+```
+
 
 **A type contains two parts: type name and type parameters**
 
+```jl
+sco("""
+	Complex{Float64}
+""")
+```
+
+
 **ComplexF64 is a bits type, it has fixed size**
+
+```jl
+sco("""
+	sizeof(Complex{Float32})
+""")
+```
+
+```jl
+sco("""
+	sizeof(Complex{Float64})
+""")
+```
+
+But Complex{BigFloat} is not
+
+
+```jl
+sco("""
+	sizeof(Complex{BigFloat})
+""")
+```
+
+```jl
+sco("""
+	isbitstype(Complex{BigFloat})
+""")
+```
+
+```jl
+sco("""
+	Complex{Float64}
+""")
+```
+
+
 
 The size of Complex{BigFloat} is not true! It returns the pointer size!
 
@@ -142,16 +293,71 @@ The size of Complex{BigFloat} is not true! It returns the pointer size!
 
 To represent a complex number with its real and imaginary parts being floating point numbers
 
+```jl
+sco("""
+	Complex{<:AbstractFloat}
+""")
+```
+
+```jl
+sco("""
+	Complex{Float64} <: Complex{<:AbstractFloat}
+""")
+```
+
+```jl
+sco("""
+	Base.isabstracttype(Complex{<:AbstractFloat})
+""")
+```
+
+```jl
+sco("""
+	Base.isconcretetype(Complex{<:AbstractFloat})
+""")
+```
+
+
 
 **We use Union to represent the union of two types**
+
+```jl
+sco("""
+	Union{AbstractFloat, Complex} <: Number
+""")
+```
+
+```jl
+sco("""
+	Union{AbstractFloat, Complex} <: Real
+""")
+```
+
 
 NOTE: it is similar to multiple inheritance, but Union can not have subtype!
 
 **You can make an alias for a type name if you think it is too long**
 
+```jl
+sco("""
+	FloatAndComplex{T} = Union{T, Complex{T}} where T<:AbstractFloat
+""")
+```
+
 ### Case study: Vector element type and speed
 
 **Any type vector is flexible. You can add any element into it.**
+
+```jl
+sco("""
+	vany = Any[]  # same as vany = []
+""")
+```
+
+
+
+
+
 
 **Fixed typed vector is more restrictive.**
 

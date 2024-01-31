@@ -713,43 +713,46 @@ sco("""
 **Boardcasting**
 
 ```jl
-sco("""
+sc("""
 	x = 0:0.1:π
 """)
 ```
 
 ```jl
-sco("""
+sc("""
 	y = sin.(x)
 """)
 ```
 
 ```jl
-sco("""
+sc("""
 	using Plots
 """)
 ```
 
 ```jl
-sco("""
+sc("""
 	plot(x, y; label="sin")
 """)
 ```
 
 ```jl
-sco("""
+sc("""
 	mesh = (1:100)'
 """)
 ```
 
 ```jl
-sco("""
-	let
+sc("""
+function example_heatmap()
 	X, Y = 0:0.1:5, 0:0.1:5
-	heatmap(X, Y, sin.(X .+ Y'))
+	hm = heatmap(X, Y, sin.(X .+ Y'))
+	return hm
 end
+BookTemplate.example_heatmap() # hide 
 """)
 ```
+
 
 
 **Broadcasting over non-concrete element types may be type unstable.**

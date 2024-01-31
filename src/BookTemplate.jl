@@ -1,5 +1,14 @@
 module BookTemplate
 
+using Books: Books
+using Plots
+using Plots: Plot
+Books.is_image(plot::Plots.Plot) = true
+Books.svg(svg_path::String, p::Plot) = savefig(p, svg_path)
+Books.png(png_path::String, p::Plot) = savefig(p, png_path)
+
+
+
 using Reexport: @reexport
 @reexport using Books:
 	build_all,
@@ -15,8 +24,7 @@ using Reexport: @reexport
 	select!,
 	select
 
-export M, do_the_fucking_print, show_c_file
-include("callc.jl")
+export M
 
 """
 	build()

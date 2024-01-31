@@ -2,30 +2,38 @@ module BookTemplate
 
 using Reexport: @reexport
 @reexport using Books:
-    build_all,
-    gen
+	build_all,
+	gen,
+	sco, #show code and output
+	@sco,
+	sc, #show code 
+	@sc
 @reexport using DataFrames:
-    DataFrame,
-    filter!,
-    filter,
-    select!,
-    select
+	DataFrame,
+	filter!,
+	filter,
+	select!,
+	select
 
-export M, example_dataframe
+using Books: Books
+using Plots: Plots, Plot
 
-include("data.jl")
+
+export M
+
+include("plot.jl")
 
 """
-    build()
+	build()
 
 This function is called during CI.
 """
 function build()
-    println("Building your awesome book!")
-    # To avoid publishing broken websites.
-    fail_on_error = true
-    gen(; fail_on_error)
-    build_all(; fail_on_error)
+	println("Building your awesome book!")
+	# To avoid publishing broken websites.
+	fail_on_error = true
+	# gen(; fail_on_error)
+	build_all(; fail_on_error)
 end
 
 end # module

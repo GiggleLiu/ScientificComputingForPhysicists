@@ -43,7 +43,6 @@ It is designed for speed.
 ```jl
 sco("""
 	using Libdl
-   
 """)
 ```
 
@@ -52,7 +51,6 @@ sco("""
 	c_factorial(x) = Libdl.@ccall "clib/demo".c_factorial(x::Csize_t)::Int
 """)
 ```
-
 
 **Typed code may overflow, but is fast!**
 
@@ -839,8 +837,6 @@ end
 With `PkgTemplates`.
 
 [https://github.com/CodingThrust/HappyMolecules.jl](https://github.com/CodingThrust/HappyMolecules.jl)
-
-
 
 
 

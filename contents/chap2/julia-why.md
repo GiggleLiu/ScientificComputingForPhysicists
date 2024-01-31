@@ -492,7 +492,7 @@ However, this violates the Performance Tips, since it transfers the run-time to 
 
 Implement addition in Python.
 
-```
+```py
 class X:
   def __init__(self, num):
     self.num = num
@@ -567,7 +567,7 @@ sco("""
 **Multiple dispatch is easier to extend!**
 
 If C wants to extend this method to a new type Z.
-```
+```c
 class Z:
   def __init__(self, num):
     self.num = num
@@ -651,12 +651,12 @@ sco("""
 **Julia function space is exponetially large!**
 Quiz: If a function has parameters, and the module has types, how many different functions can be generated?
 
-```
+```jl
 f(x::T1, y::T2, z::T3...)
 ```
 If it is an object-oriented language like Python？
 
-```
+```py
 class T1:
     def f(self, y, z, ...):
         self.num = num

@@ -15,13 +15,8 @@ using Reexport: @reexport
 	select!,
 	select
 
-using Books: Books
-using Plots: Plots, Plot
-
-
 export M
 
-include("plot.jl")
 
 """
 	build()
@@ -32,7 +27,7 @@ function build()
 	println("Building your awesome book!")
 	# To avoid publishing broken websites.
 	fail_on_error = true
-	# gen(; fail_on_error)
+	gen(; fail_on_error)
 	build_all(; fail_on_error)
 end
 

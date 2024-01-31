@@ -141,8 +141,6 @@ sco("""
 
 <img src="./assets/images/calling function.png" alt="image" width="500" height="auto">
 
-
-
 **3. The typed program is then compiled to LLVM IR**
 <img src="./assets/images/dragon.png" alt="image" width="300" height="auto">
 
@@ -331,7 +329,6 @@ sco("""
 """)
 ```
 
-
 NOTE: it is similar to multiple inheritance, but Union can not have subtype!
 
 **You can make an alias for a type name if you think it is too long**
@@ -416,8 +413,6 @@ sco("""
 	abstract type AbstractAnimal{L} end
 """)
 ```
-
-
 **One can implement the same function on different types**
 
 The most general one as the fall back method
@@ -649,9 +644,10 @@ sco("""
 **Julia function space is exponetially large!**
 Quiz: If a function has parameters, and the module has types, how many different functions can be generated?
 
-```jl
+```py
 f(x::T1, y::T2, z::T3...)
 ```
+
 If it is an object-oriented language like Python？
 
 ```py
@@ -740,19 +736,6 @@ sc("""
 """)
 ```
 
-```jl
-sc("""
-function example_heatmap()
-	X, Y = 0:0.1:5, 0:0.1:5
-	hm = heatmap(X, Y, sin.(X .+ Y'))
-	return hm
-end
-BookTemplate.example_heatmap() # hide 
-""")
-```
-
-
-
 **Broadcasting over non-concrete element types may be type unstable.**
 
 ```jl
@@ -837,8 +820,6 @@ end
 With `PkgTemplates`.
 
 [https://github.com/CodingThrust/HappyMolecules.jl](https://github.com/CodingThrust/HappyMolecules.jl)
-
-
 
 
 

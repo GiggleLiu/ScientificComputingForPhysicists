@@ -1,28 +1,65 @@
 ## Code MUST be Maintained: Version Control{#sec:version-control} 
 
-Maintaining a software project is not easy. You may
-encounter the following problems:
+Maintaining a software project is not easy, especially when it comes to multiple developers working on the same piece of code. When adding a new feature to the project, maintainers may encounter the following problems:
 
-- New code breaks an existing feature
-- Conflicts between two changes
-- No working code!
-- Bug fixes at a wrong version
-- Code lost
+- Multiple developers modify the same file at the same time, works can not be merged easily.
+- New code breaks an existing feature, downstream users are affected.
 
-A crucial part of maintaining an open-source software is **version-control**. In the following, we will introduce the best tool for doing version-control: **Git**.
+The solution to the above problems is **version-control**. Among all version control software, **git** is the most popular one.
 
-### What is a repo?
+### Create a git repository
 
-A repository, also known as a repo, is basically a directory where your project
-lives and git keeps track of your file's history. 
+A git repository, also known as a repo, is basically a directory where your project lives and git keeps track of your file's history. To get started, you start with a terminal and type
 
-- You start with a working directory, then use `git init` to make it a git repository.
-- You can use `git add` to add files to the staging area, and use `git commit` to commit the changes to the repository.
-- You can use `git checkout` to switch between commits.
-- You can use `git diff` to see the changes between commits.
-- You can use `git reset` to reset the current HEAD to the specified state.
-- You can use `git status` to see the status of the working directory, staging area, and repository.
-- You can use `git log` to see the history of commits.
+```bash
+cd path/to/working/directory
+git init
+echo "Hello, World" > README.md
+git add -A
+git commit -m 'this is my initial commit'
+git status
+```
+- Line 1: changes the directory to the working directory, which can be either an existing directory or a new directory.
+- Line 2: initializes a git repository in the working directory. A `.git` directory is created in the working directory, which contains all the necessary metadata for the repo.
+- Line 3: creates a file `README.md` with the content `Hello, World`. This line can be omitted if the working directory already contains files.
+- Line 4: line add files to the **staging area** (area that caches changes that to be committed).
+- Line 5: commits the changes to the repository, which will create a **snapshot** of your current work.
+- Line 6: shows the status of the working directory, staging area, and repository. If the above commands are executed correctly, the output should be `nothing to commit, working tree clean`.
+
+## Analyzing the git repository
+**Git** enables developers to track changes in their codebase. Continuing the previous example, we can analyze the repository with the following commands:
+
+```bash
+echo "Bye Bye, World" > README.md
+git diff
+git add -A
+git commit -m 'a second commit'
+git log
+git checkout HEAD~1
+git checkout main
+```
+
+- Line 1: makes changes to the file `README.md`.
+- Line 2: shows the changes made to the file `README.md`.
+- Line 3: adds the changes to the staging area.
+- Line 4: commits the changes to the repository.
+- Line 5: shows the history of commits. The output should be something like this:
+    ```
+    commit 02cd535b6d78fca1713784c61eec86e67ce9010c (HEAD -> main)
+    Author: GiggleLiu <cacate0129@gmail.com>
+    Date:   Mon Feb 5 14:34:20 2024 +0800
+
+        a second commit
+
+    commit 570e390759617a7021b0e069a3fbe612841b3e50
+    Author: GiggleLiu <cacate0129@gmail.com>
+    Date:   Mon Feb 5 14:23:41 2024 +0800
+
+        this is my initial commit
+    ```
+- Line 6: Checkout the previous snapshot. Note `HEAD` is your current snapshot and `HEAD~n` is the snapshot.
+
+You can use `git reset` to reset the current HEAD to the specified snapshot.
 
 ### Working with remote repositories
 

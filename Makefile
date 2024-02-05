@@ -5,6 +5,9 @@ default: init build serve
 init:
 	$(JL) -e 'using Pkg; Pkg.activate("."); Pkg.instantiate(); Pkg.precompile()'
 
+update:
+	$(JL) -e 'using Pkg; Pkg.activate("."); Pkg.update(); Pkg.precompile()'
+
 build:
 	$(JL) -e 'using BookTemplate; BookTemplate.build()'
 

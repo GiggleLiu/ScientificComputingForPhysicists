@@ -1,54 +1,25 @@
-## Get a Terminal!
+## Get a Terminal!{#sec:terminal} 
 
-You need to get a working terminal to follow the instructions in this book, because everyone who thinks he is cool uses a terminal.
+You need to get a working terminal to follow the instructions in this book, because every cool guy uses a terminal.
 
 ### Linux operating system{#sec:linux}
 
-Using Linux is the most straight-forward way to get a terminal. Just like Windows, IOS, and Mac OS, Linux is an operating system. In fact,
-Android, one of the most popular platforms on the planet, is powered by the
-Linux operating system. It is free to use, [open
-source](https://opensource.com/resources/what-open-source), widely used on
-clusters and good at automating your works. Linux kernel, Linux operating system
-and Linux distribution are different concepts. A **Linux distribution** is
-an [operating system](https://en.wikipedia.org/wiki/Operating_system) made from
-a software collection that includes the [Linux
-kernel](https://en.wikipedia.org/wiki/Linux_kernel) and, often, a [package
-management system](https://en.wikipedia.org/wiki/Package_management_system) The
-Linux kernel is started by [Linus
-Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds) in 1991.
- 
-The Linux distribution we will use for demoing and live-coding is the
-[Ubuntu](https://ubuntu.com/desktop) distribution of the
-[Linux](https://en.wikipedia.org/wiki/Linux) operating system.
+Using Linux is the most straight-forward way to get a terminal. Just like Windows, IOS, and macOS, Linux is an operating system. In fact, Android, one of the most popular platforms on the planet, is powered by the Linux operating system. It is free to use, [open source](https://opensource.com/resources/what-open-source), widely used on clusters and good at automating your works. Linux kernel and Linux distribution are different concepts.
+- The **Linux kernel** is started by [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds) in 1991.
+- A **Linux distribution** is an [operating system](https://en.wikipedia.org/wiki/Operating_system) made from a software collection that includes the [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and, often, a [package management system](https://en.wikipedia.org/wiki/Package_management_system). The Linux distribution used in this course is [Ubuntu](https://ubuntu.com/desktop).
 
 ### Shell (or Terminal){#sec:shell}
 
-Although you can use a **graphical user interface** (GUI) to interact with your
-Linux distribution, you will find that the **command line interface** (CLI) is
-more efficient and powerful. The CLI is also known as the **shell** or **terminal**.
+Although you can use a **graphical user interface** (GUI) to interact with your Linux distribution, you will find that the **command line interface** (CLI) is more efficient and powerful. The CLI is also known as the **shell** or **terminal**.
 
-The shell is a program that takes commands from the keyboard and gives them to
-the operating system to perform. [Zsh](https://zsh.org/) and
-[Bash](https://gnu.org/software/bash/) are all shell interpreters used in the
-Linux operating systems.
+The shell is a program that takes commands from the keyboard and gives them to the operating system to perform. [Zsh](https://zsh.org/) and [Bash](https://gnu.org/software/bash/) are two popular shell interpreters used in the Linux operating systems.
+- **Bash** is the default shell on most Linux distributions.
+- **Zsh** (with [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) extension) is an extended version of the shell, with a more powerful command-line editing and completion system. It includes features like spelling correction and tab-completion, and it also supports plugins and themes.
 
-**Bash**(Bourne-Again SHell) is the default shell on most Linux distributions.
-It is backward-compatible with the original Bourne shell and includes many
-additional features, such as command-line editing, job control, and shell
-scripting capabilities. Bash is widely used as it is both easy to use and has a
-large user community, resulting in a plethora of available resources (tutorials,
-scripts, etc.) online.
-
-**Zsh**(Z shell) is an extended version of the shell, with a more powerful
-command-line editing and completion system. It includes features like spelling
-correction and tab-completion, and it also supports plugins and themes. Zsh is
-commonly used by power users who require more productivity and efficiency from
-their command-line interface.
-
-We will be using `Bash` during this course. In Ubuntu, one can use `Ctrl` +
-`Alt` + `T` to open a `Bash` shell. In a `Bash` shell, we use `man command_name`
-to get help information related to a command, use `CTRL-C` to break a program
-and `CTRL-D` to exit a shell or an REPL.
+In Ubuntu, one can use `Ctrl` + `Alt` + `T` to open a shell. In a shell, we use
+- `man command_name` to get help information related to a command,
+- `CTRL-C` to break a program and
+- `CTRL-D` to exit a shell or an REPL.
 
 The following is a short list of bash commands that will be used frequently in this book.
 
@@ -77,35 +48,18 @@ git     # the stupid content tracker
 tar     # an archiving utility
 ```
 
-The power and convinence provided by `Bash` far exceeds what this list can
-express.
+**Git Resources**
 
-**Resources**
-
-* [MIT Open course: Missing semester](https://missing.csail.mit.edu/2020/shell-tools/)
-* [Learn Bash Shell](https://www.learnshell.org/)
-* [Shell Scripting Tutorial](https://www.shellscript.sh/)
-* [Bash scripting cheatsheet](https://devhints.io/bash)
+- [MIT Open course: Missing semester](https://missing.csail.mit.edu/2020/shell-tools/)
+- [Get started with the Linux command line and the Shell](https://learn.microsoft.com/en-us/training/paths/shell/)
 
 ### Vim Editor{#sec:editor}
-In order to write code, you need an editor. There are many editors available for 
-you to choose from. We recommend the following editors for different purposes.
 
-`Vim` is a highly configurable and light-weight text editor built to enable
-efficient text editing. It can be found in any Linux distribution, with or
-without a graphical user interface. This feature makes it especially useful and
-essential to master when you are dealing with servers often. `Vim` is known for
-its modal editing, a design that allows the user to switch between different
-modes of operation, each tailored for specific tasks. The primary modes include
-**Normal Mode**, used for navigating and manipulating text; **Insert Mode**,
-where users can insert text as in conventional text editors; **Visual Mode**,
-enabling text selection for operations like cutting, copying, or formatting;
-**Command Mode**, where users input commands for tasks like saving files or
-searching; and **Replace Mode**, which is used to overwrite existing text. This
-modal approach in Vim optimizes efficiency by separating the tasks of editing
-and navigating, allowing for quicker and more precise text manipulation. Users
-can seamlessly switch between these modes, leveraging the unique capabilities of
-each to enhance their text editing workflow. 
+To edit files in the terminal, you can use `Vim` - the default text editor in most Linux distributions.
+`Vim` has three primary modes, each tailored for specific tasks. The primary modes include
+- **Normal Mode**, where users can navigate through the file and perform tasks like deleting lines or copying text; One can enter the normal mode by typing `ESC`;
+- **Insert Mode**, where users can insert text as in conventional text editors; One can enter the insert mode by typing `i` in the normal mode;
+- **Command Mode**, where users input commands for tasks like saving files or searching; One can enter the command mode by typing `:` in the normal mode.
 
 A few commands are listed below to get you started with `Vim`.
 
@@ -119,31 +73,20 @@ u       # undo
 CTRL-R  # redo
 ```
 
-All the commands must be executed in the **command mode**. If you are currently
-in the input mode, you can alway type `ESC` to go back to the command mode.
-
-To learn more about Vim, please check this [lecture](https://missing.csail.mit.edu/2020/editors/).
-
- As an example, to edit the config file `~/.ssh/config` just type
-`vim ~/.ssh/config`.
+All the commands must be executed in the **normal mode**. To learn more about Vim, please check this [lecture](https://missing.csail.mit.edu/2020/editors/).
 
 ### SSH{#sec:ssh}
 
-The programmer may not always have access to a powerful machine for both running
-and development of his code. He/she may "borrow" the power of a remote machine
-with the help of `ssh` command. The underlying work force of `ssh` is **Secure
-Shell**. **Secure Shell** is a network protocol that allows the user to take
-command of a remote server securely. After establishing the **Secure Shell**
-connection, the user can take command of a server via sending it shell commands.
+The Secure Shell (SSH) protocol is a method for securely sending commands to a computer over an unsecured network. SSH uses cryptography to authenticate and encrypt connections between devices. It is widely used to:
+- push code to a remote git repository,
+- log into a remote machine and execute commands.
 
-With a host name (the IP of the target machine to login) and a user name, one
-can use the following command to login,
+With a host name (the IP of the target machine to login) and a user name, one can use the following command to login,
 
 ```bash
 ssh <username>@<hostname>
 ```
-where `<username>` is the user name and `<hostname>` is the host name or IP of the target machine.
-You will get logged in after inputting the password.
+where `<username>` is the user's account name and `<hostname>` is the host name or IP of the target machine. You will get logged in after inputting the password.
 
 **Tips to make your life easier**
 
@@ -181,6 +124,3 @@ In the above example, the public key is uploaded to the remote machine and the p
 To connect to a server, the server needs to know that you are the one who with the right to access it. To do so, the server will need to check if you have the private key that corresponds to the public key stored on the server. If you have the private key, you will be granted access to the server.
 
 The secret of the SSH key pair is that **the public key can be used to encrypt a message that can only be decrypted by the private key**, i.e. the public key is more like a lock and the private key is the key to unlock the lock. This is the foundation of the SSH protocol. So server can send you a message encrypted by your public key, and only you can decrypt it with your private key. This is how the server knows that you are the one who has the private key without actually sending the private key to the server.
-
-### Markdown{#sec:markdown}
-* [Markdown Tutorial](https://www.markdowntutorial.com/)

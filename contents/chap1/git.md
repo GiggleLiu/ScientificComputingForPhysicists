@@ -1,4 +1,4 @@
-## Maintaining Code: Version Control{#sec:version-control} 
+## Maintainability - Version Control{#sec:version-control} 
 
 Maintaining a software project is not easy, especially when it comes to multiple developers working on the same piece of code. When adding a new feature to the project, maintainers may encounter the following problems:
 
@@ -21,7 +21,7 @@ git status
 ```
 - Line 1: changes the directory to the working directory, which can be either an existing directory or a new directory.
 - Line 2: initializes a git repository in the working directory. A `.git` directory is created in the working directory, which contains all the necessary metadata for the repo.
-- Line 3: creates a file `README.md` with the content `Hello, World`. This line can be omitted if the working directory already contains files.
+- Line 3: creates a file `README.md` with the content `Hello, World`. The file `README.md` is a **markdown** file, which is a lightweight markup language with plain-text-formatting syntax. You can learn more about markdown from the [markdown tutorial](https://www.markdowntutorial.com/). This line can be omitted if the working directory already contains files.
 - Line 4: line add files to the **staging area** (area that caches changes that to be committed).
 - Line 5: commits the changes to the repository, which will create a **snapshot** of your current work.
 - Line 6: shows the status of the working directory, staging area, and repository. If the above commands are executed correctly, the output should be `nothing to commit, working tree clean`.
@@ -122,8 +122,9 @@ When working with others, you may want to propose changes to a repository and di
 - **Issue** is relatively simple, it is a way to report a bug or request a feature.
 - **Pull request** (resource: [how to create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)) is a way to propose changes to a repository and discuss them with others. It is also a way to merge code from source branch to target branch. The source branch can be a branch in the same repository or a branch in a **forked repository** - a copy of the repository in your account. Forking a repository is needed when you want to propose changes to a repository that you do not have write access to.
 
-!!! note pull requests or push directly to main branch?
-    To update the main branch, one should use pull requests as much as possible, even if you have write access to the repository, because it is a good practice to discuss the changes with others before merging them to the main branch.
+> **FAQ: Should I make a pull requests or push directly to main branch?**
+> 
+> To update the main branch, one should use pull requests as much as possible, even if you have write access to the repository. It is a good practice to discuss the changes with others before merging them to the main branch. A pull request also makes the changes more traceable, which is useful when you want to revert the changes.
 
 
 ### Summary: a cheat sheet

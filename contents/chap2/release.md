@@ -1,6 +1,5 @@
-## Share Your Code
-Now that you have an amazing package, it's time to make it available to the
-public. Before that, there is one final task to be done which is to choose a license. 
+## Publishing a Package{#sec:publishing-package} 
+Now that you have an amazing package, it's time to make it available to the public. Before that, there is one final task to be done which is to choose a license. 
 
 - GNU's Not Unix! (GNU) (1983 by Richard Stallman)
     

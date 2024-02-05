@@ -6,9 +6,9 @@
     "chap1/terminal",
     "chap1/git",
     "chap1/ci",
-    "chap1/share",
     "chap2/julia-setup",
     "chap2/julia-why",
+    "chap2/release",
     "appendix",
     "references",
   ]

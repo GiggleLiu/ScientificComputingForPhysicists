@@ -1,39 +1,17 @@
-## Code MUST be Tested!{#sec:ci-cd}
+## Correctness - Unit Tests{#sec:ci-cd}
 
-In terms of scientific computing, accuracy of your result is most certainly more
-important than anything else. To ensure the correctness of the code, we employ
-two methods: **Unit Testing** and **CI/CD**.
+In terms of scientific computing, accuracy of your result is most certainly more important than anything else. To ensure the correctness of the code, we employ two methods: **Unit Testing** and **CI/CD**.
 
 ### Unit Test
-Unit tests are typically [automated
-tests](https://en.wikipedia.org/wiki/Automated_test) written and run
-by [software developers](https://en.wikipedia.org/wiki/Software_developer) to
-ensure that a section of an application (known as the "unit") meets
-its [design](https://en.wikipedia.org/wiki/Software_design) and behaves as
-intended. In `Julia`, there exists a helpful module called
-[Test](https://docs.julialang.org/en/v1/stdlib/Test/) to help you do Unit
-Testing.
+Unit tests are typically [automated tests](https://en.wikipedia.org/wiki/Automated_test) written and run by [software developers](https://en.wikipedia.org/wiki/Software_developer) to ensure that a section of an application (known as the "unit") meets its [design](https://en.wikipedia.org/wiki/Software_design) and behaves as intended.
+Unit tests are composed of a series of individual test cases, each of which verifies the correctness by using **assertions**. If all assertions are true, the test case passes; otherwise, it fails. The unit tests are run automatically whenever the code is changed, ensuring that the code is always in a working state.
+In Julia, there exists a helpful module called [Test](https://docs.julialang.org/en/v1/stdlib/Test/) to help you do unit testing.
 
-### CI/CD
-Continuous Integration (CI) and Continuous Deployment (CD) are fundamental
-practices in modern software development aimed at enhancing the efficiency and
-quality of software production. CI is the process of automatically integrating
-code changes from multiple contributors into a single software project. This
-involves frequent code version submissions to a shared repository, where
-automated builds and tests are run. The primary goal of CI is to identify and
-address conflicts and bugs early, ensuring that the main codebase remains stable
-and release-ready at all times.
+### Automate your workflow - CI/CD
+CI/CD, which stands for continuous integration and continuous delivery/deployment, aims to streamline and accelerate the software development lifecycle.
+CI/CD are often integrated with git hosting services, e.g. [Github Actions](https://docs.github.com/en/actions). Typical CI/CD pipelines include the following steps:
 
-On the other hand, CD extends CI by automating the delivery of applications to
-selected infrastructure environments. This can range from automated testing
-stages to full-scale production deployments. The main advantage of CD is its
-ability to release new changes to customers quickly and sustainably. It enables
-a more rapid feedback loop, where improvements and fixes are delivered faster to
-end-users.
+- Automatically **build**, **test** and **merge** the code changes whenever a developer commits code to the repository.
+- Automatically **deploy** the code or documentation to a cloud service.
 
-Together, CI/CD embody a culture of continuous improvement and efficiency, where
-software quality is enhanced, and development cycles are shortened. This not
-only reduces the time and cost of software development but also allows teams to
-respond more swiftly to market changes and customer needs, maintaining a
-competitive edge in the fast-paced tech world.
-
+The CI/CD pipeline is a powerful tool to ensure the correctness of the code and the reproducibility of the results. It is also a good practice to use CI/CD to automate the workflow, especially when you are working with a team.

@@ -1,71 +1,77 @@
 ## An Introduction to the Julia programming language
 
-### A survey
-What programming language do you use? Do you have any pain point about this language?
+### What is Julia programming language?
+Julia is a modern, open-source, high performance programming language for technical computing.
+It was born in 2012 in MIT, now is maintained by JuliaHub Inc. located in Boston, US.
 
-### What is JuliaLang?
-**A modern, open-source, high performance programming lanaguage**
-
-JuliaLang was born in 2012 in MIT, now is maintained by Julia Computing Inc. located in Boston, US. Founders are Jeff Bezanson, Alan Edelman, Stefan Karpinski, Viral B. Shah.
-
-JuliaLang is open-source, its code is maintained on [Github](https://github.com/JuliaLang/julia)(https://github.com/JuliaLang/julia) and it open source LICENSE is MIT.
+*Julia is open-source.* Julia source code is maintained on GitHub repo [JuliaLang/julia](https://github.com/JuliaLang/julia), and it open-source LICENSE is MIT.
 Julia packages can be found on [JuliaHub](https://juliahub.com/ui/Packages), most of them are open-source.
 
-It is designed for speed.
+*Julia is designed for high performance* ([arXiv:1209.5145](https://arxiv.org/abs/1209.5145)).
+It is a dynamic programming language, but it is as fast as C/C++. The following figure shows the computing time of multiple programming languages normalized to C/C++.
+<img src="./assets/images/benchmark.png" alt="image" width="500" height="auto">
 
- <img src="./assets/images/benchmark.png" alt="image" width="500" height="auto">
+*Julia is a trend in scientific computing.* Many famous scientists and engineers have switched to Julia from other programming languages.
 
-### Reference
-[arXiv:1209.5145](https://arxiv.org/abs/1209.5145)
+- **Steven G. Johnson**, creater of [FFTW](http://www.fftw.org/), switched from C++ to Julia years ago.
+- **Anders Sandvik**, creater of Stochastic Series Expansion (SSE) quantum Monte Carlo method, switched from Fortran to Julia recently.
+    - Course link: [Computational Physics](https://physics.bu.edu/~py502/)
+- **Miles Stoudenmire**, creater of [ITensor](https://itensor.org/), switched from C++ to Julia years ago.
+- **Jutho Haegeman**, **Chris Rackauckas** and more.
 
-**Julia: A Fast Dynamic Language for Technical Computing**
-
--- Jeff Bezanson, Stefan Karpinski, Viral B. Shah, Alan Edelman
-
-**Dynamic** languages have become popular for scientific computing. They are generally considered highly productive, but lacking in performance. This paper presents Julia, a new dynamic language for technical computing, designed for performance from the beginning by adapting and extending modern programming language techniques. A design based on generic functions and a rich type system simultaneously enables an expressive programming model and successful type inference, leading to good performance for a wide range of programs. This makes it possible for much of the Julia library to be written in Julia itself, while also incorporating best-of-breed C and Fortran libraries.
-
-### Terms explained
-- dynamic programming language: In computer science, a dynamic programming language is a class of high-level programming languages, which at runtime execute many common programming behaviours that static programming languages perform during compilation. These behaviors could include an extension of the program, by adding new code, by extending objects and definitions, or by modifying the type system.
-- type: In a programming language, a type is a description of a set of values and a set of allowed operations on those values.
-- generic function: In computer programming, a generic function is a function defined for polymorphism.
-- type inference: Type inference refers to the automatic detection of the type of an expression in a formal language.
+> **FAQ: Should I switch to Julia?**
+>
+> Before switching to Julia, please make sure:
+>
+> - the problem you are trying to solve runs more than 10min.
+> - you are not satisfied by any existing tools.
 
 
 ### The two language problem
-**Executing a C program**
+To measure the performance of the C program, we can utilize the benchmark utilities in Julia.
+This works because Julia has perfect interoperability with C, which allows zero-cost calling of C functions. To execute a C program in Julia, one needs to compile it to a shared library first.
 
-- C code is typed.
+```bash
+$ cat demo.c
+#include <stddef.h>
+int c_factorial(size_t n) {
+	int s = 1;
+	for (size_t i=1; i<=n; i++) {
+		s *= i;
+	}
+	return s;
+}
 
-- C code needs to be compiled
-
-**One can use `Libdl` package to open a shared library**
-
-```jl
-sco("""
-	using Libdl
-""")
+$ gcc demo.c -fPIC -O3 -shared -o demo.so
 ```
 
-```jl
-sco("""
-	c_factorial(x) = Libdl.@ccall "clib/demo".c_factorial(x::Csize_t)::Int
-""")
+One can use `Libdl` package to open a shared library ([learn more](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/))
+
+```julia
+julia> using Libdl
+
+julia> c_factorial(x) = Libdl.@ccall "./demo.so".c_factorial(x::Csize_t)::Int
 ```
 
-**Typed code may overflow, but is fast!**
+The benchmark result is as follows:
 
+```julia
+julia> using BenchmarkTools
 
-```jl
-sco("""
-	using BenchmarkTools
-""")
+julia> @benchmark c_factorial(5)
+BenchmarkTools.Trial: 10000 samples with 1000 evaluations.
+ Range (min … max):  7.333 ns … 47.375 ns  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     7.458 ns              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   7.764 ns ±  1.620 ns  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  ██▅  ▃▁ ▂▂                         ▁▁▁                     ▂
+  ███▆▄██▆███▅▅▆▆▆▅▆▅▄▅▆▅▅▇▆▆▄▅▅▇█▇▆▆█████▅▃▁▁▁▁▁▁▁▃▁▁▁▁▁▁▁▃ █
+  7.33 ns      Histogram: log(frequency) by time     12.6 ns <
+
+ Memory estimate: 0 bytes, allocs estimate: 0.
 ```
 
-
-
-[learn more about calling C code in Julia](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)
-
-Discussion: not all type specifications are nessesary.
+Although the C program requires the type of variables to be manually declared, its performance is very good. The computing time is only 7.33 ns.
 
 
 **Executing a Pyhton Program**

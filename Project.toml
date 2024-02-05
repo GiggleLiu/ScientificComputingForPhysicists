@@ -3,9 +3,13 @@ uuid = "6b2b467d-d873-4a19-b33c-0abffd8470ba"
 authors = ["John Doe"]
 
 [deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 Books = "939d5c6b-51ae-42e7-97ca-7564d0d4ad91"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+MethodAnalysis = "85b6ec6f-f7df-4429-9514-a64bcd9ee824"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
+TropicalNumbers = "b3a74e9c-7526-4576-a4eb-79c0d4c32334"
 
 [compat]
 Books = "2"

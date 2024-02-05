@@ -1,4 +1,4 @@
-## Code MUST be Maintained: Version Control{#sec:version-control} 
+## Maintaining Code: Version Control{#sec:version-control} 
 
 Maintaining a software project is not easy, especially when it comes to multiple developers working on the same piece of code. When adding a new feature to the project, maintainers may encounter the following problems:
 

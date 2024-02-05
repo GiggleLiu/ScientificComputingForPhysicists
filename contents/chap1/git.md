@@ -26,7 +26,7 @@ git status
 - Line 5: commits the changes to the repository, which will create a **snapshot** of your current work.
 - Line 6: shows the status of the working directory, staging area, and repository. If the above commands are executed correctly, the output should be `nothing to commit, working tree clean`.
 
-## Analyzing the git repository
+## Track the changes
 **Git** enables developers to track changes in their codebase. Continuing the previous example, we can analyze the repository with the following commands:
 
 ```bash
@@ -57,89 +57,68 @@ git checkout main
 
         this is my initial commit
     ```
-- Line 6: Checkout the previous snapshot. Note `HEAD` is your current snapshot and `HEAD~n` is the snapshot.
+- Line 6: Checkout the previous snapshot. Note `HEAD` is your current snapshot and `HEAD~n` is the `n`th snapshot counting back from the current snapshot.
+- Line 7: Return to the `main` **branch**, which points to the latest snapshot. We will discuss more about **branch** later in this tutorial.
 
-You can use `git reset` to reset the current HEAD to the specified snapshot.
+You can use `git reset` to reset the current HEAD to the specified snapshot, which can be useful when you committed something bad by accident.
 
-### Working with remote repositories
+### Work with remote repositories
 
-Now that you have configuration all setup, we will get you familiarized with a
-few concepts. In Git terminology, **Remote** refers to a repository that is
-located on a server or another computer, rather than the user's local machine.
-It's a version of the repository that is used by teams to collaborate on a
-project. Remote repositories can be accessed and manipulated through Git
-commands, allowing users to push changes or fetch changes made by others. Remote
-repositories can be hosted on Git hosting services like GitHub, GitLab, or
-Bitbucket, or set up on a personal server. Multiple users can access and modify
-the same remote repository, making it easy for teams to work on a project
-together.
+A server to store git repository, or **remote** in git terminology, is required for the collaboration purpose. Remote repositories can be hosted on git hosting services like GitHub, GitLab, or Bitbucket.
+After creating a new empty repository (no README files) on a git hosting service ([How to create a new github repo?](https://docs.github.com/en/get-started/quickstart/create-a-repo)), a URL for cloning the repo will show up, which that usually starts with `git` or `https`. Let us denote this URL as `<url>` and continue the previous example:
 
-- You can use `git remote add <remote-name> <url>` to add a remote repository.
-- You can use `git push <remote-name> <branch>` to push commits to a remote repository.
-- You can use `git pull <remote-name> <branch>` to fetch from and integrate with another repo or a local branch.
+```bash
+git remote add origin <url>
 
+git push origin main
+```
 
-### Developing a feature safely
+- Line 1: add a remote repository, where `origin` is a tag for the added remote.
+- Line 2: push commits to the `main` branch of the remote repository `origin`. This command sometimes could fail due to another commit pushed to the remote earlier, where the commit may from another machine or another person. To resolve the issue, you can use `git pull origin main` to fetch the latest snapshot on the remote. `git pull` may also fail, because the remote commit may be incompatible with the local commit, e.g. the same file has been changed. In this worst case, you need to merge two commits manually (link).
 
-A branch in Git is a lightweight pointer to a specific commit. It allows
-developers to work on new features or make changes to the codebase without
-affecting the main codebase. Branches are created and can be switched between
-easily, and changes made in one branch do not affect other branches.
+### Develop features safely - branches
 
-To create a new branch in Git, you can use the command `git branch
-<branch_name>`. This creates a new branch but does not switch to it, so you will
-be working in the same branch until you use the command `git checkout
-<branch_name>` to switch to the new branch. Alternatively, you can use the
-command `git checkout -b <branch_name>` to create and switch to the new branch
-at the same time.
+So far, we worked with a single branch `main`. A **branch** in git is a lightweight pointer to a specific commit.
+Working on a single branch is dangerous due to the following reasons:
+- *No usable code.* Developers usually develop features based on the current `main` branch, so the `main` branch is expected to always usable. However, working on a single branch can easily break this rule.
+- *Can not resolve conflicts.* when multiple developers modify the same file at the same time, works can not be merged easily. Multiple branches can make the feature development process independent of each other, which can avoid conflicts.
+- *Can not discard a feature.* For some experimental features, you may want to discard it after testing. A commit on the main branch can not be easily reverted.
 
-To end a branch, you can use the command `git branch -d <branch_name>`. This
-deletes the specified branch, but only if it has been fully merged into the main
-branch. If you want to delete a branch whether it has been fully merged or not,
-you can use the command `git branch -D <branch_name>`. It's important to
-note that once a branch has been deleted, you cannot restore its commit history.
+Understanding the branches is extremely useful when, multiple developers are working on different features.
+```bash
+git checkout -b me/feature
+echo "Hello, World - Version 2" > README.md
+git add -A
+git commit -m 'this is my feature'
+git push origin me/feature
+```
+- Line 1: create and switch to the new branch `me/feature`. Here, we use the branch name `me/feature` to indicate that this branch is for the feature developed by `me`, which is a matter of convention.
+- Line 2-5: makes some changes to the file `README.md` and commits the changes to the repository. Finally, the changes are pushed to the remote repository `origin`. The remote branch `me/feature` is created automatically.
 
-### Example Workflow
+While developing a feature, you or another developer may want to develop another feature based on the current `main` branch. You can create another branch `other/feature` and develop the feature there.
 
-Here are two example workflows managing your project with git.
+```bash
+git checkout main
+git checkout -b other/feature
+echo "Bye Bye, World - Version 2" > feature.md
+git add -A
+git commit -m 'this is another feature'
+git push origin other/feature
+```
 
-Example 1: develop a new feature
-![](./assets/images/newfeature.png)
-<!-- ```mermaid -->
-<!-- graph LR; -->
-<!-- A[main] --- MID[ ]; -->
-<!-- MID ---|always usable| MID2[ ]; -->
-<!-- MID2 -\->B[main*]; -->
-<!-- MID -\->|checkout| D[feature]; -->
-<!-- D -\->|update & commit| D2[feature*]; -->
-<!-- D2 -\->|merge| MID2; -->
-<!-- style MID height:0px, width:0px; -->
-<!-- style MID2 height:0px, width:0px; -->
-<!-- ``` -->
+In the above example, we created a new branch `other/feature` based on the `main` branch, and made some changes to the file `feature.md`.
 
-Example 2: develop two features
-![](./assets/images/twofeatures.png)
-<!-- ```mermaid -->
-<!-- graph LR; -->
-<!-- A[main] --- MID0[ ]; -->
-<!-- MID0 --- MID1[ ]; -->
-<!-- MID1 --- MID2[ ]; -->
-<!-- MID2 --- MID3[ ]; -->
-<!-- MID3 --- END[main*]; -->
-<!-- MID0 -\->|checkout| C[feature1]; -->
-<!-- MID1 -\->|checkout| D[feature2]; -->
-<!-- C --\->|merge| MID2 -->
-<!-- D -.->|merge?| MID3 -->
-<!-- style MID0 height:0px, width:0px; -->
-<!-- style MID1 height:0px, width:0px; -->
-<!-- style MID2 height:0px, width:0px; -->
-<!-- style MID3 height:0px, width:0px; -->
-<!-- ``` -->
+Finally, when the feature is ready, you can merge the feature branch to the main branch.
 
-### Cheatsheet and Resources for Git and Github
+```bash
+git checkout main
+git merge me/feature
+git push origin main
+```
 
-It is not possible to cover all of the feature of git. We will list a few useful
-commands and resources for git learning.
+### Summary: a cheat sheet
+
+It is not possible to cover all the feature of git. We will list a few useful commands and resources for git learning.
 
 ```
 # global config
@@ -172,16 +151,6 @@ git fetch   # Download objects and refs from another repository
 git push    # Update remote refs along with associated objects
 ```
 
-A more detailed introduction could be found in this [lecture](https://missing.csail.mit.edu/2020/version-control/).
-
 ### Resources
-* [Learn Bash Shell](https://www.learnshell.org/)
-* [Learn Git](https://learngitbranching.js.org/)
-* [Github Manual](https://githubtraining.github.io/training-manual/book.pdf)
-* [How to create a new github repo](https://docs.github.com/en/get-started/quickstart/create-a-repo)
-* [How to create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
-* [Markdown Tutorial](https://www.markdowntutorial.com/)
+* [The Official GitHub Training Manual](https://githubtraining.github.io/training-manual/book.pdf)
 * MIT online course [missing semester](https://missing.csail.mit.edu/2020/).
-* [Learn Git with Game](https://learngitbranching.js.org/?locale=zh_CN)
-* [Command Visualization](https://dev.to/lydiahallie/cs-visualized-useful-git-commands-37p1)
-* [Git Panic](https://ohshitgit.com/)

@@ -5,6 +5,8 @@
 Example: collaborate with others
 ![](./assets/images/collab.png)
 
+* [How to create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
 <!-- ```mermaid -->
 <!-- graph LR; -->
 <!-- A[main] --- MID1[ ]; -->

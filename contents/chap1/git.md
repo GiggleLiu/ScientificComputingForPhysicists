@@ -26,7 +26,7 @@ git status
 - Line 5: commits the changes to the repository, which will create a **snapshot** of your current work.
 - Line 6: shows the status of the working directory, staging area, and repository. If the above commands are executed correctly, the output should be `nothing to commit, working tree clean`.
 
-## Track the changes
+### Track the changes
 **Git** enables developers to track changes in their codebase. Continuing the previous example, we can analyze the repository with the following commands:
 
 ```bash
@@ -41,22 +41,21 @@ git checkout main
 
 - Line 1: makes changes to the file `README.md`.
 - Line 2: shows the changes made to the file `README.md`.
-- Line 3: adds the changes to the staging area.
-- Line 4: commits the changes to the repository.
+- Line 3-4: adds the changes to the staging area and commits the changes to the repository.
 - Line 5: shows the history of commits. The output should be something like this:
-    ```
-    commit 02cd535b6d78fca1713784c61eec86e67ce9010c (HEAD -> main)
-    Author: GiggleLiu <cacate0129@gmail.com>
-    Date:   Mon Feb 5 14:34:20 2024 +0800
+```
+commit 02cd535b6d78fca1713784c61eec86e67ce9010c (HEAD -> main)
+Author: GiggleLiu <cacate0129@gmail.com>
+Date:   Mon Feb 5 14:34:20 2024 +0800
 
-        a second commit
+    a second commit
 
-    commit 570e390759617a7021b0e069a3fbe612841b3e50
-    Author: GiggleLiu <cacate0129@gmail.com>
-    Date:   Mon Feb 5 14:23:41 2024 +0800
+commit 570e390759617a7021b0e069a3fbe612841b3e50
+Author: GiggleLiu <cacate0129@gmail.com>
+Date:   Mon Feb 5 14:23:41 2024 +0800
 
-        this is my initial commit
-    ```
+    this is my initial commit
+```
 - Line 6: Checkout the previous snapshot. Note `HEAD` is your current snapshot and `HEAD~n` is the `n`th snapshot counting back from the current snapshot.
 - Line 7: Return to the `main` **branch**, which points to the latest snapshot. We will discuss more about **branch** later in this tutorial.
 
@@ -69,20 +68,21 @@ After creating a new empty repository (no README files) on a git hosting service
 
 ```bash
 git remote add origin <url>
-
+git remote -v
 git push origin main
 ```
 
 - Line 1: add a remote repository, where `origin` is a tag for the added remote.
-- Line 2: push commits to the `main` branch of the remote repository `origin`. This command sometimes could fail due to another commit pushed to the remote earlier, where the commit may from another machine or another person. To resolve the issue, you can use `git pull origin main` to fetch the latest snapshot on the remote. `git pull` may also fail, because the remote commit may be incompatible with the local commit, e.g. the same file has been changed. In this worst case, you need to merge two commits manually (link).
+- Line 2: shows the URL of all remotes, including the `origin` remote we just added.
+- Line 3: push commits to the `main` branch of the remote repository `origin`. This command sometimes could fail due to another commit pushed to the remote earlier, where the commit may from another machine or another person. To resolve the issue, you can use `git pull origin main` to fetch the latest snapshot on the remote. `git pull` may also fail, because the remote commit may be incompatible with the local commit, e.g. the same file has been changed. In this worst case, you need to merge two commits manually (link).
 
 ### Develop features safely - branches
 
 So far, we worked with a single branch `main`. A **branch** in git is a lightweight pointer to a specific commit.
 Working on a single branch is dangerous due to the following reasons:
 - *No usable code.* Developers usually develop features based on the current `main` branch, so the `main` branch is expected to always usable. However, working on a single branch can easily break this rule.
-- *Can not resolve conflicts.* when multiple developers modify the same file at the same time, works can not be merged easily. Multiple branches can make the feature development process independent of each other, which can avoid conflicts.
-- *Can not discard a feature.* For some experimental features, you may want to discard it after testing. A commit on the main branch can not be easily reverted.
+- *Hard to resolve conflicts.* when multiple developers modify the same file at the same time, works can not be merged easily. Multiple branches can make the feature development process independent of each other, which can avoid conflicts.
+- *Hard to discard a feature.* For some experimental features, you may want to discard it after testing. A commit on the main branch can not be easily reverted.
 
 Understanding the branches is extremely useful when, multiple developers are working on different features.
 ```bash
@@ -115,6 +115,16 @@ git checkout main
 git merge me/feature
 git push origin main
 ```
+
+### Working with others - issues and pull requests
+
+When working with others, you may want to propose changes to a repository and discuss them with others. This is where **issues** and **pull requests** come in. Issues and pull requests are features of git hosting services like GitHub and GitLab.
+- **Issue** is relatively simple, it is a way to report a bug or request a feature.
+- **Pull request** (resource: [how to create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)) is a way to propose changes to a repository and discuss them with others. It is also a way to merge code from source branch to target branch. The source branch can be a branch in the same repository or a branch in a **forked repository** - a copy of the repository in your account. Forking a repository is needed when you want to propose changes to a repository that you do not have write access to.
+
+!!! note pull requests or push directly to main branch?
+    To update the main branch, one should use pull requests as much as possible, even if you have write access to the repository, because it is a good practice to discuss the changes with others before merging them to the main branch.
+
 
 ### Summary: a cheat sheet
 

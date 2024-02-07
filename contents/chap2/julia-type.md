@@ -7,7 +7,14 @@ As an example, let us consider the type for complex numbers.
 ```julia
 Complex{Float64}
 ```
-where `Float64` is the **type parameter** of `Complex`. Type parameters are a part of a type, without which the type is not fully specified. A fully specified type is called a **concrete type**, which can be instantiated in memory.
+where `Float64` is the **type parameter** of `Complex`. Type parameters are a part of a type, without which the type is not fully specified. A fully specified type is called a **concrete type**, which has a fixed memory layout and can be instantiated in memory. For example, the `Complex{Float64}` consists of two fields of type `Float64`, which are the real and imaginary parts of the complex number.
+```julia
+julia> fieldnames(Complex{Float64})
+(:re, :im)
+
+julia> fieldtypes(Complex{Float64})
+(Float64, Float64)
+```
 
 Extending the example, we can define the type for a matrix of complex numbers.
 
@@ -31,19 +38,24 @@ DataType
 ```
 
 ### Example: define you first type
-We first define of an abstract type for animals with `L` legs.
+We first define of an abstract type `AbstractAnimal` with the keyword `abstract type`:
 ```julia
 julia> abstract type AbstractAnimal{L} end
 ```
+where the type parameter `L` stands for the number of legs.
+Defining the number of legs as a type parameter or a field of a concrete type is a design choice. Providing more information in the type system can help the compiler to optimize the code, but it can also make the compiler generate more code.
 
-Then we define a concrete type `Dog` with 4 legs, which is a subtype of `AbstractAnimal{4}`.
+Abstract types can have subtypes. In the following we define a concrete subtype type `Dog` with 4 legs, which is a subtype of `AbstractAnimal{4}`.
 ```julia
 julia> struct Dog <: AbstractAnimal{4}
 	color::String
 end
 ```
 
-`<:` is the symbol for sybtyping， `A <: B` means A is a subtype of B. Similarly, we define a `Cat` with 4 legs, a `Cock` with 2 legs and a `Human` with 2 legs.
+where `<:` is the symbol for sybtyping， `A <: B` means A is a subtype of B.
+Concrete types can have fields, which are the data members of the type. However, they can not have subtypes.
+
+Similarly, we define a `Cat` with 4 legs, a `Cock` with 2 legs and a `Human` with 2 legs.
 
 ```julia
 julia> struct Cat <: AbstractAnimal{4}
@@ -90,6 +102,7 @@ julia> fight(hum::AbstractAnimal, a::Human) = "loss"
 fight (generic function with 5 methods)
 ```
 where `Union{Dog, Cat}` is a **union type**. It is a type that can be either `Dog` or `Cat`.
+`Union` types are not concrete since they do not have a fixed memory layout, meanwhile, they can not be subtyped!
 Here, we defined 5 methods for the function `fight`. However, defining too many methods for the same function can be dangerous. You need to be careful about the ambiguity error!
 
 
@@ -137,32 +150,48 @@ Quiz: How many method instances are generated for fight so far?
 julia> methodinstances(fight)
 ```
 
-### Julia type system
-A Julia type can be classified as an abstract type or a concrete type.
-
-- **abstract types**: types that can have other types as their supertype, but cannot be instantiated themselves. For example, `Number` is an abstract type, and `Integer` is a subtype of `Number`.
-- **concrete types**: types that can be instantiated.
-    - **primitive types**: types that are built into the language, such as `Int64`, `Float64`, `Bool`, and `Char`.
-    - **composite types**: types that are built out of other types. For example, `Complex{Float64}` is a composite type, built out of two `Float64` values.
-
-Only concrete types can be instantiated
-
+### Julia number system
+The type tree rooted on `Number` looks like:
 ```julia
-julia> fieldnames(Number)
-ERROR: ArgumentError: type does not have a definite number of fields
-Stacktrace:
- [1] fieldcount
-   @ Base ./reflection.jl:895 [inlined]
- [2] fieldnames(t::DataType)
-   @ Base ./reflection.jl:167
- [3] top-level scope
-   @ REPL[21]:1
-
-julia> fieldnames(Complex{Float64})
-(:re, :im)
+Number
+├─ Base.MultiplicativeInverses.MultiplicativeInverse{T}
+│  ├─ Base.MultiplicativeInverses.SignedMultiplicativeInverse{T<:Signed}
+│  └─ Base.MultiplicativeInverses.UnsignedMultiplicativeInverse{T<:Unsigned}
+├─ Complex{T<:Real}
+├─ Real
+│  ├─ AbstractFloat
+│  │  ├─ BigFloat
+│  │  ├─ Float16
+│  │  ├─ Float32
+│  │  └─ Float64
+│  ├─ AbstractIrrational
+...
+```
+The Julia type system is a tree, and `Any` is the root of type tree, i.e. it is a super type of any other type.
+The `Number` type is the root type of julia number system, which is also a subtype of `Any`.
+```julia
+julia> Number <: Any
 ```
 
-**Primitive Types**
+There are utilities to analyze the type system:
+
+```julia
+julia> subtypes(Number)
+3-element Vector{Any}:
+ Base.MultiplicativeInverses.MultiplicativeInverse
+ Complex
+ Real
+
+julia> supertype(Float64)
+AbstractFloat
+
+julia> AbstractFloat <: Real
+true
+```
+
+The leaf nodes of the type tree are called **concrete types**. They are the types that can be instantiated in memory. Among the concrete types, there are **primitive types** and **composite types**. Primitive types are built into the language, such as `Int64`, `Float64`, `Bool`, and `Char`, while are built on top of primitive types, such as `Dict`, `Complex` and the user-defined types.
+
+**The list of primitive types**
 
 ```bash
 primitive type Float16 <: AbstractFloat 16 end
@@ -184,114 +213,8 @@ primitive type Int128  <: Signed   128 end
 primitive type UInt128 <: Unsigned 128 end
 ```
 
-***Type tree**
-
-```julia
-Number
-├─ Base.MultiplicativeInverses.MultiplicativeInverse{T}
-│  ├─ Base.MultiplicativeInverses.SignedMultiplicativeInverse{T<:Signed}
-│  └─ Base.MultiplicativeInverses.UnsignedMultiplicativeInverse{T<:Unsigned}
-├─ Complex{T<:Real}
-├─ Real
-│  ├─ AbstractFloat
-│  │  ├─ BigFloat
-│  │  ├─ Float16
-│  │  ├─ Float32
-│  │  └─ Float64
-│  ├─ AbstractIrrational
-...
-```
-
-```julia
-julia> subtypes(Number)
-
-julia> supertype(Float64)
-
-julia> AbstractFloat <: Real
-```
-
-`Any` is a super type of any other type
-
-```julia
-julia> Number <: Any
-```
-
-### How to measure the performance of your CPU?
-
-```julia
-julia> using BenchmarkTools
-
-julia> A, B = rand(1000, 1000), rand(1000, 1000);
-
-julia> @btime $A * $B
-```
-
-```julia
-julia> isbitstype(Complex{Float64})
-
-julia> sizeof(Complex{Float32})
-
-julia> sizeof(Complex{Float64})
-```
-
-But `Complex{BigFloat}` is not
-
-```julia
-julia> sizeof(Complex{BigFloat})
-
-julia> isbitstype(Complex{BigFloat})
-```
-
-The size of `Complex{BigFloat}` is not true! It returns the pointer size!
-
-### The union of types
-
-```julia
-julia> Union{AbstractFloat, Complex} <: Number
-
-julia> Union{AbstractFloat, Complex} <: Real
-```
-
-NOTE: Union of types is similar to multiple inheritance, but Union can not have subtype!
-
-### Case study: Vector element type and speed
-
-Any type vector is flexible. You can add any element into it.
-
-```julia
-vany = Any[]  # same as vany = []
-
-typeof(vany)
-
-push!(vany, "a")
-
-push!(vany, 1)
-```
-
-Fixed typed vector is more restrictive.
-
-```julia
-vfloat64 = Float64[]
-
-vfloat64 |> typeof
-
-push!(vfloat64, "a")
-```
-
-Do not abuse the type system. e.g. a "zero" cost implementation
-
-```julia
-Val(3.0) # just a type
-
-f(::Val{1}) = Val(1)
-
-f(::Val{2}) = Val(1)
-```
-
-It violates the [Performance Tips](https://docs.julialang.org/en/v1/manual/performance-tips/), since it transfers the run-time to compile time.
-
-### Multiple dispatch is more powerful than object-oriented programming!
-Implement addition in Python.
+### Extending the number system
+Extending the number system in Julia is much easier than in object-oriented languages like Python. In the following example, we show how to implement addition operation of a user defined class in Python.
 ```python
 class X:
   def __init__(self, num):
@@ -318,32 +241,38 @@ class Y:
 
 print(X(3) + Y(5))
 
-
 print(Y(3) + X(5))
 ```
+Here, we implemented the addition operation of two classes `X` and `Y`. The `__add__` method is called when the `+` operator is used with the object on the left-hand side, while the `__radd__` method is called when the object is on the right-hand side.
+The output is as follows:
+```
+X = 8
+X = 8
+```
+It turns out the `__radd__` method of `Y` is not called at all. This is because the `__radd__` method is only called when the object on the left-hand side does not have the `__add__` method by some artifical rules.
 
-Implement addition in Julian style
+Implement addition in Julian style is much easier. We can define the addition operation of two types `X` and `Y` as follows.
 ```julia
-struct X{T}
+julia> struct X{T} <: Number
 	num::T
 end
 
-struct Y{T}
+julia> struct Y{T} <: Number
 	num::T
 end
 
-Base.:(+)(a::X, b::Y) = X(a.num + b.num)
+julia> Base.:(+)(a::X, b::Y) = X(a.num + b.num);
 
-Base.:(+)(a::Y, b::X) = X(a.num + b.num)
+julia> Base.:(+)(a::Y, b::X) = X(a.num + b.num);
 
-Base.:(+)(a::X, b::X) = X(a.num + b.num)
+julia> Base.:(+)(a::X, b::X) = X(a.num + b.num);
 
-Base.:(+)(a::Y, b::Y) = Y(a.num + b.num)
+julia> Base.:(+)(a::Y, b::Y) = Y(a.num + b.num);
 ```
 
-Multiple dispatch is easier to extend!
+Multiple dispatch seems to be more expressive than object-oriented programming.
 
-If `C` wants to extend this method to a new type `Z`.
+Now, supposed you want to extend this method to a new type `Z`. In python, he needs to define a new class `Z` as follows.
 
 ```python
 class Z:
@@ -363,81 +292,50 @@ print(X(3) + Z(5))
 
 print(Z(3) + X(5))
 ```
+The output is as follows:
+```
+X = 8
+Z = 8
+```
+
+No matter how hard you try, you can not make the `__add__` method of `Z` to be called when the object is on the left-hand side.
+In Julia, this is not a problem at all. We can define the addition operation of `Z` as follows.
 
 ```julia
-struct Z{T}
+julia> struct Z{T} <: Number
     num::T
 end
 
-Base.:(+)(a::X, b::Z) = Z(a.num + b.num)
+julia> Base.:(+)(a::X, b::Z) = Z(a.num + b.num);
 
-Base.:(+)(a::Z, b::X) = Z(a.num + b.num)
+julia> Base.:(+)(a::Z, b::X) = Z(a.num + b.num);
 
-Base.:(+)(a::Y, b::Z) = Z(a.num + b.num)
+julia> Base.:(+)(a::Y, b::Z) = Z(a.num + b.num);
 
-Base.:(+)(a::Z, b::Y) = Z(a.num + b.num)
+julia> Base.:(+)(a::Z, b::Y) = Z(a.num + b.num);
 
-Base.:(+)(a::Z, b::Z) = Z(a.num + b.num)
+julia> Base.:(+)(a::Z, b::Z) = Z(a.num + b.num);
+
+julia> X(3) + Y(5)
+X{Int64}(8)
+
+julia> Y(3) + X(5)
+X{Int64}(8)
+
+julia> X(3) + Z(5)
+Z{Int64}(8)
+
+julia> Z(3) + Y(5)
+Z{Int64}(8)
 ```
 
-```julia
-let biganyv = collect(Any, 1:2:20000)
-    @benchmark for i=1:length($biganyv)
-        $biganyv[i] += 1
-    end
-end
-```
-
-```julia
-let bigfloatv = collect(Float64, 1:2:20000)
-    @benchmark for i=1:length($bigfloatv)
-        $bigfloatv[i] += 1
-    end
-end
-```
-
-```julia
-fib(x::Int) = x <= 2 ? 1 : fib(x-1) + fib(x-2)
-
-@benchmark fib(20)
-```
-
-```julia
-addup(::Val{x}, ::Val{y}) where {x, y} = Val(x + y)
-```
-
-```julia
-f(::Val{x}) where x = addup(f(Val(x-1)), f(Val(x-2)))
-```
-
-```julia
-@benchmark f(Val(20)) end
-```
-
-```julia
-X(3) + Y(5)
-```
-
-```julia
-Y(3) + X(5)
-```
-
-```julia
-X(3) + Z(5)
-```
-
-```julia
-Z(3) + Y(5)
-```
-
-Julia function space is exponetially large!
-
-Quiz: If a function $f$ has $k$ parameters, and the module has $t$ types, how many different functions can be generated?
+There is a deeper reason why multiple dispatch is more expressive than object-oriented programming. The Julia function space is exponentially large!
+If a function $f$ has $k$ parameters, and the module has $t$ types, there can be $t^k$ methods for the function $f$.
 ```jula
 f(x::T1, y::T2, z::T3...)
 ```
 
-If it is an object-oriented language like Python？
+However, in an object-oriented language like Python, the function space is only linear to the number of classes.
 ```python
 class T1:
     def f(self, y, z, ...):
@@ -445,49 +343,52 @@ class T1:
 
 ```
 
+### Example: Fibonacci number
+The Fibonacci number is defined as follows.
+```julia
+julia> fib(x::Int) = x <= 2 ? 1 : fib(x-1) + fib(x-2)
+fib (generic function with 1 methods)
+
+julia> addup(x::Int, y::Int) = x + y
+addup (generic function with 1 methods)
+
+julia> @btime fib(40)
+  278.066 ms (0 allocations: 0 bytes)
+102334155
+```
+
+Oops, it is really slow. There is definitely a better way to calculate the Fibonacci number, but let us stick to the current implementation for now.
+
+If you know the Julia type system, you can implement the Fibonacci number in a zero cost way. The trick is to use the type system to calculate the Fibonacci number at compile time. There is a type `Val` defined in the `Base` module, which is just a type with a type parameter. The type parameter can be a number:
+
+```julia
+julia> Val(3.0)
+Val{3.0}()
+```
+
+We can define the addition operation of `Val` as the addition of the type parameters.
+```julia
+julia> addup(::Val{x}, ::Val{y}) where {x, y} = Val(x + y)
+addup (generic function with 2 methods)
+
+julia> addup(Val(5), Val(7))
+Val{12}()
+```
+
+Finally, we can define the Fibonacci number in a zero cost way.
+```julia
+julia> fib(::Val{x}) where x = x <= 2 ? Val(1) : addup(fib(Val(x-1)), fib(Val(x-2)))
+fib (generic function with 2 methods)
+
+
+julia> @btime fib(Val(40))
+  0.792 ns (0 allocations: 0 bytes)
+Val{102334155}()
+```
+Wow, it is really fast! However, this trick is not recommended. It is not a good practice to abuse the type system. You simply transfer the run-time to compile time, which violates the [Performance Tips](https://docs.julialang.org/en/v1/manual/performance-tips/).
+On the other hand, we find the compiling time of the function `fib` is much shorter than the run-time. This is because the function `fib` is a **recursive function**. The compiler can not optimize the recursive function very well.
+
 ### Summary
 * *Multiple dispatch* is a feature of some programming languages in which a function or method can be dynamically dispatched based on the **run-time** type.
 * Julia's mutiple dispatch provides exponential abstraction power comparing with an object-oriented language.
 * By carefully designed type system, we can program in an exponentially large function space.
-
-**A final comment: do not abuse the type system, otherwise the main memory might explode for generating too many functions.**
-
-```jl
-sco("""
-	fib(x::Int) = x <= 2 ? 1 : fib(x-1) + fib(x-2)
-""")
-```
-
-**A "zero" cost implementation**
-
-```jl
-sco("""
-	Val(3.0)
-""")
-```
-
-```jl
-sco("""
-	addup(::Val{x}, ::Val{y}) where {x, y} = Val(x + y)
-""")
-```
-
-```jl
-sco("""
-	f(::Val{x}) where x = addup(f(Val(x-1)), f(Val(x-2)))
-""")
-```
-
-```jl
-sco("""
-	f(::Val{1}) = Val(1)
-""")
-```
-
-```jl
-sco("""
-	f(::Val{2}) = Val(1)
-""")
-```
-
-However, this violates the Performance Tips, since it transfers the run-time to compile time.

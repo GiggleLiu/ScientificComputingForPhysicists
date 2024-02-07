@@ -120,20 +120,20 @@ Open VSCode and open the `Extensions` tab on the left side-bar of the window, se
 
 You are ready to go, cheers!
 
-### A quick introduction to the Julia REPL
+### The four modes of Julia REPL
 
 A Julia REPL has four modes,
 
-1. Julian mode is the default mode that can interpret your Julia code.
+1. **Julian mode** is the default mode that can interpret your Julia code.
 
-2. Shell mode is the mode that you can run shell commands. Press `;` in the Julian mode and type
+2. **Shell mode** is the mode that you can run shell commands. Press `;` in the Julian mode and type
 ```julia
 shell> date
 Sun Nov  6 10:50:21 PM CST 2022
 ```
 To return to the Julian mode, type the <kbd>Backspace</kbd> key.
 
-3. Package mode is the mode that you can manage packages. Press `]` in the Julian mode and type
+3. **Package mode** is the mode that you can manage packages. Press `]` in the Julian mode and type
 ```julia
 (@v1.8) pkg> st
 Status `~/.julia/environments/v1.8/Project.toml`
@@ -141,7 +141,7 @@ Status `~/.julia/environments/v1.8/Project.toml`
 ```
 To return to the Julian mode, type the <kbd>Backspace</kbd> key.
 
-4. Help mode is the mode that you can access the docstrings of functions. Press `?` in the Julian mode and type
+4. **Help mode** is the mode that you can access the docstrings of functions. Press `?` in the Julian mode and type
 ```julia
 help> sum
 ... docstring for sum ...

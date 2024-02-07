@@ -1,0 +1,2514 @@
+%
+\documentclass[
+  notoc % Suppress Tufte style table of contents.
+]{tufte-book}
+
+% Required Tufte packages.
+\usepackage{changepage} % or changepage
+\usepackage{fancyhdr}
+\usepackage{fontenc}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{bibentry}
+\usepackage{optparams}
+\usepackage{paralist}
+\usepackage{placeins}
+\usepackage{ragged2e}
+\usepackage{setspace}
+\usepackage{textcase}
+\usepackage{textcomp}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{xcolor}
+\usepackage{xifthen}
+\usepackage{morefloats}
+
+\geometry{paperheight=10in,paperwidth=7in,marginparwidth=30mm,marginparsep=2mm,bindingoffset=10mm,top=10mm,inner=8mm,outer=8mm,bottom=16mm,includehead,includemp}
+
+% Tufte vs. Pandoc workaround.
+% Issue: https://github.com/Tufte-LaTeX/tufte-latex/issues/64.
+\renewcommand\allcapsspacing[1]{{\addfontfeature{LetterSpace=15}#1}}
+\renewcommand\smallcapsspacing[1]{{\addfontfeature{LetterSpace=10}#1}}
+
+% \setmainfont{TeX Gyre Pagella}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\setmainfont{texgyrepagella}[
+  Extension = .otf,
+  UprightFont = *-regular,
+  BoldFont = *-bold,
+  ItalicFont = *-italic,
+  BoldItalicFont = *-bolditalic,
+]
+
+\usepackage{fontspec}
+\setmonofont{JuliaMono-Medium.ttf}[
+    % Do not remove the trailing forward slash.
+    Path = /home/runner/.julia/artifacts/45f34ceb7f1b7b67949715de56b123afeaa72e47/juliamono-0.045/,
+    Contextuals = Alternate,
+    Ligatures = NoCommon
+]
+
+\newfontface\JuliaMonoRegular{JuliaMono-Regular.ttf}[
+    Path = /home/runner/.julia/artifacts/45f34ceb7f1b7b67949715de56b123afeaa72e47/juliamono-0.045/,
+    Contextuals = Alternate,
+    Ligatures = NoCommon
+]
+
+\newfontface\JuliaMonoBold{JuliaMono-Bold.ttf}[
+    Path = /home/runner/.julia/artifacts/45f34ceb7f1b7b67949715de56b123afeaa72e47/juliamono-0.045/,
+    Contextuals = Alternate,
+    Ligatures = NoCommon
+]
+
+
+
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\DeclareRobustCommand{\href}[2]{#2\footnote{\url{#1}}}
+
+\usepackage{float}
+\floatplacement{figure}{H}
+
+% Listings Julia syntax definition.
+\input{/home/runner/.julia/packages/Books/odNoe/defaults/julia_listings.tex}
+
+% Unicode support.
+\input{/home/runner/.julia/packages/Books/odNoe/defaults/julia_listings_unicode.tex}
+
+% Used by Pandoc.
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+}
+\newcommand{\passthrough}[1]{#1}
+
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+
+% Source: Wandmalfarbe/pandoc-latex-template.
+
+\definecolor{linkblue}{HTML}{117af2}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks,
+  citecolor=linkblue,
+  linkcolor=linkblue,
+  urlcolor=linkblue,
+  linktoc=page, % Avoid Table of Contents being nearly completely blue.
+  pdftitle={Scientific Computing for Physicist},
+  pdfauthor={Yu-Sheng Zhao; Yi-Dai Zhang; Jin-Guo Liu},
+  pdflang={en-US},
+  breaklinks=true,
+  pdfcreator={LaTeX via Pandoc}%
+}
+\urlstyle{same} % disable monospaced font for URLs
+
+\title{Scientific Computing for Physicist}
+\author{\noindent{Yu-Sheng Zhao}\\[3mm] \noindent{Yi-Dai
+Zhang}\\[3mm] \noindent{Jin-Guo Liu}\\[3mm] }
+\date{}
+
+% Re-enable section numbering which was disabled by tufte.
+\setcounter{secnumdepth}{2}
+
+% Fix captions for longtable.
+% Thanks to David Carlisle at https://tex.stackexchange.com/a/183344/92217.
+\makeatletter
+\def\LT@makecaption#1#2#3{%
+  \noalign{\smash{\hbox{\kern\textwidth\rlap{\kern\marginparsep
+  \parbox[t]{\marginparwidth}{\vspace{12pt}%
+\@tufte@caption@font \@tufte@caption@justification \noindent
+   #1{#2: }\ignorespaces #3}}}}}}
+\makeatother
+
+% Doesn't seem to do anything.
+\usepackage{float}
+\floatplacement{figure}{H}
+\floatplacement{table}{H}
+
+% Reduce large spacing around sections.
+\titlespacing*{\chapter}{0pt}{5pt}{20pt}
+\titlespacing*{\section}{0pt}{2.5ex plus 1ex minus .2ex}{1.3ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.75ex plus 1ex minus .2ex}{1.0ex plus.2ex}
+
+\titleformat{\chapter}%
+  [hang]% shape
+  {\normalfont\huge\itshape}% format applied to label+text
+  {\huge\thechapter}% label
+  {1em}% horizontal separation between label and title body
+  {}% before the title body
+  []% after the title body
+
+% Reduce spacing in table of contents.
+\usepackage{etoolbox}
+\makeatletter
+\pretocmd{\chapter}{\addtocontents{toc}{\protect\addvspace{-3\p@}}}{}{}
+\pretocmd{\section}{\addtocontents{toc}{\protect\addvspace{-4\p@}}}{}{}
+\pretocmd{\subsection}{\addtocontents{toc}{\protect\addvspace{-5\p@}}}{}{}
+\makeatother
+
+% Long texts are harder to read than tables.
+% Therefore, we can reduce the font size of the table.
+\AtBeginEnvironment{longtable}{\footnotesize}
+
+% Some space between paragraphs is necessary because code blocks can output single line paragraphs.
+\setlength\parskip{1em plus 0.1em minus 0.2em}
+
+% For justified text.
+\usepackage{ragged2e}
+
+% tufte-book disables subsubsections by default.
+% Got this definition back via `\show\subsubsection`.
+
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{unicode-math}
+
+% URL line breaks.
+\usepackage{xurl}
+
+% Probably doesn't hurt.
+\usepackage{marginfix}
+
+
+
+
+\begin{document}
+
+\makeatletter
+\thispagestyle{empty}
+\vfill
+{\Huge\bf
+\noindent
+\@title
+}\\[1in]
+{\Large
+\noindent
+\@author
+}
+\makeatother
+
+\makeatletter
+\newpage
+\thispagestyle{empty}
+\vfill
+{\noindent
+\begin{tabular}{l} Yu-Sheng Zhao\\ Hong-Kong University of Science and Technology (Guangzhou)\\ \\ Yi-Dai Zhang\\ Hong-Kong University of Science and Technology (Guangzhou)\\ \\ Jin-Guo Liu\\ Hong-Kong University of Science and Technology (Guangzhou)\\ \\ \end{tabular}
+}
+\vfill
+{\small
+\url{https://book.jinguo-group.science}
+
+Version: 2024-02-07
+
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+}
+\makeatother
+
+
+% Don't remove this or authors will show up in header of every page.
+\frontmatter
+\mainmatter
+\fancyfoot[C]{\url{https://github.com/johndoe/Book.jl}}
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+% Justify text.
+\justifying
+
+% parindent seems to be set from within another class too.
+% it is really not useful here because it will also indent lines directly after
+% code blocks. Which most of the times not useful.
+\setlength{\parindent}{0pt}
+
+\hypertarget{sec:open-source-dev-toolchains}{%
+\chapter{Becoming an Open-Source
+Developer}\label{sec:open-source-dev-toolchains}}
+
+This section focuses on understanding the open source workflow, which is
+the foundation of scientific computing. Along the way, we will introduce
+to you our recommended tools for accomplishing each task.
+
+\hypertarget{sec:terminal}{%
+\section{Get a Terminal!}\label{sec:terminal}}
+
+You need to get a working terminal to follow the instructions in this
+book, because every cool guy uses a terminal.
+
+\hypertarget{sec:linux}{%
+\subsection{Linux operating system}\label{sec:linux}}
+
+Using Linux is the most straight-forward way to get a terminal. Just
+like Windows, IOS, and macOS, Linux is an operating system. In fact,
+Android, one of the most popular platforms on the planet, is powered by
+the Linux operating system. It is free to use,
+\href{https://opensource.com/resources/what-open-source}{open source},
+widely used on clusters and good at automating your works. Linux kernel
+and Linux distribution are different concepts. - The \textbf{Linux
+kernel} is started
+by~\href{https://en.wikipedia.org/wiki/Linus_Torvalds}{Linus Torvalds}
+in 1991. - A~\textbf{Linux distribution} is
+an~\href{https://en.wikipedia.org/wiki/Operating_system}{operating
+system}~made from a software collection that includes
+the~\href{https://en.wikipedia.org/wiki/Linux_kernel}{Linux kernel}~and,
+often,
+a~\href{https://en.wikipedia.org/wiki/Package_management_system}{package
+management system}. The Linux distribution used in this course is
+\href{https://ubuntu.com/desktop}{Ubuntu}.
+
+\hypertarget{sec:shell}{%
+\subsection{Shell (or Terminal)}\label{sec:shell}}
+
+Although you can use a \textbf{graphical user interface} (GUI) to
+interact with your Linux distribution, you will find that the
+\textbf{command line interface} (CLI) is more efficient and powerful.
+The CLI is also known as the \textbf{shell} or \textbf{terminal}.
+
+The shell is a program that takes commands from the keyboard and gives
+them to the operating system to perform. \href{https://zsh.org/}{Zsh}
+and \href{https://gnu.org/software/bash/}{Bash} are two popular shell
+interpreters used in the Linux operating systems. - \textbf{Bash} is the
+default shell on most Linux distributions. - \textbf{Zsh} (with
+\href{https://github.com/ohmyzsh/ohmyzsh}{oh-my-zsh} extension) is an
+extended version of the shell, with a more powerful command-line editing
+and completion system. It includes features like spelling correction and
+tab-completion, and it also supports plugins and themes.
+
+In Ubuntu, one can use \passthrough{\lstinline!Ctrl!} +
+\passthrough{\lstinline!Alt!} + \passthrough{\lstinline!T!} to open a
+shell. In a shell, we use - \passthrough{\lstinline!man command\_name!}
+to get help information related to a command, -
+\passthrough{\lstinline!CTRL-C!} to break a program and -
+\passthrough{\lstinline!CTRL-D!} to exit a shell or an REPL.
+
+The following is a short list of bash commands that will be used
+frequently in this book.
+
+\begin{lstlisting}
+man     # an interface to the system reference manuals
+
+ls      # list directory contents
+cd      # change directory
+mkdir   # make directories
+rm      # remove files or directories
+pwd     # print name of current/working directory
+
+echo    # display a line of text
+cat     # concatenate files and print on the standard output
+
+alias   # create an alias for a command
+
+lscpu   # display information about the CPU architecture
+lsmem   # list the ranges of available memory with their online status
+
+top     # display Linux processes
+ssh     # the OpenSSH remote login client
+vim     # Vi IMproved, a programmer's text editor
+git     # the stupid content tracker
+
+tar     # an archiving utility
+\end{lstlisting}
+
+\textbf{Git Resources}
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://missing.csail.mit.edu/2020/shell-tools/}{MIT Open
+  course: Missing semester}
+\item
+  \href{https://learn.microsoft.com/en-us/training/paths/shell/}{Get
+  started with the Linux command line and the Shell}
+\end{itemize}
+
+\hypertarget{sec:editor}{%
+\subsection{Vim Editor}\label{sec:editor}}
+
+To edit files in the terminal, you can use \passthrough{\lstinline!Vim!}
+- the default text editor in most Linux distributions.
+\passthrough{\lstinline!Vim!} has three primary modes, each tailored for
+specific tasks. The primary modes include - \textbf{Normal Mode}, where
+users can navigate through the file and perform tasks like deleting
+lines or copying text; One can enter the normal mode by typing
+\passthrough{\lstinline!ESC!}; - \textbf{Insert Mode}, where users can
+insert text as in conventional text editors; One can enter the insert
+mode by typing \passthrough{\lstinline!i!} in the normal mode; -
+\textbf{Command Mode}, where users input commands for tasks like saving
+files or searching; One can enter the command mode by typing
+\passthrough{\lstinline!:!} in the normal mode.
+
+A few commands are listed below to get you started with
+\passthrough{\lstinline!Vim!}.
+
+\begin{lstlisting}
+i       # input
+:w      # write
+:q      # quit
+:q!     # force quit without saving
+
+u       # undo
+CTRL-R  # redo
+\end{lstlisting}
+
+All the commands must be executed in the \textbf{normal mode}. To learn
+more about Vim, please check this
+\href{https://missing.csail.mit.edu/2020/editors/}{lecture}.
+
+\hypertarget{sec:ssh}{%
+\subsection{SSH}\label{sec:ssh}}
+
+The Secure Shell (SSH) protocol is a method for securely sending
+commands to a computer over an unsecured network. SSH uses cryptography
+to authenticate and encrypt connections between devices. It is widely
+used to: - push code to a remote git repository, - log into a remote
+machine and execute commands.
+
+With a host name (the IP of the target machine to login) and a user
+name, one can use the following command to login,
+
+\begin{lstlisting}[language=bash]
+ssh <username>@<hostname>
+\end{lstlisting}
+
+where \passthrough{\lstinline!<username>!} is the user's account name
+and \passthrough{\lstinline!<hostname>!} is the host name or IP of the
+target machine. You will get logged in after inputting the password.
+
+\textbf{Tips to make your life easier}
+
+It will be tedious to type the host name and user name everytime you
+want to login to the remote machine. You can setup the
+\passthrough{\lstinline!\~/.ssh/config!} file to make your life easier.
+The following is an example of the
+\passthrough{\lstinline!\~/.ssh/config!} file.
+
+\begin{lstlisting}
+Host amat5315
+  HostName <hostname>
+  User <username>
+\end{lstlisting}
+
+where \passthrough{\lstinline!amat5315!} is the alias of the host. After
+setting up the \passthrough{\lstinline!\~/.ssh/config!}, you can login
+to the remote machine by typing
+
+\begin{lstlisting}[language=bash]
+ssh amat5315
+\end{lstlisting}
+
+If you want to avoid typing the password everytime you login, you can
+use the command
+
+\begin{lstlisting}[language=bash]
+ssh-keygen
+\end{lstlisting}
+
+to generate a pair of public and private keys, which will be stored in
+the \passthrough{\lstinline!\~/.ssh!} folder on the local machine. After
+setting up the keys, you can copy the public key to the remote machine
+by typing
+
+\begin{lstlisting}[language=bash]
+ssh-copy-id amat5315
+\end{lstlisting}
+
+Try connecting to the remote machine again, you will find that you don't
+need to type the password anymore.
+
+\textbf{How does SSH key pair work?} The SSH key pair is a pair of
+asymmetric keys, one is the public key and the other is the private key.
+In the above example, the public key is uploaded to the remote machine
+and the private key is stored on the local machine. The public key can
+be shared with anyone, but the private key must be kept secret.
+
+To connect to a server, the server needs to know that you are the one
+who with the right to access it. To do so, the server will need to check
+if you have the private key that corresponds to the public key stored on
+the server. If you have the private key, you will be granted access to
+the server.
+
+The secret of the SSH key pair is that \textbf{the public key can be
+used to encrypt a message that can only be decrypted by the private
+key}, i.e.~the public key is more like a lock and the private key is the
+key to unlock the lock. This is the foundation of the SSH protocol. So
+server can send you a message encrypted by your public key, and only you
+can decrypt it with your private key. This is how the server knows that
+you are the one who has the private key without actually sending the
+private key to the server.
+
+\hypertarget{sec:version-control}{%
+\section{Maintainability - Version Control}\label{sec:version-control}}
+
+Maintaining a software project is not easy, especially when it comes to
+multiple developers working on the same piece of code. When adding a new
+feature to the project, maintainers may encounter the following
+problems:
+
+\begin{itemize}
+\tightlist
+\item
+  Multiple developers modify the same file at the same time, works can
+  not be merged easily.
+\item
+  New code breaks an existing feature, downstream users are affected.
+\end{itemize}
+
+The solution to the above problems is \textbf{version-control}. Among
+all version control software, \textbf{git} is the most popular one.
+
+\hypertarget{create-a-git-repository}{%
+\subsection{Create a git repository}\label{create-a-git-repository}}
+
+A git repository, also known as a repo, is basically a directory where
+your project lives and git keeps track of your file's history. To get
+started, you start with a terminal and type
+
+\begin{lstlisting}[language=bash]
+cd path/to/working/directory
+git init
+echo "Hello, World" > README.md
+git add -A
+git commit -m 'this is my initial commit'
+git status
+\end{lstlisting}
+
+\begin{itemize}
+\tightlist
+\item
+  Line 1: changes the directory to the working directory, which can be
+  either an existing directory or a new directory.
+\item
+  Line 2: initializes a git repository in the working directory. A
+  \passthrough{\lstinline!.git!} directory is created in the working
+  directory, which contains all the necessary metadata for the repo.
+\item
+  Line 3: creates a file \passthrough{\lstinline!README.md!} with the
+  content \passthrough{\lstinline!Hello, World!}. The file
+  \passthrough{\lstinline!README.md!} is a \textbf{markdown} file, which
+  is a lightweight markup language with plain-text-formatting syntax.
+  You can learn more about markdown from the
+  \href{https://www.markdowntutorial.com/}{markdown tutorial}. This line
+  can be omitted if the working directory already contains files.
+\item
+  Line 4: line add files to the \textbf{staging area} (area that caches
+  changes that to be committed).
+\item
+  Line 5: commits the changes to the repository, which will create a
+  \textbf{snapshot} of your current work.
+\item
+  Line 6: shows the status of the working directory, staging area, and
+  repository. If the above commands are executed correctly, the output
+  should be
+  \passthrough{\lstinline!nothing to commit, working tree clean!}.
+\end{itemize}
+
+\hypertarget{track-the-changes}{%
+\subsection{Track the changes}\label{track-the-changes}}
+
+\textbf{Git} enables developers to track changes in their codebase.
+Continuing the previous example, we can analyze the repository with the
+following commands:
+
+\begin{lstlisting}[language=bash]
+echo "Bye Bye, World" > README.md
+git diff
+git add -A
+git commit -m 'a second commit'
+git log
+git checkout HEAD~1
+git checkout main
+\end{lstlisting}
+
+\begin{itemize}
+\tightlist
+\item
+  Line 1: makes changes to the file \passthrough{\lstinline!README.md!}.
+\item
+  Line 2: shows the changes made to the file
+  \passthrough{\lstinline!README.md!}.
+\item
+  Line 3-4: adds the changes to the staging area and commits the changes
+  to the repository.
+\item
+  Line 5: shows the history of commits. The output should be something
+  like this:
+\end{itemize}
+
+\begin{lstlisting}
+commit 02cd535b6d78fca1713784c61eec86e67ce9010c (HEAD -> main)
+Author: GiggleLiu <cacate0129@gmail.com>
+Date:   Mon Feb 5 14:34:20 2024 +0800
+
+    a second commit
+
+commit 570e390759617a7021b0e069a3fbe612841b3e50
+Author: GiggleLiu <cacate0129@gmail.com>
+Date:   Mon Feb 5 14:23:41 2024 +0800
+
+    this is my initial commit
+\end{lstlisting}
+
+\begin{itemize}
+\tightlist
+\item
+  Line 6: Checkout the previous snapshot. Note
+  \passthrough{\lstinline!HEAD!} is your current snapshot and
+  \passthrough{\lstinline!HEAD\~n!} is the \passthrough{\lstinline!n!}th
+  snapshot counting back from the current snapshot.
+\item
+  Line 7: Return to the \passthrough{\lstinline!main!} \textbf{branch},
+  which points to the latest snapshot. We will discuss more about
+  \textbf{branch} later in this tutorial.
+\end{itemize}
+
+You can use \passthrough{\lstinline!git reset!} to reset the current
+HEAD to the specified snapshot, which can be useful when you committed
+something bad by accident.
+
+\hypertarget{work-with-remote-repositories}{%
+\subsection{Work with remote
+repositories}\label{work-with-remote-repositories}}
+
+A server to store git repository, or \textbf{remote} in git terminology,
+is required for the collaboration purpose. Remote repositories can be
+hosted on git hosting services like GitHub, GitLab, or Bitbucket. After
+creating a new empty repository (no README files) on a git hosting
+service
+(\href{https://docs.github.com/en/get-started/quickstart/create-a-repo}{How
+to create a new github repo?}), a URL for cloning the repo will show up,
+which that usually starts with \passthrough{\lstinline!git!} or
+\passthrough{\lstinline!https!}. Let us denote this URL as
+\passthrough{\lstinline!<url>!} and continue the previous example:
+
+\begin{lstlisting}[language=bash]
+git remote add origin <url>
+git remote -v
+git push origin main
+\end{lstlisting}
+
+\begin{itemize}
+\tightlist
+\item
+  Line 1: add a remote repository, where
+  \passthrough{\lstinline!origin!} is a tag for the added remote.
+\item
+  Line 2: shows the URL of all remotes, including the
+  \passthrough{\lstinline!origin!} remote we just added.
+\item
+  Line 3: push commits to the \passthrough{\lstinline!main!} branch of
+  the remote repository \passthrough{\lstinline!origin!}. This command
+  sometimes could fail due to another commit pushed to the remote
+  earlier, where the commit may from another machine or another person.
+  To resolve the issue, you can use
+  \passthrough{\lstinline!git pull origin main!} to fetch the latest
+  snapshot on the remote. \passthrough{\lstinline!git pull!} may also
+  fail, because the remote commit may be incompatible with the local
+  commit, e.g.~the same file has been changed. In this worst case, you
+  need to merge two commits manually (link).
+\end{itemize}
+
+\hypertarget{develop-features-safely---branches}{%
+\subsection{Develop features safely -
+branches}\label{develop-features-safely---branches}}
+
+So far, we worked with a single branch \passthrough{\lstinline!main!}. A
+\textbf{branch} in git is a lightweight pointer to a specific commit.
+Working on a single branch is dangerous due to the following reasons: -
+\emph{No usable code.} Developers usually develop features based on the
+current \passthrough{\lstinline!main!} branch, so the
+\passthrough{\lstinline!main!} branch is expected to always usable.
+However, working on a single branch can easily break this rule. -
+\emph{Hard to resolve conflicts.} when multiple developers modify the
+same file at the same time, works can not be merged easily. Multiple
+branches can make the feature development process independent of each
+other, which can avoid conflicts. - \emph{Hard to discard a feature.}
+For some experimental features, you may want to discard it after
+testing. A commit on the main branch can not be easily reverted.
+
+Understanding the branches is extremely useful when, multiple developers
+are working on different features.
+
+\begin{lstlisting}[language=bash]
+git checkout -b me/feature
+echo "Hello, World - Version 2" > README.md
+git add -A
+git commit -m 'this is my feature'
+git push origin me/feature
+\end{lstlisting}
+
+\begin{itemize}
+\tightlist
+\item
+  Line 1: create and switch to the new branch
+  \passthrough{\lstinline!me/feature!}. Here, we use the branch name
+  \passthrough{\lstinline!me/feature!} to indicate that this branch is
+  for the feature developed by \passthrough{\lstinline!me!}, which is a
+  matter of convention.
+\item
+  Line 2-5: makes some changes to the file
+  \passthrough{\lstinline!README.md!} and commits the changes to the
+  repository. Finally, the changes are pushed to the remote repository
+  \passthrough{\lstinline!origin!}. The remote branch
+  \passthrough{\lstinline!me/feature!} is created automatically.
+\end{itemize}
+
+While developing a feature, you or another developer may want to develop
+another feature based on the current \passthrough{\lstinline!main!}
+branch. You can create another branch
+\passthrough{\lstinline!other/feature!} and develop the feature there.
+
+\begin{lstlisting}[language=bash]
+git checkout main
+git checkout -b other/feature
+echo "Bye Bye, World - Version 2" > feature.md
+git add -A
+git commit -m 'this is another feature'
+git push origin other/feature
+\end{lstlisting}
+
+In the above example, we created a new branch
+\passthrough{\lstinline!other/feature!} based on the
+\passthrough{\lstinline!main!} branch, and made some changes to the file
+\passthrough{\lstinline!feature.md!}.
+
+Finally, when the feature is ready, you can merge the feature branch to
+the main branch.
+
+\begin{lstlisting}[language=bash]
+git checkout main
+git merge me/feature
+git push origin main
+\end{lstlisting}
+
+\hypertarget{working-with-others---issues-and-pull-requests}{%
+\subsection{Working with others - issues and pull
+requests}\label{working-with-others---issues-and-pull-requests}}
+
+When working with others, you may want to propose changes to a
+repository and discuss them with others. This is where \textbf{issues}
+and \textbf{pull requests} come in. Issues and pull requests are
+features of git hosting services like GitHub and GitLab. -
+\textbf{Issue} is relatively simple, it is a way to report a bug or
+request a feature. - \textbf{Pull request} (resource:
+\href{https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request}{how
+to create a pull request}) is a way to propose changes to a repository
+and discuss them with others. It is also a way to merge code from source
+branch to target branch. The source branch can be a branch in the same
+repository or a branch in a \textbf{forked repository} - a copy of the
+repository in your account. Forking a repository is needed when you want
+to propose changes to a repository that you do not have write access to.
+
+\begin{quote}
+\textbf{FAQ: Should I make a pull requests or push directly to main
+branch?}
+
+To update the main branch, one should use pull requests as much as
+possible, even if you have write access to the repository. It is a good
+practice to discuss the changes with others before merging them to the
+main branch. A pull request also makes the changes more traceable, which
+is useful when you want to revert the changes.
+\end{quote}
+
+\hypertarget{summary-a-cheat-sheet}{%
+\subsection{Summary: a cheat sheet}\label{summary-a-cheat-sheet}}
+
+It is not possible to cover all the feature of git. We will list a few
+useful commands and resources for git learning.
+
+\begin{lstlisting}
+# global config
+git config  # Get and set repository or global options
+
+# initialize a repo
+git init    # Create an empty Git repo or reinitialize an existing one
+git clone   # Clone repository into new directory
+
+# info
+git status  # Show the working tree status
+git log     # Show commit logs
+git diff    # Show changes between commits, commit and working tree, etc
+
+# work on a branch
+git add     # Add file contents to the index
+git rm      # Remove files from the working tree and from the index
+git commit  # Record changes to the repository
+git reset   # Reset current HEAD to the specified state
+
+# branch manipulation
+git checkout # Switch branches or restore working tree files
+git branch  # List, create, or delete branches
+git merge   # Join two or more development histories together
+
+# remote synchronization
+git remote  # Manage set of tracked repositories
+git pull  # Fetch from and integrate with another repo or a local branch
+git fetch   # Download objects and refs from another repository
+git push    # Update remote refs along with associated objects
+\end{lstlisting}
+
+\hypertarget{resources}{%
+\subsection{Resources}\label{resources}}
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://githubtraining.github.io/training-manual/book.pdf}{The
+  Official GitHub Training Manual}
+\item
+  MIT online course \href{https://missing.csail.mit.edu/2020/}{missing
+  semester}.
+\end{itemize}
+
+\hypertarget{sec:ci-cd}{%
+\section{Correctness - Unit Tests}\label{sec:ci-cd}}
+
+In terms of scientific computing, accuracy of your result is most
+certainly more important than anything else. To ensure the correctness
+of the code, we employ two methods: \textbf{Unit Testing} and
+\textbf{CI/CD}.
+
+\hypertarget{unit-test}{%
+\subsection{Unit Test}\label{unit-test}}
+
+Unit tests are typically
+\href{https://en.wikipedia.org/wiki/Automated_test}{automated tests}
+written and run by
+\href{https://en.wikipedia.org/wiki/Software_developer}{software
+developers} to ensure that a section of an application (known as the
+``unit'') meets its
+\href{https://en.wikipedia.org/wiki/Software_design}{design} and behaves
+as intended. Unit tests are composed of a series of individual test
+cases, each of which verifies the correctness by using
+\textbf{assertions}. If all assertions are true, the test case passes;
+otherwise, it fails. The unit tests are run automatically whenever the
+code is changed, ensuring that the code is always in a working state. In
+Julia, there exists a helpful module called
+\href{https://docs.julialang.org/en/v1/stdlib/Test/}{Test} to help you
+do unit testing.
+
+\hypertarget{automate-your-workflow---cicd}{%
+\subsection{Automate your workflow -
+CI/CD}\label{automate-your-workflow---cicd}}
+
+CI/CD, which stands for continuous integration and continuous
+delivery/deployment, aims to streamline and accelerate the software
+development lifecycle. CI/CD are often integrated with git hosting
+services, e.g.~\href{https://docs.github.com/en/actions}{Github
+Actions}. Typical CI/CD pipelines include the following steps:
+
+\begin{itemize}
+\tightlist
+\item
+  Automatically \textbf{build}, \textbf{test} and \textbf{merge} the
+  code changes whenever a developer commits code to the repository.
+\item
+  Automatically \textbf{deploy} the code or documentation to a cloud
+  service.
+\end{itemize}
+
+The CI/CD pipeline is a powerful tool to ensure the correctness of the
+code and the reproducibility of the results. It is also a good practice
+to use CI/CD to automate the workflow, especially when you are working
+with a team.
+
+\hypertarget{sec:julia}{%
+\chapter{Julia}\label{sec:julia}}
+
+\passthrough{\lstinline!Julia!} is a high-level, high-performance,
+dynamic programming language. From the designing stage,
+\passthrough{\lstinline!Julia!} is intended to address the needs of
+high-performance numerical analysis and computational science, without
+the typical need of separate compilation to be fast, while also being
+effective for general-purpose programming, web use or as a specification
+language. \passthrough{\lstinline!Julia!} is also a free and open-source
+language, with a \href{https://julialang.org/community/}{large
+community} and a \href{https://juliahub.com/}{rich ecosystem}.
+
+We will devlve deeper into \passthrough{\lstinline!Julia!} later in the
+chapter. For now, we will just install \passthrough{\lstinline!Julia!}
+and setup the environment.
+
+\hypertarget{sec:setup}{%
+\section{Setup Julia}\label{sec:setup}}
+
+\hypertarget{step-1-installing-julia}{%
+\subsection{Step 1: Installing Julia}\label{step-1-installing-julia}}
+
+For Linux/Mac users, please open a terminal and type the following
+command to install \href{https://julialang.org/}{Julia} with
+\href{https://github.com/JuliaLang/juliaup}{juliaup}.
+\passthrough{\lstinline!Juliaup!} is a tool to manage Julia versions and
+installations. It allows you to install multiple versions of Julia and
+switch between them easily.
+
+\begin{lstlisting}[language=bash]
+curl -fsSL https://install.julialang.org | sh # Linux and macOS
+\end{lstlisting}
+
+For Windows users, please open execute the following command in a
+\passthrough{\lstinline!cmd!},
+
+\begin{lstlisting}
+winget install julia -s msstore # Windows
+\end{lstlisting}
+
+You can also install Juliaup directly from
+\href{https://www.microsoft.com/store/apps/9NJNWW8PVKMN}{Windows Store}.
+
+\hypertarget{for-users-suffering-from-the-slow-download-speed}{%
+\subsection{For users suffering from the slow download
+speed}\label{for-users-suffering-from-the-slow-download-speed}}
+
+Network connectivity can be an issue for some users, especially for
+those who are in China. You may need to specify another server for
+installing Juliaup and Julia packages. To do so, execute the following
+command in your terminal before running the script above.
+
+\textbf{Linux and macOS}
+
+\begin{lstlisting}[language=bash]
+export JULIAUP_SERVER=https://mirror.nju.edu.cn/julia-releases/ # Linux & macOS
+export JULIA_PKG_SERVER=https://mirrors.nju.edu.cn/julia
+\end{lstlisting}
+
+\textbf{Windows}
+
+\begin{lstlisting}
+$env:JULIAUP_SERVER="https://mirror.nju.edu.cn/julia-releases/" # Windows
+$env:JULIA_PKG_SERVER="https://mirrors.nju.edu.cn/julia"
+\end{lstlisting}
+
+An alternative approach is downloading the corresponding Julia binary
+from the \href{https://mirror.nju.edu.cn/julia-releases/}{Nanjing
+university mirror website}. After installing the binary, please set the
+Julia binary path properly if you want to start a Julia REPL from a
+terminal, check this
+\href{https://julialang.org/downloads/platform/}{manual page} to learn
+more.
+
+\hypertarget{installing-julia}{%
+\subsection{Installing Julia}\label{installing-julia}}
+
+To verify that Julia is installed, please open a \textbf{new} terminal
+and run the following command in your terminal.
+\passthrough{\lstinline!bash   julia!} - It should start a Julia
+REPL(Read-Eval-Print-Loop) session like this - If you wish to install a
+specific version of Julia, please refer to the
+\href{https://github.com/JuliaLang/juliaup}{documentation}.
+
+\hypertarget{step-2-package-management}{%
+\subsection{Step 2: Package
+Management}\label{step-2-package-management}}
+
+\begin{itemize}
+\tightlist
+\item
+  \passthrough{\lstinline!Julia!} has a mature eco-system for scientific
+  computing.
+\item
+  \passthrough{\lstinline!Pkg!} is the built-in package manager for
+  Julia.
+\item
+  To enter the package manager, press \passthrough{\lstinline!]!} in the
+  REPL.
+  \includegraphics{https://github.com/exAClior/QMBCTutorial/blob/ys/julia-tutorial/notebooks/resources/scripts/Packages.gif?raw=true}
+\item
+  The environment is indicated by the \passthrough{\lstinline!(@v1.9)!}.
+\item
+  To add a package, type \passthrough{\lstinline!add <package name>!}.
+\item
+  To exit the package manager press \passthrough{\lstinline!backspace!}
+  key
+\item
+  \href{https://pkgdocs.julialang.org/v1/managing-packages/}{Read More}
+\end{itemize}
+
+\hypertarget{step-3.-configure-the-startup-file}{%
+\subsection{Step 3. Configure the startup
+file}\label{step-3.-configure-the-startup-file}}
+
+First create a new file
+\passthrough{\lstinline!\~/.julia/config/startup.jl!} by executing the
+following commands
+
+\passthrough{\lstinline!mkdir -r \~/.julia/config!}
+\passthrough{\lstinline!touch \~/.julia/config/startup.jl!}
+
+You could open the file with your favourite editor and add the following
+content
+
+\begin{lstlisting}
+try
+    using Revise
+catch e
+    @warn "fail to load Revise."
+end
+\end{lstlisting}
+
+The contents in the startup file is executed immediately after you open
+a new Julia session.
+
+Then you need to install
+\href{https://github.com/timholy/Revise.jl}{Revise}, which is an Julia
+package that can greatly improve the using experience of Julia. To
+install \passthrough{\lstinline!Revise!}, open Julia REPL and type
+
+\begin{lstlisting}
+julia> using Pkg; Pkg.add("Revise")
+\end{lstlisting}
+
+If you don't know about \passthrough{\lstinline!startup.jl!} and where
+to find it,
+\href{https://docs.julialang.org/en/v1/manual/command-line-interface/\#Startup-file}{here}
+is a good place for further information.
+
+\hypertarget{more-packages}{%
+\subsection{More Packages}\label{more-packages}}
+
+\begin{itemize}
+\tightlist
+\item
+  You may find more Julia packages \href{https://juliahub.com/}{here}.
+\end{itemize}
+
+As a final step, please verify your Julia configuration by openning a
+Julia REPL and type
+
+\begin{lstlisting}
+julia> versioninfo()
+Julia Version 1.9.2
+Commit e4ee485e909 (2023-07-05 09:39 UTC)
+Platform Info:
+  OS: macOS (arm64-apple-darwin22.4.0)
+  CPU: 10 × Apple M2 Pro
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-14.0.6 (ORCJIT, apple-m1)
+  Threads: 1 on 6 virtual cores
+Environment:
+  JULIA_NUM_THREADS = 1
+  JULIA_PROJECT = @.
+  JULIA_PKG_SERVER = http://cn-southeast.pkg.juliacn.com/ 
+\end{lstlisting}
+
+\hypertarget{step-4.-download-an-editor-vscode}{%
+\subsection{Step 4. Download an editor:
+VSCode}\label{step-4.-download-an-editor-vscode}}
+
+Install VSCode by downloading the correct binary for your platform from
+\href{https://code.visualstudio.com/download}{here}. Open VSCode and
+open the \passthrough{\lstinline!Extensions!} tab on the left side-bar
+of the window, search \passthrough{\lstinline!Julia!} and install the
+most popular extension.
+\href{https://github.com/julia-vscode/julia-vscode}{read more\ldots{}}
+
+You are ready to go, cheers!
+
+\hypertarget{the-four-modes-of-julia-repl}{%
+\subsection{The four modes of Julia
+REPL}\label{the-four-modes-of-julia-repl}}
+
+A Julia REPL has four modes,
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Julian mode} is the default mode that can interpret your Julia
+  code.
+\item
+  \textbf{Shell mode} is the mode that you can run shell commands. Press
+  \passthrough{\lstinline!;!} in the Julian mode and type
+\end{enumerate}
+
+\begin{lstlisting}
+shell> date
+Sun Nov  6 10:50:21 PM CST 2022
+\end{lstlisting}
+
+To return to the Julian mode, type the Backspace key.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  \textbf{Package mode} is the mode that you can manage packages. Press
+  \passthrough{\lstinline!]!} in the Julian mode and type
+\end{enumerate}
+
+\begin{lstlisting}
+(@v1.8) pkg> st
+Status `~/.julia/environments/v1.8/Project.toml`
+  [295af30f] Revise v3.4.0
+\end{lstlisting}
+
+To return to the Julian mode, type the Backspace key.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  \textbf{Help mode} is the mode that you can access the docstrings of
+  functions. Press \passthrough{\lstinline!?!} in the Julian mode and
+  type
+\end{enumerate}
+
+\begin{lstlisting}
+help> sum
+... docstring for sum ...
+\end{lstlisting}
+
+To return to the Julian mode, type the Backspace key.
+
+\href{https://docs.julialang.org/en/v1/stdlib/REPL/}{read more\ldots{}}
+
+\hypertarget{sec:whyjulia}{%
+\section{Why Julia is fast?}\label{sec:whyjulia}}
+
+\hypertarget{what-is-julia-programming-language}{%
+\subsection{What is Julia programming
+language?}\label{what-is-julia-programming-language}}
+
+Julia is a modern, open-source, high performance programming language
+for technical computing. It was born in 2012 in MIT, now is maintained
+by JuliaHub Inc.~located in Boston, US.
+
+\emph{Julia is open-source.} Julia source code is maintained on GitHub
+repo \href{https://github.com/JuliaLang/julia}{JuliaLang/julia}, and it
+open-source LICENSE is MIT. Julia packages can be found on
+\href{https://juliahub.com/ui/Packages}{JuliaHub}, most of them are
+open-source.
+
+\emph{Julia is designed for high performance}
+(\href{https://arxiv.org/abs/1209.5145}{arXiv:1209.5145}). It is a
+dynamic programming language, but it is as fast as C/C++. The following
+figure shows the computing time of multiple programming languages
+normalized to C/C++.
+
+\emph{Julia is a trend in scientific computing.} Many famous scientists
+and engineers have switched to Julia from other programming languages.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Steven G. Johnson}, creater of
+  \href{http://www.fftw.org/}{FFTW}, switched from C++ to Julia years
+  ago.
+\item
+  \textbf{Anders Sandvik}, creater of Stochastic Series Expansion (SSE)
+  quantum Monte Carlo method, switched from Fortran to Julia recently.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Course link: \href{https://physics.bu.edu/~py502/}{Computational
+    Physics}
+  \end{itemize}
+\item
+  \textbf{Miles Stoudenmire}, creater of
+  \href{https://itensor.org/}{ITensor}, switched from C++ to Julia years
+  ago.
+\item
+  \textbf{Jutho Haegeman}, \textbf{Chris Rackauckas} and more.
+\end{itemize}
+
+\begin{quote}
+\textbf{FAQ: Should I switch to Julia?}
+
+Before switching to Julia, please make sure:
+
+\begin{itemize}
+\tightlist
+\item
+  the problem you are trying to solve runs more than 10min.
+\item
+  you are not satisfied by any existing tools.
+\end{itemize}
+\end{quote}
+
+\hypertarget{my-first-program-factorial}{%
+\subsection{My first program:
+Factorial}\label{my-first-program-factorial}}
+
+Before we start, please make sure you have the needed packages
+installed. Type \passthrough{\lstinline!]!} in the Julia REPL to enter
+the package manager, and then type
+
+\begin{lstlisting}
+pkg> add BenchmarkTools, MethodAnalysis
+\end{lstlisting}
+
+Go back to the REPL by pressing \passthrough{\lstinline!Backspace!}.
+
+\begin{lstlisting}
+julia> function jlfactorial(n)
+           x = 1
+           for i in 1:n
+               x = x * i
+           end
+           return x
+       end
+jlfactorial (generic function with 1 method)
+\end{lstlisting}
+
+To make sure the performance is measured correctly, we use the
+\passthrough{\lstinline!@btime!} macro in the
+\passthrough{\lstinline!BenchmarkTools!} package to measure the
+performance of the function.
+
+\begin{lstlisting}
+julia> @btime jlfactorial(x) setup=(x=5)
+2.208 ns (0 allocations: 0 bytes)
+120
+\end{lstlisting}
+
+CPU clock cycle is \textasciitilde0.3ns, so it takes only a few clock
+cycles to compute the factorial of 5. Julia is really fast!
+
+\hypertarget{compare-with-the-speed-of-c-program}{%
+\subsection{Compare with the speed of C
+program}\label{compare-with-the-speed-of-c-program}}
+
+To measure the performance of the C program, we can utilize the
+benchmark utilities in Julia. Benchmarking C program with Julia is
+accurate because Julia has perfect interoperability with C, which allows
+zero-cost calling of C functions.
+
+In the following example, we first write a C program to calculate the
+factorial of a number. The file is named
+\passthrough{\lstinline!demo.c!}, and the content is as follows:
+
+\begin{lstlisting}[language=bash]
+$ cat demo.c
+#include <stddef.h>
+int c_factorial(size_t n) {
+    int s = 1;
+    for (size_t i=1; i<=n; i++) {
+        s *= i;
+    }
+    return s;
+}
+\end{lstlisting}
+
+To execute a C program in Julia, one needs to compile it to a shared
+library.
+
+\begin{lstlisting}
+$ gcc demo.c -fPIC -O3 -shared -o demo.so
+\end{lstlisting}
+
+To call the function in Julia, one can use the
+\passthrough{\lstinline!@ccall!} macro in the
+\passthrough{\lstinline!Libdl!} package
+(\href{https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/}{learn
+more}). Please open a Julia REPL and execute the following code:
+
+\begin{lstlisting}
+julia> using Libdl
+
+julia> c_factorial(x) = Libdl.@ccall "./demo.so".c_factorial(x::Csize_t)::Int
+\end{lstlisting}
+
+The benchmark result is as follows:
+
+\begin{lstlisting}
+julia> using BenchmarkTools
+
+julia> @benchmark c_factorial(5)
+BenchmarkTools.Trial: 10000 samples with 1000 evaluations.
+ Range (min … max):  7.333 ns … 47.375 ns  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     7.458 ns              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   7.764 ns ±  1.620 ns  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  ██▅  ▃▁ ▂▂                         ▁▁▁                     ▂
+  ███▆▄██▆███▅▅▆▆▆▅▆▅▄▅▆▅▅▇▆▆▄▅▅▇█▇▆▆█████▅▃▁▁▁▁▁▁▁▃▁▁▁▁▁▁▁▃ █
+  7.33 ns      Histogram: log(frequency) by time     12.6 ns <
+
+ Memory estimate: 0 bytes, allocs estimate: 0.
+\end{lstlisting}
+
+Although the C program requires the type of variables to be manually
+declared, its performance is very good. The computing time is only 7.33
+ns.
+
+\hypertarget{compare-with-the-speed-of-python-program}{%
+\subsection{Compare with the speed of Python
+program}\label{compare-with-the-speed-of-python-program}}
+
+We use the \passthrough{\lstinline!timeit!} module in ipython to measure
+the performance of the Python program.
+
+\begin{lstlisting}
+In [5]: def factorial(n):
+...:        x = 1
+...:        for i in range(1, n+1):
+...:            x = x * i
+...:        return x
+...:
+
+In [6]: factorial(5)
+Out[6]: 120
+
+In [7]: timeit factorial(5)
+144 ns ± 0.379 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+
+In [8]: factorial(100)
+Out[8]: 93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000
+\end{lstlisting}
+
+One can also use the \passthrough{\lstinline!PyCall!} package to call
+the Python function in Julia.
+
+The computing time of the Python program is 144 ns, which is 20 times
+slower than the C program and 70 times slower than the Julia program. On
+the other hand, the python program is more flexible since its integer
+type is not limited by the machine word size.
+
+\begin{lstlisting}
+julia> typemax(Int)
+9223372036854775807
+
+julia> jlfactorial(100)
+0
+\end{lstlisting}
+
+The reason why python is slow and flexible are the same. In python the
+type of a variable is not declared when it is defined, and it can be
+changed at any time. This is why the integer type becomes an arbitrary
+precision integer type when the number is too large. If a variable does
+not have a fixed type, the program can not preallocate memory for it due
+to the lack of size information. Then a dynamic typed language has to
+use a tuple \passthrough{\lstinline!(type, *data)!} to represent an
+object, where \passthrough{\lstinline!type!} is the type of the object
+and \passthrough{\lstinline!*data!} is the pointer to the data. Pointing
+to a random memory location is slow, because it violates the principle
+of data locality. Lacking of data locality causes the frequent cache
+miss - failure to find the data in the L1, L2, or L3 cache. Loading data
+from the main memory is slow, because of the long latency of reading the
+main memory.
+
+\hypertarget{combining-python-and-cc}{%
+\subsection{Combining Python and C/C++?}\label{combining-python-and-cc}}
+
+From the maintainer's perspective, it is hard to maintain a program
+written in both Python and C/C++: - It makes the build configuration
+files complicated. - Learning two programming languages is hard for new
+contributors.
+
+Using python as glue is not as powerful as it looks, the following
+problem can not be solved by this approach: - Monte Carlo simulation. -
+Branching and bound algorithms.
+
+\hypertarget{julias-solution-just-in-time-jit-compilation}{%
+\subsection{Julia's solution: Just in time (JIT)
+compilation}\label{julias-solution-just-in-time-jit-compilation}}
+
+Given that you have defined a Julia function, the Julia compiler will
+generate a binary for the function when it is called for the first time.
+The binary is called a \textbf{method instance}, and it is generated
+based on the \textbf{input types} of the function. The method instance
+is then stored in the method table, and it will be called when the
+function is called with the same input types. The method instance is
+generated by the LLVM compiler, and it is optimized for the input types.
+The method instance is a binary, and it is as fast as a C/C++ program.
+
+\textbf{Step 1: Infer the types}
+
+\begin{lstlisting}
+julia> @code_warntype jlfactorial(10)
+MethodInstance for jlfactorial(::Int64)
+  from jlfactorial(n) @ Main REPL[4]:1
+Arguments
+  #self#::Core.Const(jlfactorial)
+  n::Int64
+Locals
+  @_3::Union{Nothing, Tuple{Int64, Int64}}
+  x::Int64
+  i::Int64
+Body::Int64
+1 ─       (x = 1)
+│   %2  = (1:n)::Core.PartialStruct(UnitRange{Int64}, Any[Core.Const(1), Int64])
+│         (@_3 = Base.iterate(%2))
+│   %4  = (@_3 === nothing)::Bool
+│   %5  = Base.not_int(%4)::Bool
+└──       goto #4 if not %5
+2 ┄ %7  = @_3::Tuple{Int64, Int64}
+│         (i = Core.getfield(%7, 1))
+│   %9  = Core.getfield(%7, 2)::Int64
+│         (x = x * i)
+│         (@_3 = Base.iterate(%2, %9))
+│   %12 = (@_3 === nothing)::Bool
+│   %13 = Base.not_int(%12)::Bool
+└──       goto #4 if not %13
+3 ─       goto #2
+4 ┄       return x
+\end{lstlisting}
+
+When type inference fails
+
+\begin{lstlisting}
+julia> badcode(x) = x > 3 ? 1.0 : 3
+
+julia> @code_warntype badcode(4)
+MethodInstance for badcode(::Int64)
+  from badcode(x) @ Main REPL[9]:1
+Arguments
+  #self#::Core.Const(badcode)
+  x::Int64
+Body::Union{Float64, Int64}
+1 ─ %1 = (x > 3)::Bool
+└──      goto #3 if not %1
+2 ─      return 1.0
+3 ─      return 3
+\end{lstlisting}
+
+\passthrough{\lstinline!Union\{Float64, Int64\}!} means the return type
+is either \passthrough{\lstinline!Float64!} or
+\passthrough{\lstinline!Int64!}.
+
+Type unstable code is slow
+
+\begin{lstlisting}
+julia> x = rand(1:10, 1000);
+
+julia> @benchmark badcode.($x)
+BenchmarkTools.Trial: 10000 samples with 8 evaluations.
+ Range (min … max):  2.927 μs … 195.198 μs  ┊ GC (min … max):  0.00% … 96.52%
+ Time  (median):     3.698 μs               ┊ GC (median):     0.00%
+ Time  (mean ± σ):   4.257 μs ±   7.894 μs  ┊ GC (mean ± σ):  12.43% ±  6.54%
+
+                 ▁▅█▅▃▂                                        
+  ▁▃▅▇▇▇▅▃▂▂▂▃▄▆▇███████▇▇▅▄▄▃▃▃▃▃▃▂▂▃▂▂▂▂▁▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ ▃
+  2.93 μs         Histogram: frequency by time        5.44 μs <
+
+ Memory estimate: 26.72 KiB, allocs estimate: 696.
+
+julia> stable(x) = x > 3 ? 1.0 : 3.0
+stable (generic function with 1 method)
+
+julia> @benchmark stable.($x)
+BenchmarkTools.Trial: 10000 samples with 334 evaluations.
+ Range (min … max):  213.820 ns … 25.350 μs  ┊ GC (min … max):  0.00% … 98.02%
+ Time  (median):     662.551 ns              ┊ GC (median):     0.00%
+ Time  (mean ± σ):   947.978 ns ±  1.187 μs  ┊ GC (mean ± σ):  29.30% ± 21.05%
+
+  ▂▃▅██▇▅▄▃▂▁                                                  ▂
+  ████████████▇▅▅▄▄▁▁▁▁▁▁▁▁▁▁▁▁▁▃▅▆▇██████▇▇▇▆█▇▇▇▇▇▇▇▇▆▇▆▆▆▇▇ █
+  214 ns        Histogram: log(frequency) by time      6.32 μs <
+
+ Memory estimate: 7.94 KiB, allocs estimate: 1.
+\end{lstlisting}
+
+\begin{itemize}
+\tightlist
+\item
+  ``\passthrough{\lstinline!.!}'' is the broadcasting operator.
+\item
+  ``\passthrough{\lstinline!$!}'' is the interpolation operator, it is
+  used to interpolate a variable into an expression.
+\end{itemize}
+
+\textbf{Step 2: Generates the LLVM intermediate representation}
+
+LLVM is a set of compiler and toolchain technologies that can be used to
+develop a front end for any programming language and a back end for any
+instruction set architecture. LLVM is the backend of multiple languages,
+including Julia, Rust, Swift and Kotlin.
+
+\begin{lstlisting}
+julia> @code_llvm jlfactorial(10)
+
+or any instruction set architecture. LLVM is the backend of multiple languages, including Julia, Rust, Swift and Kotlin.
+
+
+
+;  @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:1 within `jlfactorial`
+define i64 @julia_jlfactorial_3677(i64 signext %0) #0 {
+top:
+;  @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:3 within `jlfactorial`
+; ┌ @ range.jl:5 within `Colon`
+; │┌ @ range.jl:403 within `UnitRange`
+; ││┌ @ range.jl:414 within `unitrange_last`
+     %1 = call i64 @llvm.smax.i64(i64 %0, i64 0)
+; └└└
+; ┌ @ range.jl:897 within `iterate`
+; │┌ @ range.jl:672 within `isempty`
+; ││┌ @ operators.jl:378 within `>`
+; │││┌ @ int.jl:83 within `<`
+      %2 = icmp slt i64 %0, 1
+; └└└└
+  br i1 %2, label %L32, label %L17.preheader
+
+L17.preheader:                                    ; preds = %top
+;  @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:5 within `jlfactorial`
+  %min.iters.check = icmp ult i64 %1, 2
+  br i1 %min.iters.check, label %scalar.ph, label %vector.ph
+
+vector.ph:                                        ; preds = %L17.preheader
+  %n.vec = and i64 %1, 9223372036854775806
+  %ind.end = or i64 %1, 1
+  br label %vector.body
+
+vector.body:                                      ; preds = %vector.body, %vector.ph
+  %index = phi i64 [ 0, %vector.ph ], [ %induction12, %vector.body ]
+  %vec.phi = phi i64 [ 1, %vector.ph ], [ %3, %vector.body ]
+  %vec.phi11 = phi i64 [ 1, %vector.ph ], [ %4, %vector.body ]
+  %offset.idx = or i64 %index, 1
+  %induction12 = add i64 %index, 2
+;  @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:4 within `jlfactorial`
+; ┌ @ int.jl:88 within `*`
+   %3 = mul i64 %vec.phi, %offset.idx
+   %4 = mul i64 %vec.phi11, %induction12
+   %5 = icmp eq i64 %induction12, %n.vec
+   br i1 %5, label %middle.block, label %vector.body
+
+middle.block:                                     ; preds = %vector.body
+; └
+;  @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:5 within `jlfactorial`
+  %bin.rdx = mul i64 %4, %3
+  %cmp.n = icmp eq i64 %1, %n.vec
+  br i1 %cmp.n, label %L32, label %scalar.ph
+
+scalar.ph:                                        ; preds = %middle.block, %L17.preheader
+  %bc.resume.val = phi i64 [ %ind.end, %middle.block ], [ 1, %L17.preheader ]
+  %bc.merge.rdx = phi i64 [ %bin.rdx, %middle.block ], [ 1, %L17.preheader ]
+  br label %L17
+
+L17:                                              ; preds = %L17, %scalar.ph
+  %value_phi4 = phi i64 [ %7, %L17 ], [ %bc.resume.val, %scalar.ph ]
+  %value_phi6 = phi i64 [ %6, %L17 ], [ %bc.merge.rdx, %scalar.ph ]
+;  @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:4 within `jlfactorial`
+; ┌ @ int.jl:88 within `*`
+   %6 = mul i64 %value_phi6, %value_phi4
+; └
+;  @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:5 within `jlfactorial`
+; ┌ @ range.jl:901 within `iterate`
+; │┌ @ promotion.jl:521 within `==`
+    %.not = icmp eq i64 %value_phi4, %1
+; │└
+   %7 = add nuw i64 %value_phi4, 1
+; └
+  br i1 %.not, label %L32, label %L17
+
+L32:                                              ; preds = %L17, %middle.block, %top
+  %value_phi10 = phi i64 [ 1, %top ], [ %bin.rdx, %middle.block ], [ %6, %L17 ]
+;  @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:6 within `jlfactorial`
+  ret i64 %value_phi10
+}
+\end{lstlisting}
+
+\textbf{Step 3: Compiles to binary code}
+
+\begin{lstlisting}
+julia> @code_native jlfactorial(10)
+    .section    __TEXT,__text,regular,pure_instructions
+    .build_version macos, 14, 0
+    .globl  _julia_jlfactorial_3726         ; -- Begin function julia_jlfactorial_3726
+    .p2align    2
+_julia_jlfactorial_3726:                ; @julia_jlfactorial_3726
+; ┌ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:1 within `jlfactorial`
+; %bb.0:                                ; %top
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:3 within `jlfactorial`
+; │┌ @ range.jl:5 within `Colon`
+; ││┌ @ range.jl:403 within `UnitRange`
+; │││┌ @ range.jl:414 within `unitrange_last`
+    cmp x0, #0
+    csel    x9, x0, xzr, gt
+; │└└└
+    cmp x0, #1
+    b.lt    LBB0_3
+; %bb.1:                                ; %L17.preheader
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:5 within `jlfactorial`
+    cmp x9, #2
+    b.hs    LBB0_4
+; %bb.2:
+    mov w8, #1
+    mov w0, #1
+    b   LBB0_7
+LBB0_3:
+    mov w0, #1
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:6 within `jlfactorial`
+    ret
+LBB0_4:                                 ; %vector.ph
+    mov x12, #0
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:5 within `jlfactorial`
+    and x10, x9, #0x7ffffffffffffffe
+    orr x8, x9, #0x1
+    mov w11, #1
+    mov w13, #1
+LBB0_5:                                 ; %vector.body
+                                        ; =>This Inner Loop Header: Depth=1
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:4 within `jlfactorial`
+; │┌ @ int.jl:88 within `*`
+    madd    x11, x11, x12, x11
+; │└
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:5 within `jlfactorial`
+    add x14, x12, #2
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:4 within `jlfactorial`
+; │┌ @ int.jl:88 within `*`
+    mul x13, x13, x14
+    mov x12, x14
+    cmp x10, x14
+    b.ne    LBB0_5
+; %bb.6:                                ; %middle.block
+; │└
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:5 within `jlfactorial`
+    mul x0, x13, x11
+    cmp x9, x10
+    b.eq    LBB0_9
+LBB0_7:                                 ; %L17.preheader15
+    add x9, x9, #1
+LBB0_8:                                 ; %L17
+                                        ; =>This Inner Loop Header: Depth=1
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:4 within `jlfactorial`
+; │┌ @ int.jl:88 within `*`
+    mul x0, x0, x8
+; │└
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:5 within `jlfactorial`
+; │┌ @ range.jl:901 within `iterate`
+    add x8, x8, #1
+; │└
+    cmp x9, x8
+    b.ne    LBB0_8
+LBB0_9:                                 ; %L32
+; │ @ /Users/liujinguo/jcode/ModernScientificComputing2024/Lecture2/3.julia.jl#==#d2429055-58e9-4d84-894f-2e639723e078:6 within `jlfactorial`
+    ret
+; └
+                                        ; -- End function
+.subsections_via_symbols
+\end{lstlisting}
+
+\begin{lstlisting}
+julia> methods(jlfactorial)
+# 1 method for generic function "jlfactorial" from Main:
+ [1] jlfactorial(n)
+     @ REPL[4]:1
+\end{lstlisting}
+
+\begin{lstlisting}
+julia> using MethodAnalysis
+
+julia> methodinstances(jlfactorial)
+1-element Vector{Core.MethodInstance}:
+ MethodInstance for jlfactorial(::Int64)
+\end{lstlisting}
+
+Single method, multiple instances
+
+\begin{lstlisting}
+julia> jlfactorial(UInt32(5))
+120
+
+julia> methodinstances(jlfactorial)
+2-element Vector{Core.MethodInstance}:
+ MethodInstance for jlfactorial(::Int64)
+ MethodInstance for jlfactorial(::UInt32)
+\end{lstlisting}
+
+\hypertarget{summary-key-ingredients-of-performance}{%
+\subsection{Summary: Key ingredients of
+performance}\label{summary-key-ingredients-of-performance}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{JIT} compilation: compile the code with \textbf{LLVM} compiler
+  framework when a method is called for the first time;
+\item
+  \textbf{Multiple dispatch}: invoke the correct method instance
+  according to the type of multiple arguments;
+\end{itemize}
+
+\hypertarget{type-and-multiple-dispatch}{%
+\section{Type and Multiple-dispatch}\label{type-and-multiple-dispatch}}
+
+\hypertarget{julia-types}{%
+\subsection{Julia Types}\label{julia-types}}
+
+Julia has rich type system, which is not limited to the
+\textbf{primitive types} that supported by the hardware. The type system
+is the key to the \textbf{multiple dispatch} feature of Julia.
+
+As an example, let us consider the type for complex numbers.
+
+\begin{lstlisting}
+Complex{Float64}
+\end{lstlisting}
+
+where \passthrough{\lstinline!Float64!} is the \textbf{type parameter}
+of \passthrough{\lstinline!Complex!}. Type parameters are a part of a
+type, without which the type is not fully specified. A fully specified
+type is called a \textbf{concrete type}, which has a fixed memory layout
+and can be instantiated in memory. For example, the
+\passthrough{\lstinline!Complex\{Float64\}!} consists of two fields of
+type \passthrough{\lstinline!Float64!}, which are the real and imaginary
+parts of the complex number.
+
+\begin{lstlisting}
+julia> fieldnames(Complex{Float64})
+(:re, :im)
+
+julia> fieldtypes(Complex{Float64})
+(Float64, Float64)
+\end{lstlisting}
+
+Extending the example, we can define the type for a matrix of complex
+numbers.
+
+\begin{lstlisting}
+Array{Complex{Float64}, 2}
+\end{lstlisting}
+
+\passthrough{\lstinline!Array!} type has two type parameters, the first
+one is the \textbf{element type} and the second one is the
+\textbf{dimension} of the array.
+
+One can get the type of value with \passthrough{\lstinline!typeof!}
+function.
+
+\begin{lstlisting}
+julia> typeof(1+2im)
+
+julia> typeof(randn(Complex{Float64}, 2, 2))
+\end{lstlisting}
+
+Then, what the type of a type?
+
+\begin{lstlisting}
+julia> typeof(Complex{Float64})
+DataType
+\end{lstlisting}
+
+\hypertarget{example-define-you-first-type}{%
+\subsection{Example: define you first
+type}\label{example-define-you-first-type}}
+
+We first define of an abstract type
+\passthrough{\lstinline!AbstractAnimal!} with the keyword
+\passthrough{\lstinline!abstract type!}:
+
+\begin{lstlisting}
+julia> abstract type AbstractAnimal{L} end
+\end{lstlisting}
+
+where the type parameter \passthrough{\lstinline!L!} stands for the
+number of legs. Defining the number of legs as a type parameter or a
+field of a concrete type is a design choice. Providing more information
+in the type system can help the compiler to optimize the code, but it
+can also make the compiler generate more code.
+
+Abstract types can have subtypes. In the following we define a concrete
+subtype type \passthrough{\lstinline!Dog!} with 4 legs, which is a
+subtype of \passthrough{\lstinline!AbstractAnimal\{4\}!}.
+
+\begin{lstlisting}
+julia> struct Dog <: AbstractAnimal{4}
+    color::String
+end
+\end{lstlisting}
+
+where \passthrough{\lstinline!<:!} is the symbol for sybtyping，
+\passthrough{\lstinline!A <: B!} means A is a subtype of B. Concrete
+types can have fields, which are the data members of the type. However,
+they can not have subtypes.
+
+Similarly, we define a \passthrough{\lstinline!Cat!} with 4 legs, a
+\passthrough{\lstinline!Cock!} with 2 legs and a
+\passthrough{\lstinline!Human!} with 2 legs.
+
+\begin{lstlisting}
+julia> struct Cat <: AbstractAnimal{4}
+    color::String
+end
+
+julia> struct Cock <: AbstractAnimal{2}
+    gender::Bool
+end
+
+julia> struct Human{FT <: Real} <: AbstractAnimal{2}
+    height::FT
+    function Human(height::T) where T <: Real
+        if height <= 0 || height > 300
+            error("The tall of a Human being must be in range 0~300, got $(height)")
+        end
+        return new{T}(height)
+    end
+end
+\end{lstlisting}
+
+Here, the \passthrough{\lstinline!Human!} type has its own constructor.
+The \passthrough{\lstinline!new!} function is the default constructor.
+
+We can define a \textbf{fall back method}
+\passthrough{\lstinline!fight!} on the abstract type
+\passthrough{\lstinline!AbstractAnimal!}
+
+\begin{lstlisting}
+julia> fight(a::AbstractAnimal, b::AbstractAnimal) = "draw"
+\end{lstlisting}
+
+where \passthrough{\lstinline!::!} is a type assertion. This function
+will be invoked if two subtypes of
+\passthrough{\lstinline!AbstractAnimal!} are fed into the function
+\passthrough{\lstinline!fight!} and no more \textbf{explicit} methods
+are defined.
+
+We can define many more explicit methods with the same name.
+
+\begin{lstlisting}
+julia> fight(dog::Dog, cat::Cat) = "win"
+fight (generic function with 2 methods)
+
+julia> fight(hum::Human, a::AbstractAnimal) = "win"
+fight (generic function with 3 methods)
+
+julia> fight(hum::Human, a::Union{Dog, Cat}) = "loss"
+fight (generic function with 4 methods)
+
+julia> fight(hum::AbstractAnimal, a::Human) = "loss"
+fight (generic function with 5 methods)
+\end{lstlisting}
+
+where \passthrough{\lstinline!Union\{Dog, Cat\}!} is a \textbf{union
+type}. It is a type that can be either \passthrough{\lstinline!Dog!} or
+\passthrough{\lstinline!Cat!}. \passthrough{\lstinline!Union!} types are
+not concrete since they do not have a fixed memory layout, meanwhile,
+they can not be subtyped! Here, we defined 5 methods for the function
+\passthrough{\lstinline!fight!}. However, defining too many methods for
+the same function can be dangerous. You need to be careful about the
+ambiguity error!
+
+\begin{lstlisting}
+julia> fight(Human(170), Human(180))
+ERROR: MethodError: fight(::Human{Int64}, ::Human{Int64}) is ambiguous.
+
+Candidates:
+  fight(hum::AbstractAnimal, a::Human)
+    @ Main REPL[37]:1
+  fight(hum::Human, a::AbstractAnimal)
+    @ Main REPL[35]:1
+
+Possible fix, define
+  fight(::Human, ::Human)
+
+Stacktrace:
+ [1] top-level scope
+   @ REPL[38]:1
+\end{lstlisting}
+
+It makes sense because we claim \passthrough{\lstinline!Human!} wins any
+other animals, but we also claim any animal losses to
+\passthrough{\lstinline!Human!}. When it comes to two
+\passthrough{\lstinline!Human!}s, the two functions are equally valid.
+To resolve the ambiguity, we can define a new method for the function
+\passthrough{\lstinline!fight!} as follows.
+
+\begin{lstlisting}
+julia> fight(hum::Human{T}, hum2::Human{T}) where T<:Real = hum.height > hum2.height ? "win" : "loss"
+\end{lstlisting}
+
+Now, we can test the function \passthrough{\lstinline!fight!} with
+different combinations of animals.
+
+\begin{lstlisting}
+julia> fight(Cock(true), Cat("red"))
+"draw"
+
+julia> fight(Dog("blue"), Cat("white"))
+"win"
+
+julia> fight(Human(180), Cat("white"))
+"loss"
+
+julia> fight(Human(170), Human(180))
+"loss"
+\end{lstlisting}
+
+Quiz: How many method instances are generated for fight so far?
+
+\begin{lstlisting}
+julia> methodinstances(fight)
+\end{lstlisting}
+
+\hypertarget{julia-number-system}{%
+\subsection{Julia number system}\label{julia-number-system}}
+
+The type tree rooted on \passthrough{\lstinline!Number!} looks like:
+
+\begin{lstlisting}
+Number
+├─ Base.MultiplicativeInverses.MultiplicativeInverse{T}
+│  ├─ Base.MultiplicativeInverses.SignedMultiplicativeInverse{T<:Signed}
+│  └─ Base.MultiplicativeInverses.UnsignedMultiplicativeInverse{T<:Unsigned}
+├─ Complex{T<:Real}
+├─ Real
+│  ├─ AbstractFloat
+│  │  ├─ BigFloat
+│  │  ├─ Float16
+│  │  ├─ Float32
+│  │  └─ Float64
+│  ├─ AbstractIrrational
+...
+\end{lstlisting}
+
+The Julia type system is a tree, and \passthrough{\lstinline!Any!} is
+the root of type tree, i.e.~it is a super type of any other type. The
+\passthrough{\lstinline!Number!} type is the root type of julia number
+system, which is also a subtype of \passthrough{\lstinline!Any!}.
+
+\begin{lstlisting}
+julia> Number <: Any
+\end{lstlisting}
+
+There are utilities to analyze the type system:
+
+\begin{lstlisting}
+julia> subtypes(Number)
+3-element Vector{Any}:
+ Base.MultiplicativeInverses.MultiplicativeInverse
+ Complex
+ Real
+
+julia> supertype(Float64)
+AbstractFloat
+
+julia> AbstractFloat <: Real
+true
+\end{lstlisting}
+
+The leaf nodes of the type tree are called \textbf{concrete types}. They
+are the types that can be instantiated in memory. Among the concrete
+types, there are \textbf{primitive types} and \textbf{composite types}.
+Primitive types are built into the language, such as
+\passthrough{\lstinline!Int64!}, \passthrough{\lstinline!Float64!},
+\passthrough{\lstinline!Bool!}, and \passthrough{\lstinline!Char!},
+while are built on top of primitive types, such as
+\passthrough{\lstinline!Dict!}, \passthrough{\lstinline!Complex!} and
+the user-defined types.
+
+\textbf{The list of primitive types}
+
+\begin{lstlisting}[language=bash]
+primitive type Float16 <: AbstractFloat 16 end
+primitive type Float32 <: AbstractFloat 32 end
+primitive type Float64 <: AbstractFloat 64 end
+
+primitive type Bool <: Integer 8 end
+primitive type Char <: AbstractChar 32 end
+
+primitive type Int8    <: Signed   8 end
+primitive type UInt8   <: Unsigned 8 end
+primitive type Int16   <: Signed   16 end
+primitive type UInt16  <: Unsigned 16 end
+primitive type Int32   <: Signed   32 end
+primitive type UInt32  <: Unsigned 32 end
+primitive type Int64   <: Signed   64 end
+primitive type UInt64  <: Unsigned 64 end
+primitive type Int128  <: Signed   128 end
+primitive type UInt128 <: Unsigned 128 end
+\end{lstlisting}
+
+\hypertarget{extending-the-number-system}{%
+\subsection{Extending the number
+system}\label{extending-the-number-system}}
+
+Extending the number system in Julia is much easier than in
+object-oriented languages like Python. In the following example, we show
+how to implement addition operation of a user defined class in Python.
+
+\begin{lstlisting}[language=Python]
+class X:
+  def __init__(self, num):
+    self.num = num
+
+  def __add__(self, other_obj):
+    return X(self.num+other_obj.num)
+
+  def __radd__(self, other_obj):
+    return X(other_obj.num + self.num)
+
+  def __str__(self):
+    return "X = " + str(self.num)
+
+class Y:
+  def __init__(self, num):
+    self.num = num
+
+  def __radd__(self, other_obj):
+    return Y(self.num+other_obj.num)
+
+  def __str__(self):
+    return "Y = " + str(self.num)
+
+print(X(3) + Y(5))
+
+print(Y(3) + X(5))
+\end{lstlisting}
+
+Here, we implemented the addition operation of two classes
+\passthrough{\lstinline!X!} and \passthrough{\lstinline!Y!}. The
+\passthrough{\lstinline!\_\_add\_\_!} method is called when the
+\passthrough{\lstinline!+!} operator is used with the object on the
+left-hand side, while the \passthrough{\lstinline!\_\_radd\_\_!} method
+is called when the object is on the right-hand side. The output is as
+follows:
+
+\begin{lstlisting}
+X = 8
+X = 8
+\end{lstlisting}
+
+It turns out the \passthrough{\lstinline!\_\_radd\_\_!} method of
+\passthrough{\lstinline!Y!} is not called at all. This is because the
+\passthrough{\lstinline!\_\_radd\_\_!} method is only called when the
+object on the left-hand side does not have the
+\passthrough{\lstinline!\_\_add\_\_!} method by some artifical rules.
+
+Implement addition in Julian style is much easier. We can define the
+addition operation of two types \passthrough{\lstinline!X!} and
+\passthrough{\lstinline!Y!} as follows.
+
+\begin{lstlisting}
+julia> struct X{T} <: Number
+    num::T
+end
+
+julia> struct Y{T} <: Number
+    num::T
+end
+
+julia> Base.:(+)(a::X, b::Y) = X(a.num + b.num);
+
+julia> Base.:(+)(a::Y, b::X) = X(a.num + b.num);
+
+julia> Base.:(+)(a::X, b::X) = X(a.num + b.num);
+
+julia> Base.:(+)(a::Y, b::Y) = Y(a.num + b.num);
+\end{lstlisting}
+
+Multiple dispatch seems to be more expressive than object-oriented
+programming.
+
+Now, supposed you want to extend this method to a new type
+\passthrough{\lstinline!Z!}. In python, he needs to define a new class
+\passthrough{\lstinline!Z!} as follows.
+
+\begin{lstlisting}[language=Python]
+class Z:
+  def __init__(self, num):
+    self.num = num
+
+  def __add__(self, other_obj):
+    return Z(self.num+other_obj.num)
+
+  def __radd__(self, other_obj):
+    return Z(other_obj.num + self.num)
+
+  def __str__(self):
+    return "Z = " + str(self.num)
+
+print(X(3) + Z(5))
+
+print(Z(3) + X(5))
+\end{lstlisting}
+
+The output is as follows:
+
+\begin{lstlisting}
+X = 8
+Z = 8
+\end{lstlisting}
+
+No matter how hard you try, you can not make the
+\passthrough{\lstinline!\_\_add\_\_!} method of
+\passthrough{\lstinline!Z!} to be called when the object is on the
+left-hand side. In Julia, this is not a problem at all. We can define
+the addition operation of \passthrough{\lstinline!Z!} as follows.
+
+\begin{lstlisting}
+julia> struct Z{T} <: Number
+    num::T
+end
+
+julia> Base.:(+)(a::X, b::Z) = Z(a.num + b.num);
+
+julia> Base.:(+)(a::Z, b::X) = Z(a.num + b.num);
+
+julia> Base.:(+)(a::Y, b::Z) = Z(a.num + b.num);
+
+julia> Base.:(+)(a::Z, b::Y) = Z(a.num + b.num);
+
+julia> Base.:(+)(a::Z, b::Z) = Z(a.num + b.num);
+
+julia> X(3) + Y(5)
+X{Int64}(8)
+
+julia> Y(3) + X(5)
+X{Int64}(8)
+
+julia> X(3) + Z(5)
+Z{Int64}(8)
+
+julia> Z(3) + Y(5)
+Z{Int64}(8)
+\end{lstlisting}
+
+There is a deeper reason why multiple dispatch is more expressive than
+object-oriented programming. The Julia function space is exponentially
+large! If a function \(f\) has \(k\) parameters, and the module has
+\(t\) types, there can be \(t^k\) methods for the function \(f\).
+
+\begin{lstlisting}
+f(x::T1, y::T2, z::T3...)
+\end{lstlisting}
+
+However, in an object-oriented language like Python, the function space
+is only linear to the number of classes.
+
+\begin{lstlisting}[language=Python]
+class T1:
+    def f(self, y, z, ...):
+        self.num = num
+\end{lstlisting}
+
+\hypertarget{example-fibonacci-number}{%
+\subsection{Example: Fibonacci number}\label{example-fibonacci-number}}
+
+The Fibonacci number is defined as follows.
+
+\begin{lstlisting}
+julia> fib(x::Int) = x <= 2 ? 1 : fib(x-1) + fib(x-2)
+fib (generic function with 1 methods)
+
+julia> addup(x::Int, y::Int) = x + y
+addup (generic function with 1 methods)
+
+julia> @btime fib(40)
+  278.066 ms (0 allocations: 0 bytes)
+102334155
+\end{lstlisting}
+
+Oops, it is really slow. There is definitely a better way to calculate
+the Fibonacci number, but let us stick to the current implementation for
+now.
+
+If you know the Julia type system, you can implement the Fibonacci
+number in a zero cost way. The trick is to use the type system to
+calculate the Fibonacci number at compile time. There is a type
+\passthrough{\lstinline!Val!} defined in the
+\passthrough{\lstinline!Base!} module, which is just a type with a type
+parameter. The type parameter can be a number:
+
+\begin{lstlisting}
+julia> Val(3.0)
+Val{3.0}()
+\end{lstlisting}
+
+We can define the addition operation of \passthrough{\lstinline!Val!} as
+the addition of the type parameters.
+
+\begin{lstlisting}
+julia> addup(::Val{x}, ::Val{y}) where {x, y} = Val(x + y)
+addup (generic function with 2 methods)
+
+julia> addup(Val(5), Val(7))
+Val{12}()
+\end{lstlisting}
+
+Finally, we can define the Fibonacci number in a zero cost way.
+
+\begin{lstlisting}
+julia> fib(::Val{x}) where x = x <= 2 ? Val(1) : addup(fib(Val(x-1)), fib(Val(x-2)))
+fib (generic function with 2 methods)
+
+
+julia> @btime fib(Val(40))
+  0.792 ns (0 allocations: 0 bytes)
+Val{102334155}()
+\end{lstlisting}
+
+Wow, it is really fast! However, this trick is not recommended. It is
+not a good practice to abuse the type system. You simply transfer the
+run-time to compile time, which violates the
+\href{https://docs.julialang.org/en/v1/manual/performance-tips/}{Performance
+Tips}. On the other hand, we find the compiling time of the function
+\passthrough{\lstinline!fib!} is much shorter than the run-time. This is
+because the function \passthrough{\lstinline!fib!} is a
+\textbf{recursive function}. The compiler can not optimize the recursive
+function very well.
+
+\hypertarget{summary}{%
+\subsection{Summary}\label{summary}}
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Multiple dispatch} is a feature of some programming languages in
+  which a function or method can be dynamically dispatched based on the
+  \textbf{run-time} type.
+\item
+  Julia's mutiple dispatch provides exponential abstraction power
+  comparing with an object-oriented language.
+\item
+  By carefully designed type system, we can program in an exponentially
+  large function space.
+\end{itemize}
+
+\hypertarget{tuple-array-and-broadcasting}{%
+\section{Tuple, Array and
+broadcasting}\label{tuple-array-and-broadcasting}}
+
+\textbf{Tuple has fixed memory layout, but array does not.}
+
+\begin{lstlisting}[language=Julia]
+tp = (1, 2.0, 'c')
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+(1, 2.0, 'c')
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+typeof(tp)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+Tuple{Int64, Float64, Char}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+isbitstype(typeof(tp))
+\end{lstlisting}
+
+true
+
+\begin{lstlisting}[language=Julia]
+arr = [1, 2.0, 'c']
+\end{lstlisting}
+
+1
+
+2.0
+
+\begin{lstlisting}[language=Output]
+'c': ASCII/Unicode U+0063 (category Ll: Letter, lowercase)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+typeof(arr)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+Vector{Any} (alias for Array{Any, 1})
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+isbitstype(typeof(arr))
+\end{lstlisting}
+
+false
+
+\textbf{Boardcasting}
+
+\begin{lstlisting}[language=Julia]
+x = 0:0.1:π
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+y = sin.(x)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+using Plots
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+plot(x, y; label="sin")
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+mesh = (1:100)'
+\end{lstlisting}
+
+\textbf{Broadcasting over non-concrete element types may be type
+unstable.}
+
+\begin{lstlisting}[language=Julia]
+eltype(arr)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+Any
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+arr .+ 1
+\end{lstlisting}
+
+2
+
+3.0
+
+\begin{lstlisting}[language=Output]
+'d': ASCII/Unicode U+0064 (category Ll: Letter, lowercase)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+eltype(tp)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+Any
+\end{lstlisting}
+
+\hypertarget{julia-package-development}{%
+\subsection{Julia package development}\label{julia-package-development}}
+
+\begin{lstlisting}[language=Julia]
+using TropicalNumbers
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+nothing
+\end{lstlisting}
+
+The file structure of a package
+
+\begin{lstlisting}[language=Julia]
+project_folder = dirname(dirname(pathof(TropicalNumbers)))
+\end{lstlisting}
+
+/home/runner/.julia/packages/TropicalNumbers/kRhOl
+
+\textbf{Unit Test}
+
+\begin{lstlisting}[language=Julia]
+using Test
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+nothing
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+@test Tropical(3.0) + Tropical(2.0) == Tropical(3.0)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+Test Passed
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+@test_throws BoundsError [1,2][3]
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+Test Passed
+      Thrown: BoundsError
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+@test_broken 3 == 2
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+Test Broken
+  Expression: 3 == 2
+\end{lstlisting}
+
+\begin{lstlisting}[language=Julia]
+@testset "Tropical Number addition" begin
+    @test Tropical(3.0) + Tropical(2.0) == Tropical(3.0)
+    @test_throws BoundsError [1][2]
+    @test_broken 3 == 2
+end
+\end{lstlisting}
+
+\begin{lstlisting}[language=Output]
+Test.DefaultTestSet("Tropical Number addition", Any[Test Broken
+  Expression: 3 == 2], 2, false, false, true, 1.707316862782449e9, 1.707316862807562e9, false, "none")
+\end{lstlisting}
+
+\hypertarget{case-study-create-a-package-like-happymolecules}{%
+\subsection{Case study: Create a package like
+HappyMolecules}\label{case-study-create-a-package-like-happymolecules}}
+
+With \passthrough{\lstinline!PkgTemplates!}.
+
+\url{https://github.com/CodingThrust/HappyMolecules.jl}
+
+\begin{lstlisting}
+julia> isbitstype(Complex{Float64})
+
+julia> sizeof(Complex{Float32})
+
+julia> sizeof(Complex{Float64})
+\end{lstlisting}
+
+But \passthrough{\lstinline!Complex\{BigFloat\}!} is not
+
+\begin{lstlisting}
+julia> sizeof(Complex{BigFloat})
+
+julia> isbitstype(Complex{BigFloat})
+\end{lstlisting}
+
+The size of \passthrough{\lstinline!Complex\{BigFloat\}!} is not true!
+It returns the pointer size!
+
+\hypertarget{how-to-measure-the-performance-of-your-cpu}{%
+\subsection{How to measure the performance of your
+CPU?}\label{how-to-measure-the-performance-of-your-cpu}}
+
+The performance of a CPU is measured by the number of \textbf{floating
+point operations per second} (FLOPS) it can perform. The floating point
+operations include addition, subtraction, multiplication and division.
+The FLOPS can be related to multiple factors, such as the clock
+frequency, the number of cores, the number of instructions per cycle,
+and the number of floating point units. A simple way to measure the
+FLOPS is to benchmarking the speed of matrix multiplication.
+
+\begin{lstlisting}
+julia> using BenchmarkTools
+
+julia> A, B = rand(1000, 1000), rand(1000, 1000);
+
+julia> @btime $A * $B;
+  12.122 ms (2 allocations: 7.63 MiB)
+\end{lstlisting}
+
+The number of FLOPS in a \(n\times n\times n\) matrix multiplication is
+\(2n^3\). The FLOPS can be calculated as:
+\(2 \times 1000^3 / (12.122 \times 10^{-3}) = 165~{\rm GFLOPS}\).
+
+\hypertarget{case-study-vector-element-type-and-speed}{%
+\subsection{Case study: Vector element type and
+speed}\label{case-study-vector-element-type-and-speed}}
+
+Any type vector is flexible. You can add any element into it.
+
+\begin{lstlisting}
+vany = Any[]  # same as vany = []
+
+typeof(vany)
+
+push!(vany, "a")
+
+push!(vany, 1)
+\end{lstlisting}
+
+Fixed typed vector is more restrictive.
+
+\begin{lstlisting}
+vfloat64 = Float64[]
+
+vfloat64 |> typeof
+
+push!(vfloat64, "a")
+\end{lstlisting}
+
+Do not abuse the type system. e.g.~a ``zero'' cost implementation
+
+\begin{lstlisting}
+Val(3.0) # just a type
+
+f(::Val{1}) = Val(1)
+
+f(::Val{2}) = Val(1)
+\end{lstlisting}
+
+It violates the
+\href{https://docs.julialang.org/en/v1/manual/performance-tips/}{Performance
+Tips}, since it transfers the run-time to compile time.
+
+\begin{lstlisting}
+let biganyv = collect(Any, 1:2:20000)
+    @benchmark for i=1:length($biganyv)
+        $biganyv[i] += 1
+    end
+end
+\end{lstlisting}
+
+\begin{lstlisting}
+let bigfloatv = collect(Float64, 1:2:20000)
+    @benchmark for i=1:length($bigfloatv)
+        $bigfloatv[i] += 1
+    end
+end
+\end{lstlisting}
+
+\begin{lstlisting}
+fib(x::Int) = x <= 2 ? 1 : fib(x-1) + fib(x-2)
+
+@benchmark fib(20)
+\end{lstlisting}
+
+\begin{lstlisting}
+addup(::Val{x}, ::Val{y}) where {x, y} = Val(x + y)
+\end{lstlisting}
+
+\begin{lstlisting}
+f(::Val{x}) where x = addup(f(Val(x-1)), f(Val(x-2)))
+\end{lstlisting}
+
+\begin{lstlisting}
+@benchmark f(Val(20)) end
+\end{lstlisting}
+
+\hypertarget{sec:publishing-package}{%
+\section{Publishing a Package}\label{sec:publishing-package}}
+
+Now that you have an amazing package, it's time to make it available to
+the public. Before that, there is one final task to be done which is to
+choose a license.
+
+\begin{itemize}
+\item
+  GNU's Not Unix! (GNU) (1983 by Richard Stallman)
+
+  Its goal is to give computer users freedom and control in their use of
+  their computers
+  and~\href{https://en.wikipedia.org/wiki/Computer_hardware}{computing
+  devices}~by collaboratively developing and publishing software that
+  gives everyone the rights to freely run the software, copy and
+  distribute it, study it, and modify it. GNU software grants these
+  rights in
+  its~\href{https://en.wikipedia.org/wiki/GNU_General_Public_License}{license}.
+\item
+  The problem of GPL Lisense: The GPL and licenses modeled on it impose
+  the restriction that source code must be distributed or made available
+  for all works that are derivatives of the GNU copyrighted code.
+
+  Case study:
+  \href{https://www.notion.so/Wiki-53dd9dafd57b40f6b253d6605667a472}{Free
+  Software fundation v.s. Cisco Systems}
+
+  Modern Licenses are:
+  \href{https://en.wikipedia.org/wiki/MIT_License}{MIT} and
+  \href{https://en.wikipedia.org/wiki/Apache_License}{Apache}.
+\end{itemize}
+
+\hypertarget{appendix}{%
+\chapter*{Appendix}\label{appendix}}
+\addcontentsline{toc}{chapter}{Appendix}
+
+This is the appendix.
+
+\hypertarget{references}{%
+\chapter{References}\label{references}}
+
+\backmatter
+
+\end{document}

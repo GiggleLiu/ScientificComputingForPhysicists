@@ -30,7 +30,7 @@ julia> typeof(Complex{Float64})
 DataType
 ```
 
-### Example: you first type system
+### Example: define you first type
 We first define of an abstract type for animals with `L` legs.
 ```julia
 julia> abstract type AbstractAnimal{L} end
@@ -137,13 +137,13 @@ Quiz: How many method instances are generated for fight so far?
 julia> methodinstances(fight)
 ```
 
-### Type system
-Abstract types and concrete types
+### Julia type system
+A Julia type can be classified as an abstract type or a concrete type.
 
-- abstract types: types that can have other types as their supertype, but cannot be instantiated themselves. For example, Number is an abstract type, and Integer is a subtype of Number.
-- concrete types: types that can be instantiated.
-    - primitive types: types that are built into the language, such as `Int64`, `Float64`, `Bool`, and `Char`.
-    - composite types: types that are built out of other types. For example, `Complex{Float64}` is a composite type, built out of two `Float64` values.
+- **abstract types**: types that can have other types as their supertype, but cannot be instantiated themselves. For example, `Number` is an abstract type, and `Integer` is a subtype of `Number`.
+- **concrete types**: types that can be instantiated.
+    - **primitive types**: types that are built into the language, such as `Int64`, `Float64`, `Bool`, and `Char`.
+    - **composite types**: types that are built out of other types. For example, `Complex{Float64}` is a composite type, built out of two `Float64` values.
 
 Only concrete types can be instantiated
 

@@ -1,4 +1,4 @@
-# Julia{#sec:julia}
+# Julia Programming Language{#sec:julia}
 
 `Julia` is a high-level, high-performance, dynamic programming language. From
 the designing stage, `Julia` is intended to address the needs of

@@ -1,4 +1,9 @@
-## Publishing a Package{#sec:publishing-package} 
+## You First Package{#sec:publishing-package} 
+### Create a package
+
+### Unit tests
+
+### Release a package
 Now that you have an amazing package, it's time to make it available to the public. Before that, there is one final task to be done which is to choose a license. 
 
 - GNU's Not Unix! (GNU) (1983 by Richard Stallman)

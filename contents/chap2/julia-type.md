@@ -1,4 +1,4 @@
-## Type and Multiple-dispatch
+## Types and Multiple-dispatch{#sec:multiple-dispatch}
 ### Julia Types
 
 Julia has rich type system, which is not limited to the **primitive types** that supported by the hardware. The type system is the key to the **multiple dispatch** feature of Julia.
@@ -35,6 +35,23 @@ Then, what the type of a type?
 ```julia
 julia> typeof(Complex{Float64})
 DataType
+```
+
+There is a very special type: `Tuple`, which is different from regular types in the following ways:
+
+- Tuple types may have any number of parameters.
+- Tuple types are covariant in their parameters: `Tuple{Int}` is a subtype of `Tuple{Any}`. Therefore `Tuple{Any}` is considered an abstract type, and tuple types are only concrete if their parameters are.
+- Tuples do not have field names; fields are only accessed by index.
+
+```julia
+julia> tp = (1, 2.0, 'c')
+(1, 2.0, 'c')
+
+julia> typeof(tp)
+Tuple{Int64, Float64, Char}
+
+julia> tp[2]
+2.0
 ```
 
 ### Example: define you first type
@@ -151,6 +168,12 @@ julia> methodinstances(fight)
 ```
 
 ### Julia number system
+The Julia type system is a tree, and `Any` is the root of type tree, i.e. it is a super type of any other type.
+The `Number` type is the root type of Julia number system, which is also a subtype of `Any`.
+```julia
+julia> Number <: Any
+```
+
 The type tree rooted on `Number` looks like:
 ```julia
 Number
@@ -167,13 +190,8 @@ Number
 │  ├─ AbstractIrrational
 ...
 ```
-The Julia type system is a tree, and `Any` is the root of type tree, i.e. it is a super type of any other type.
-The `Number` type is the root type of julia number system, which is also a subtype of `Any`.
-```julia
-julia> Number <: Any
-```
 
-There are utilities to analyze the type system:
+There are utilities to analyze the type tree:
 
 ```julia
 julia> subtypes(Number)
@@ -189,7 +207,7 @@ julia> AbstractFloat <: Real
 true
 ```
 
-The leaf nodes of the type tree are called **concrete types**. They are the types that can be instantiated in memory. Among the concrete types, there are **primitive types** and **composite types**. Primitive types are built into the language, such as `Int64`, `Float64`, `Bool`, and `Char`, while are built on top of primitive types, such as `Dict`, `Complex` and the user-defined types.
+The leaf nodes of the type tree are called **concrete types**. They are the types that can be instantiated in memory. Among the concrete types, there are **primitive types** and **composite types**. Primitive types are built into the language, such as `Int64`, `Float64`, `Bool`, and `Char`, while composite types are built on top of primitive types, such as `Dict`, `Complex` and the user-defined types.
 
 **The list of primitive types**
 
@@ -213,8 +231,8 @@ primitive type Int128  <: Signed   128 end
 primitive type UInt128 <: Unsigned 128 end
 ```
 
-### Extending the number system
-Extending the number system in Julia is much easier than in object-oriented languages like Python. In the following example, we show how to implement addition operation of a user defined class in Python.
+### Extending the number system - a comparison with object-oriented programming
+Extending the number system in Julia is much easier than in object-oriented languages like Python. In the following example, we show how to implement addition operation of a user defined class in Python (feel free to skip if you do not know Python).
 ```python
 class X:
   def __init__(self, num):
@@ -329,12 +347,13 @@ julia> Z(3) + Y(5)
 Z{Int64}(8)
 ```
 
-There is a deeper reason why multiple dispatch is more expressive than object-oriented programming. The Julia function space is exponentially large!
-If a function $f$ has $k$ parameters, and the module has $t$ types, there can be $t^k$ methods for the function $f$.
+There is a deeper reason why multiple dispatch is more expressive than object-oriented programming. *The Julia function space is exponentially large*!
+If a function $f$ has $k$ parameters, and the module has $t$ types, there can be $t^k$ methods for the function $f$:
 ```jula
 f(x::T1, y::T2, z::T3...)
 ```
 
+Exponential function space allows us to specify the behavior of a function in a very fine-grained way.
 However, in an object-oriented language like Python, the function space is only linear to the number of classes.
 ```python
 class T1:
@@ -342,9 +361,10 @@ class T1:
         self.num = num
 
 ```
+The behavior of method `f` is completely determined by the first argument `self`, which means *object-oriented programming is equivalent to single dispatch*.
 
-### Example: Fibonacci number
-The Fibonacci number is defined as follows.
+### Example: Computing Fibonacci number at compile time
+The Fibonacci number has a recursive definition:
 ```julia
 julia> fib(x::Int) = x <= 2 ? 1 : fib(x-1) + fib(x-2)
 fib (generic function with 1 methods)
@@ -357,7 +377,7 @@ julia> @btime fib(40)
 102334155
 ```
 
-Oops, it is really slow. There is definitely a better way to calculate the Fibonacci number, but let us stick to the current implementation for now.
+Oops, it is really slow. There is definitely a better way to calculate the Fibonacci number, but let us stick to this recursive implementation for now.
 
 If you know the Julia type system, you can implement the Fibonacci number in a zero cost way. The trick is to use the type system to calculate the Fibonacci number at compile time. There is a type `Val` defined in the `Base` module, which is just a type with a type parameter. The type parameter can be a number:
 
@@ -385,10 +405,9 @@ julia> @btime fib(Val(40))
   0.792 ns (0 allocations: 0 bytes)
 Val{102334155}()
 ```
-Wow, it is really fast! However, this trick is not recommended. It is not a good practice to abuse the type system. You simply transfer the run-time to compile time, which violates the [Performance Tips](https://docs.julialang.org/en/v1/manual/performance-tips/).
-On the other hand, we find the compiling time of the function `fib` is much shorter than the run-time. This is because the function `fib` is a **recursive function**. The compiler can not optimize the recursive function very well.
+Wow, it computes in no time! However, this trick is not recommended in the [Julia performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/). This implementation simply transfers the run-time computation to the compile time.
+On the other hand, we find the compiling time of the function `fib` is much shorter than the run-time. The recursive form turns out to be optimized away by the Julia compiler. But still, it is not recommended to abuse the type system.
 
 ### Summary
 * *Multiple dispatch* is a feature of some programming languages in which a function or method can be dynamically dispatched based on the **run-time** type.
-* Julia's mutiple dispatch provides exponential abstraction power comparing with an object-oriented language.
-* By carefully designed type system, we can program in an exponentially large function space.
+* Julia's multiple dispatch provides exponential large function space, which allows extending the number system easily.

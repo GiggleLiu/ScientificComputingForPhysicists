@@ -1,24 +1,4 @@
-## Tuple, Array and broadcasting
-
-**Tuple has fixed memory layout, but array does not.**
-
-```jl
-sco("""
-	tp = (1, 2.0, 'c')
-""")
-```
-
-```jl
-sco("""
-	typeof(tp)
-""")
-```
-
-```jl
-sco("""
-	isbitstype(typeof(tp))
-""")
-```
+## Array and Broadcasting
 
 ```jl
 sco("""
@@ -259,3 +239,22 @@ f(::Val{x}) where x = addup(f(Val(x-1)), f(Val(x-2)))
 @benchmark f(Val(20)) end
 ```
 
+
+### Example: Image processing
+
+1. Download an image from the internet:
+```jl
+sco("""
+    url = "https://avatars.githubusercontent.com/u/8445510?v=4"
+    target_path = tempname() * ".png"
+    download(url, target_path)
+""")
+```
+
+2. Load the image with `Images.jl`:
+```jl
+sco("""
+    using Images
+    img = load(target_path)
+""")
+```

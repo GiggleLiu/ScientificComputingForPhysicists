@@ -32,5 +32,5 @@ makedocs(;
 deploydocs(;
     repo="github.com/GiggleLiu/ScientificComputingForPhysicists.jl",
     devbranch="main",
-    devurl="https://book.jinguo-group.science",
+    devurl="",
 )

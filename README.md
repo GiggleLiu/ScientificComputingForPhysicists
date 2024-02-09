@@ -2,7 +2,7 @@
 
 Online book is deployed at: <https://book.jinguo-group.science/>
 
-This book is also available as [**PDF**](/sci4phys.pdf){target="_blank"}.
+This book is also available as PDF. To build a PDF, please run `make build` locally (see below).
 
 ## Developer note
 

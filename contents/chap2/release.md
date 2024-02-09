@@ -54,10 +54,13 @@ After running the above commands, a new directory named `MyFirstPackage` will be
 - `codecov/89%`: the code coverage is 89%, meaning that 89% of the code is covered by tests.
 - `docs/dev`: the documentation is built and deployed with GitHub pages.
 
-Now, let's take a look at the file structure of the package:
+Now, let's take a look at the file structure of the package by running the following command in the package path (`~/.julia/dev/OMEinsum`):
 ```bash
-$ tree OMEinsum -L 1
-OMEinsum
+$ tree . -L 1 -a
+.
+├── .git
+├── .github
+├── .gitignore
 ├── LICENSE
 ├── Project.toml
 ├── README.md
@@ -69,12 +72,46 @@ OMEinsum
 ├── src
 └── test
 ```
-- `LICENSE`: the file that contains the license of the package, which is MIT in this case.
-- `Project.toml`: the file that contains the metadata of the package, including the name, UUID, version, and dependencies of the package.
-- `README.md`: the file that contains the description of the package, including the installation guide, usage, and examples.
-- `docs`: the folder that contains the documentation of the package.
+- `.git` and `.gitignore`: the files that are used by Git. The `.gitingore` file contains the files that should be ignored by Git.
+- `.github`: the folder that contains the GitHub Actions configuration files. Its file structure is as follows:
+  ```bash
+  .github
+  └── workflows
+      ├── TagBot.yml
+      └── ci.yml
+  ```
+  - The `ci.yml` file contains the configuration for the CI of the package, which is used to automate the process of
+    - testing the package after a pull request is opened or the main branch is updated,
+    - building the documentation after a pull request is merged.
+  - The `TagBot.yml` file contains the configuration for the TagBot, which is used to automate the process of tagging a release after a pull request is merged.
+- `LICENSE`: the file that contains the license of the package. The MIT license is used in this package.
+- `README.md`: the manual that shows up in the GitHub repository of the package, which contains the description of the package.
+- `Project.toml`: the file that contains the metadata of the package, including the name, UUID, version, dependencies and compatibility of the package. To **add a new dependency**, you can use the following command in the package path:
+  ```bash
+  $ julia --project
+  ```
+  to enter the package environment, and then type `] add PackageName`.
+  The **compatibility**, which is used to specify the version of the package that is compatible with the current package, needs to be updated manually. It is specified in the `[compat]` section of the `Project.toml` file.
+  The most widely used dependency version specifier is `=`, which means matching the first nonzero component of the version number. For example:
+
+  - `1` matches `1.0.0`, `1.1.0`, `1.1.1`, but not `2.0.0`.
+  - `0.1` matches `0.1.0`, `0.1.1`, `0.1.2`, but not `0.2.0`.
+  - `1.2` matches `1.2.0`, `1.3.1`, but not `1.2.0` or `2.0.0`.
+
+  Please check the Julia documentation about [package compatibility](https://pkgdocs.julialang.org/v1/compatibility/) for advanced usage.
+- `docs`: the folder that contains the documentation of the package. The documentation is built with [Documenter.jl](https://documenter.juliadocs.org/stable/). The build script is `docs/make.jl`. To **build the documentation**, you can use the following command in the package path:
+  ```bash
+  $ cd docs
+  $ julia --project make.jl
+  ```
+  Instantiate the documentation environment if necessary. For seamless **debugging** of documentation, it is highly recommended using the [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) package.
 - `src`: the folder that contains the source code of the package.
-- `test`: the folder that contains the test code of the package.
+- `test`: the folder that contains the test code of the package. The main test file is `runtests.jl`, which is executed by GitHub Actions. If you want to run local tests, you can use the following command in the package path:
+- `ext`: the folder that contains the extension of the package, which should be consistent with the `[weakdeps]` section in the `Project.toml` file.
+  ```bash
+  $ julia --project -e 'using Pkg; Pkg.test()'
+  ```
+  or simply type `] test` in the package environment.
 
 ### Unit tests
 

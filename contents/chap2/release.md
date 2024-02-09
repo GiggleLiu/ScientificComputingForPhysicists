@@ -1,9 +1,84 @@
-## You First Package{#sec:publishing-package} 
+## My First Package{#sec:publishing-package} 
+One of the most important features of Julia is its package manager. It allows one to create, manage, and publish his own packages. In this section, we will learn how to create a package and publish it to the Julia registry.
+
+Julia package manager can install the correct version of a package and its dependencies because it knows the exact versions of all the packages that are compatible with each other. This information was stored in the [`General` registry](https://github.com/JuliaRegistries/General) - a central GitHub repository of metadata about all registered Julia packages.
+
+Everyone can register a package in the `General` registry. To do so, you need to:
+
+1. **Create a package** with a unique UUID as its identifier. Although the same registry may not have two packages with the same name, however, using name as the identifier of a package is not safe because it may not be unique when multiple registries are used.
+2. **Specify the dependency** of your package in the `Project.toml` file, like which version of a package your package depends on.
+3. **Open-source the package** by pushing the package to a public repository on GitHub.
+4. **Register the package** in the `General` registry by creating a pull request to the `General` registry. This process can be automated by the [Julia registrator](https://github.com/JuliaRegistries/Registrator.jl).
+5. Wait for the pull request to be merged. After that, your package is available to the public. A good practice is to **tag a release** after the pull request is merged so that your package version update can be reflected in your GitHub repository. This process can be automated by the [TagBot](https://github.com/JuliaRegistries/TagBot).
+
 ### Create a package
+We use [`PkgTemplate`](https://github.com/JuliaCI/PkgTemplates.jl).
+Open a Julia REPL and type the following commands to initialize a new package named `MyFirstPackage`:
+
+```julia
+julia> using PkgTemplates
+
+julia> tpl = Template(;
+    user="GiggleLiu",
+    authors="GiggleLiu",
+    julia=v"1.10",
+    plugins=[
+        License(; name="MIT"),
+        Git(; ssh=true),
+        GitHubActions(; x86=true),
+        Codecov(),
+        Documenter{GitHubActions}(),
+    ],
+)
+
+julia> tpl("MyFirstPackage")
+```
+where the username `"GiggleLiu"` should be replaced with your GitHub username.
+Many plugins are used in the above example:
+
+- `License`: to choose a license for the package. Here we use the MIT license. Please refer to [Choosing a license](#sec:license) for more information.
+- `Git`: to initialize a Git repository for the package. Here we use the SSH protocol for Git for convenience. Using [two-factor authentication (2FA)](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication) can make your GitHub account more secure.
+- `GitHubActions`: to enable continuous integration (CI) with [GitHub Actions](https://docs.github.com/en/actions).
+- `Codecov`: to enable code coverage tracking with [Codecov](https://about.codecov.io/). It is a tool that helps you to measure the test coverage of your code. A package with high test coverage is more reliable.
+- `Documenter`: to enable documentation building and deployment with [Documenter.jl](https://documenter.juliadocs.org/stable/) and [GitHub pages](https://pages.github.com/).
+
+After running the above commands, a new directory named `MyFirstPackage` will be created in the folder `~/.julia/dev/` - the default location for Julia packages.
+
+**Example**: The structure and CI/CD of [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl)
+
+![](./assets/images/omeinsum.png)
+
+`OMEinsum.jl` is a package for tensor contraction. The badges in the `README.md` file of the package repository are the following:
+
+- `build/passing`: the tests executed by GitHub Actions are passing.
+- `codecov/89%`: the code coverage is 89%, meaning that 89% of the code is covered by tests.
+- `docs/dev`: the documentation is built and deployed with GitHub pages.
+
+Now, let's take a look at the file structure of the package:
+```bash
+$ tree OMEinsum -L 1
+OMEinsum
+├── LICENSE
+├── Project.toml
+├── README.md
+├── benchmark
+├── docs
+├── examples
+├── ext
+├── ome-logo.png
+├── src
+└── test
+```
+- `LICENSE`: the file that contains the license of the package, which is MIT in this case.
+- `Project.toml`: the file that contains the metadata of the package, including the name, UUID, version, and dependencies of the package.
+- `README.md`: the file that contains the description of the package, including the installation guide, usage, and examples.
+- `docs`: the folder that contains the documentation of the package.
+- `src`: the folder that contains the source code of the package.
+- `test`: the folder that contains the test code of the package.
 
 ### Unit tests
 
-### Release a package
+### Choosing a license{#sec:license}
 Now that you have an amazing package, it's time to make it available to the public. Before that, there is one final task to be done which is to choose a license. 
 
 - GNU's Not Unix! (GNU) (1983 by Richard Stallman)

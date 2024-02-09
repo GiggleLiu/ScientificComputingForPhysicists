@@ -1,4 +1,5 @@
-## Array and Broadcasting
+## Understanding Performance{#sec:performance}
+### Array and Broadcasting
 
 ```jl
 sco("""

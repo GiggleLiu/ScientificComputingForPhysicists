@@ -9,8 +9,8 @@
     "chap2/julia-setup",
     "chap2/julia-why",
     "chap2/julia-type",
-    "chap2/julia-arrays",
     "chap2/release",
+    "chap2/performance",
     "appendix",
     "references",
   ]

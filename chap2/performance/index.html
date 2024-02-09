@@ -1,86 +1,169 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Understanding Performance · Scientific Computing For Physicists</title><meta name="title" content="Understanding Performance · Scientific Computing For Physicists"/><meta property="og:title" content="Understanding Performance · Scientific Computing For Physicists"/><meta property="twitter:title" content="Understanding Performance · Scientific Computing For Physicists"/><meta name="description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:description" content="Documentation for Scientific Computing For Physicists."/><meta property="twitter:description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:url" content="https://book.jinguo-group.science/chap2/performance/"/><meta property="twitter:url" content="https://book.jinguo-group.science/chap2/performance/"/><link rel="canonical" href="https://book.jinguo-group.science/chap2/performance/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Scientific Computing For Physicists</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Become an Open-source Developer</span><ul><li><a class="tocitem" href="../../chap1/terminal/">Get a Terminal!</a></li><li><a class="tocitem" href="../../chap1/git/">Maintainability - Version Control</a></li><li><a class="tocitem" href="../../chap1/ci/">Correctness - Unit Tests</a></li></ul></li><li><span class="tocitem">Julia Programming Language</span><ul><li><a class="tocitem" href="../julia-setup/">Julia Programming Language</a></li><li><a class="tocitem" href="../julia-why/">Why Julia?</a></li><li><a class="tocitem" href="../julia-type/">Types and Multiple-dispatch</a></li><li><a class="tocitem" href="../release/">My First Package</a></li><li class="is-active"><a class="tocitem" href>Understanding Performance</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Julia Programming Language</a></li><li class="is-active"><a href>Understanding Performance</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Understanding Performance</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists/blob/main/docs/src/chap2/performance.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Understanding-Performance"><a class="docs-heading-anchor" href="#Understanding-Performance">Understanding Performance</a><a id="Understanding-Performance-1"></a><a class="docs-heading-anchor-permalink" href="#Understanding-Performance" title="Permalink"></a></h1><h3 id="Array-and-Broadcasting"><a class="docs-heading-anchor" href="#Array-and-Broadcasting">Array and Broadcasting</a><a id="Array-and-Broadcasting-1"></a><a class="docs-heading-anchor-permalink" href="#Array-and-Broadcasting" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; arr = [1, 2.0, &#39;c&#39;]</code><code class="nohighlight hljs ansi" style="display:block;">3-element Vector{Any}:
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Understanding Performance · Scientific Computing For Physicists</title><meta name="title" content="Understanding Performance · Scientific Computing For Physicists"/><meta property="og:title" content="Understanding Performance · Scientific Computing For Physicists"/><meta property="twitter:title" content="Understanding Performance · Scientific Computing For Physicists"/><meta name="description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:description" content="Documentation for Scientific Computing For Physicists."/><meta property="twitter:description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:url" content="https://book.jinguo-group.science/chap2/performance/"/><meta property="twitter:url" content="https://book.jinguo-group.science/chap2/performance/"/><link rel="canonical" href="https://book.jinguo-group.science/chap2/performance/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Scientific Computing For Physicists</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Become an Open-source Developer</span><ul><li><a class="tocitem" href="../../chap1/terminal/">Get a Terminal!</a></li><li><a class="tocitem" href="../../chap1/git/">Maintainability - Version Control</a></li><li><a class="tocitem" href="../../chap1/ci/">Correctness - Unit Tests</a></li></ul></li><li><span class="tocitem">Julia Programming Language</span><ul><li><a class="tocitem" href="../julia-setup/">Setup Julia</a></li><li><a class="tocitem" href="../julia-why/">Why Julia?</a></li><li><a class="tocitem" href="../julia-type/">Types and Multiple-dispatch</a></li><li><a class="tocitem" href="../release/">My First Package</a></li><li class="is-active"><a class="tocitem" href>Understanding Performance</a><ul class="internal"><li><a class="tocitem" href="#Array"><span>Array</span></a></li><li><a class="tocitem" href="#Broadcasting"><span>Broadcasting</span></a></li><li><a class="tocitem" href="#Benchmark-and-profile"><span>Benchmark and profile</span></a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Julia Programming Language</a></li><li class="is-active"><a href>Understanding Performance</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Understanding Performance</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists/blob/main/docs/src/chap2/performance.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Understanding-Performance"><a class="docs-heading-anchor" href="#Understanding-Performance">Understanding Performance</a><a id="Understanding-Performance-1"></a><a class="docs-heading-anchor-permalink" href="#Understanding-Performance" title="Permalink"></a></h1><h2 id="Array"><a class="docs-heading-anchor" href="#Array">Array</a><a id="Array-1"></a><a class="docs-heading-anchor-permalink" href="#Array" title="Permalink"></a></h2><p>Initializing an array in Julia is simple. You can initialize an array with different types of elements.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; zero_vector = zeros(3) # zero vector</code><code class="nohighlight hljs ansi" style="display:block;">3-element Vector{Float64}:
+ 0.0
+ 0.0
+ 0.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; direct_matrix = [5 2 1; 1 4 5; 2 4 9] # explicit</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Int64}:
+ 5  2  1
+ 1  4  5
+ 2  4  9</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; rand_vector = randn(Float32, 3, 3) # random normal distribution</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float32}:
+  0.588814  0.389269  1.25292
+  0.265855  0.687805  0.33093
+ -0.655958  1.09316   0.0916273</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; step_vector = collect(1:3)  # collect from a range</code><code class="nohighlight hljs ansi" style="display:block;">3-element Vector{Int64}:
  1
- 2.0
-  &#39;c&#39;: ASCII/Unicode U+0063 (category Ll: Letter, lowercase)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	typeof(arr)
-&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	isbitstype(typeof(arr))
-&quot;&quot;&quot;)</code></pre><p><strong>Boardcasting</strong></p><pre><code class="language-jl hljs">sc(&quot;&quot;&quot;
-	x = 0:0.1:π
-&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sc(&quot;&quot;&quot;
-	y = sin.(x)
-&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sc(&quot;&quot;&quot;
-	using Plots
-&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sc(&quot;&quot;&quot;
-	plot(x, y; label=&quot;sin&quot;)
-&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sc(&quot;&quot;&quot;
-	mesh = (1:100)&#39;
-&quot;&quot;&quot;)</code></pre><p><strong>Broadcasting over non-concrete element types may be type unstable.</strong></p><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	eltype(arr)
-&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	arr .+ 1
-&quot;&quot;&quot;)</code></pre><pre><code class="language-julia hljs">eltype(tp)</code></pre><h3 id="Julia-package-development"><a class="docs-heading-anchor" href="#Julia-package-development">Julia package development</a><a id="Julia-package-development-1"></a><a class="docs-heading-anchor-permalink" href="#Julia-package-development" title="Permalink"></a></h3><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	using TropicalNumbers
-&quot;&quot;&quot;)</code></pre><p>The file structure of a package</p><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	project_folder = dirname(dirname(pathof(TropicalNumbers)))
-&quot;&quot;&quot;)</code></pre><p>&lt;img src=&quot;./assets/images/julia_dev.png&quot; alt=&quot;image&quot; width=&quot;500&quot; height=&quot;auto&quot;&gt;</p><p><strong>Unit Test</strong></p><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	using Test
-&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	@test Tropical(3.0) + Tropical(2.0) == Tropical(3.0)
-&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	@test_throws BoundsError [1,2][3]
-&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	@test_broken 3 == 2
-&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-	@testset &quot;Tropical Number addition&quot; begin
-	@test Tropical(3.0) + Tropical(2.0) == Tropical(3.0)
-	@test_throws BoundsError [1][2]
-	@test_broken 3 == 2
+ 2
+ 3</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; uninitialized_vector = Vector{Int}(undef, 3) # uninitialized vector of size 3</code><code class="nohighlight hljs ansi" style="display:block;">3-element Vector{Int64}:
+ 139759663739648
+ 139759389160928
+               0</code></pre><ul><li><p><strong>Julia array is fast.</strong> In memory, it is a contiguous block if the element type is bitstype - having a fixed size in memory.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; isbitstype(Int)</code><code class="nohighlight hljs ansi" style="display:block;">true</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; isbitstype(Complex{Float64})   # complex number has a fixed size</code><code class="nohighlight hljs ansi" style="display:block;">true</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sizeof(Complex{Float64})</code><code class="nohighlight hljs ansi" style="display:block;">16</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; isbitstype(typeof((&#39;a&#39;, 2, false)))  # tuple has a fixed size</code><code class="nohighlight hljs ansi" style="display:block;">true</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sizeof(typeof((&#39;a&#39;, 2, false)))</code><code class="nohighlight hljs ansi" style="display:block;">24</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; isbitstype(typeof(randn(3)))   # array does not have a fixed size</code><code class="nohighlight hljs ansi" style="display:block;">false</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sizeof(typeof(randn(3)))  # an array of array may cause slow indexing.</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: Type Array does not have a definite size.</code></pre></li><li><p><strong>Julia array memory layout is column-major</strong>. Looping over the first index is faster than looping over the last index.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; function mysum_col(A::AbstractMatrix)
+           s = zero(eltype(A)) # zero of the element type of A
+           for j in 1:size(A, 2) # loop over the second index
+               for i in 1:size(A, 1)  # loop over the first index
+                   s += A[i, j]
+               end
+           end
+           return s
+       end</code><code class="nohighlight hljs ansi" style="display:block;">mysum_col (generic function with 1 method)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; function mysum_row(A::AbstractMatrix)
+           s = zero(eltype(A)) # zero of the element type of A
+           for i in 1:size(A, 1)  # loop over the first index
+              for j in 1:size(A, 2) # loop over the second index
+                   s += A[i, j]
+               end
+           end
+           return s
+       end</code><code class="nohighlight hljs ansi" style="display:block;">mysum_row (generic function with 1 method)</code></pre><p>For small scale matrix, their performance is similar since the matrix can be cached well. However, for large scale matrix, the column-major layout is much faster due to the cache locality.</p><pre><code class="language-julia-repl hljs">julia&gt; using BenchmarkTools
+
+julia&gt; A = rand(10000, 10000);
+
+julia&gt; @btime mysum_col($A)
+  85.885 ms (0 allocations: 0 bytes)
+4.999830721534851e7
+
+julia&gt; @btime mysum_row($A)
+  189.794 ms (0 allocations: 0 bytes)
+4.9998307215344414e7</code></pre></li><li><p><strong>Julia array indexing starts from 1</strong>. It is different from C, Python, and R, which start from 0. 😞</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = [1, 2, 3]</code><code class="nohighlight hljs ansi" style="display:block;">3-element Vector{Int64}:
+ 1
+ 2
+ 3</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A[1]     # the first element</code><code class="nohighlight hljs ansi" style="display:block;">1</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A[end]   # the last element</code><code class="nohighlight hljs ansi" style="display:block;">3</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A[1:2]   # the first two elements</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Int64}:
+ 1
+ 2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A[2:-1:1] # the first two elements in the reversed order</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Int64}:
+ 2
+ 1</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; B = [1 2 3; 4 5 6; 7 8 9];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; B[1:2]   # the first two elements, returns B[1,1] and B[2,1] since B is column-major</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Int64}:
+ 1
+ 4</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; B[1:2, 1:2] # returns a submatrix</code><code class="nohighlight hljs ansi" style="display:block;">2×2 Matrix{Int64}:
+ 1  2
+ 4  5</code></pre></li></ul><h2 id="Broadcasting"><a class="docs-heading-anchor" href="#Broadcasting">Broadcasting</a><a id="Broadcasting-1"></a><a class="docs-heading-anchor-permalink" href="#Broadcasting" title="Permalink"></a></h2><p>Julia has a powerful broadcasting mechanism. It is a way to apply a function to each element of an array. The broadcasting is done by adding a dot <code>.</code> before the function name.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; x = 0:0.1:2π</code><code class="nohighlight hljs ansi" style="display:block;">0.0:0.1:6.2</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; y = sin.(x) .+ cos.(3 .* x);</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><pre><code class="language-julia hljs">using Plots  # for high-quality plots, we suggest using `Makie.jl`
+Plots.plot(x, y; label=&quot;sin(x) + cos(3x)&quot;)</code></pre><img src="35b09e0e.svg" alt="Example block output"/><h3 id="Loop-fusion"><a class="docs-heading-anchor" href="#Loop-fusion">Loop fusion</a><a id="Loop-fusion-1"></a><a class="docs-heading-anchor-permalink" href="#Loop-fusion" title="Permalink"></a></h3><p>The broadcasting is very efficient due to <strong>loop fusion</strong>. In the above example, only one loop is needed to calculate <code>sin</code> and <code>cos</code> for each element of <code>x</code> and only one array is allocated to store the result.</p><p>Loop fused:</p><pre><code class="language-julia-repl hljs">julia&gt; using BenchmarkTools
+julia&gt; @benchmark sin.($x) .+ cos.(3 .* $x);
+BenchmarkTools.Trial: 10000 samples with 107 evaluations.
+ Range (min … max):  775.308 ns …  2.984 μs  ┊ GC (min … max): 0.00% … 62.53%
+ Time  (median):     781.159 ns              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   798.606 ns ± 78.472 ns  ┊ GC (mean ± σ):  0.28% ±  2.36%
+
+  ▅█▄    ▁ ▃▂ ▃▄▁      ▁                                       ▁
+  ███▆▆▇██▇██▆███▇▆▆▆▆▇██▆▆▅▆▅▅▅▆▅▇▆▅▅▅▄▅▄▅▆▅▅▅▄▄▄▅▅▅▄▄▄▄▃▄▅▅▆ █
+  775 ns        Histogram: log(frequency) by time       995 ns &lt;
+
+ Memory estimate: 576 bytes, allocs estimate: 1.</code></pre><p>Loop not fused</p><pre><code class="language-julia-repl hljs">julia&gt; @benchmark sin.($x) + cos.(3 * $x);
+BenchmarkTools.Trial: 10000 samples with 107 evaluations.
+ Range (min … max):  778.430 ns …  2.714 μs  ┊ GC (min … max): 0.00% … 66.36%
+ Time  (median):     802.570 ns              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   809.210 ns ± 66.113 ns  ┊ GC (mean ± σ):  0.26% ±  2.30%
+
+   ▃        ▅█▇▄        ▂   ▄▄                                 ▂
+  ███▄▁▁▁▃▄█████▇▆▇▇▇█▅███▆███▇▄▅▃▅▇▇▇▆▅▆▅▅▅▅▆▆▅▅▄▅▄▃▄▄▄▃▄▅▄▄▆ █
+  778 ns        Histogram: log(frequency) by time       900 ns &lt;
+
+ Memory estimate: 576 bytes, allocs estimate: 1.</code></pre><h3 id="When-shapes-do-not-match"><a class="docs-heading-anchor" href="#When-shapes-do-not-match">When shapes do not match</a><a id="When-shapes-do-not-match-1"></a><a class="docs-heading-anchor-permalink" href="#When-shapes-do-not-match" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = [1 2 3; 4 5 6]</code><code class="nohighlight hljs ansi" style="display:block;">2×3 Matrix{Int64}:
+ 1  2  3
+ 4  5  6</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; B = [1 2 3]</code><code class="nohighlight hljs ansi" style="display:block;">1×3 Matrix{Int64}:
+ 1  2  3</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A .+ B   # B is broadcasted to match the size of A</code><code class="nohighlight hljs ansi" style="display:block;">2×3 Matrix{Int64}:
+ 2  4  6
+ 5  7  9</code></pre><p>B is a (column) vector, which means its shape is (3, 1). The broadcasting is done by repeating the vector to match the shape of A.</p><p>With this trick, we can easily evaluate a function on a meshgrid.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; a = sin.(x) + cos.(3 * x);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; b = cos.(x);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; mesh = a&#39; .* b # a has shape (1, length(x)), b has shape (length(x), 1)</code><code class="nohighlight hljs ansi" style="display:block;">63×63 Matrix{Float64}:
+ 1.0       1.05517   1.024     0.91713   …  0.380901  0.670594  0.885933
+ 0.995004  1.0499    1.01889   0.912548     0.378998  0.667244  0.881507
+ 0.980067  1.03414   1.00359   0.898849     0.373309  0.657227  0.868273
+ 0.955336  1.00804   0.978269  0.876168     0.363889  0.640643  0.846364
+ 0.921061  0.971876  0.943171  0.844733     0.350833  0.617658  0.815998
+ 0.877583  0.925999  0.898649  0.804857  …  0.334272  0.588502  0.777479
+ 0.825336  0.870869  0.845148  0.75694      0.314371  0.553465  0.731192
+ 0.764842  0.807038  0.783202  0.70146      0.291329  0.512899  0.677599
+ 0.696707  0.735144  0.713431  0.638971     0.265376  0.467207  0.617235
+ 0.62161   0.655904  0.636532  0.570097     0.236772  0.416848  0.550705
+ ⋮                                       ⋱  ⋮
+ 0.634693  0.669709  0.649929  0.582096     0.241755  0.425621  0.562295
+ 0.70867   0.747767  0.725681  0.649942  …  0.269933  0.47523   0.627834
+ 0.775566  0.818354  0.794183  0.711295     0.295414  0.52009   0.687099
+ 0.834713  0.880764  0.85475   0.76554      0.317943  0.559753  0.739499
+ 0.88552   0.934374  0.906776  0.812137     0.337295  0.593824  0.784511
+ 0.927478  0.978647  0.949743  0.850618     0.353278  0.621962  0.821684
+ 0.96017   1.01314   0.983219  0.880601  …  0.36573   0.643884  0.850646
+ 0.983268  1.03752   1.00687   0.901785     0.374528  0.659374  0.87111
+ 0.996542  1.05152   1.02046   0.913959     0.379584  0.668275  0.882869</code></pre><pre><code class="language-julia hljs">heatmap(mesh)</code></pre><img src="ae2ceae9.svg" alt="Example block output"/><h3 id="Unwanted-broadcasting"><a class="docs-heading-anchor" href="#Unwanted-broadcasting">Unwanted broadcasting</a><a id="Unwanted-broadcasting-1"></a><a class="docs-heading-anchor-permalink" href="#Unwanted-broadcasting" title="Permalink"></a></h3><p>Consider we have a vector, and we want to scale it with factors <code>1, 2, 3</code> and store the results in to a vector, i.e. we will get a vector of vectors. The following code will not work as expected.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; [3,2,1,0] .* (1:3)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: DimensionMismatch: arrays could not be broadcast to a common size; got a dimension with lengths 4 and 3</code></pre><p>Note a range is an iterable object. The broadcasting operation works on any iterable object, hence it tries to broadcast over the elements of the vector. A shape mismatch error is raised, which is unwanted.</p><p>In this case, we can use <code>Ref</code> to protect the vector from broadcasting.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; Ref([3,2,1,0]) .* (1:3)</code><code class="nohighlight hljs ansi" style="display:block;">3-element Vector{Vector{Int64}}:
+ [3, 2, 1, 0]
+ [6, 4, 2, 0]
+ [9, 6, 3, 0]</code></pre><p>We can see the vector is treated as a whole.</p><h3 id="Example:-create-a-meshgrid-for-triangular-lattice"><a class="docs-heading-anchor" href="#Example:-create-a-meshgrid-for-triangular-lattice">Example: create a meshgrid for triangular lattice</a><a id="Example:-create-a-meshgrid-for-triangular-lattice-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-create-a-meshgrid-for-triangular-lattice" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; b1 = [1, 0]</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Int64}:
+ 1
+ 0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; b2 = [0.5, sqrt(3)/2]</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
+ 0.5
+ 0.8660254037844386</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; n = 5</code><code class="nohighlight hljs ansi" style="display:block;">5</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; mesh1 = [i * b1 + j * b2 for i in 1:n, j in 1:n]  # list comprehension</code><code class="nohighlight hljs ansi" style="display:block;">5×5 Matrix{Vector{Float64}}:
+ [1.5, 0.866025]  [2.0, 1.73205]  …  [3.0, 3.4641]  [3.5, 4.33013]
+ [2.5, 0.866025]  [3.0, 1.73205]     [4.0, 3.4641]  [4.5, 4.33013]
+ [3.5, 0.866025]  [4.0, 1.73205]     [5.0, 3.4641]  [5.5, 4.33013]
+ [4.5, 0.866025]  [5.0, 1.73205]     [6.0, 3.4641]  [6.5, 4.33013]
+ [5.5, 0.866025]  [6.0, 1.73205]     [7.0, 3.4641]  [7.5, 4.33013]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; mesh2= (1:n) .* Ref(b1) .+ (1:n)&#39; .* Ref(b2)  # broadcasting</code><code class="nohighlight hljs ansi" style="display:block;">5×5 Matrix{Vector{Float64}}:
+ [1.5, 0.866025]  [2.0, 1.73205]  …  [3.0, 3.4641]  [3.5, 4.33013]
+ [2.5, 0.866025]  [3.0, 1.73205]     [4.0, 3.4641]  [4.5, 4.33013]
+ [3.5, 0.866025]  [4.0, 1.73205]     [5.0, 3.4641]  [5.5, 4.33013]
+ [4.5, 0.866025]  [5.0, 1.73205]     [6.0, 3.4641]  [6.5, 4.33013]
+ [5.5, 0.866025]  [6.0, 1.73205]     [7.0, 3.4641]  [7.5, 4.33013]</code></pre><pre><code class="language-julia hljs">scatter(vec(getindex.(mesh2, 1)), vec(getindex.(mesh2, 2)), label=&quot;mesh2&quot;, ratio=1, markersize=5)</code></pre><img src="abe97006.svg" alt="Example block output"/><h3 id="Case-study:-Image-processing"><a class="docs-heading-anchor" href="#Case-study:-Image-processing">Case study: Image processing</a><a id="Case-study:-Image-processing-1"></a><a class="docs-heading-anchor-permalink" href="#Case-study:-Image-processing" title="Permalink"></a></h3><ol><li>Download an image from the internet:</li></ol><pre><code class="language-julia hljs">url = &quot;https://avatars.githubusercontent.com/u/8445510?v=4&quot;
+target_path = tempname() * &quot;.png&quot;
+download(url, target_path)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;/tmp/jl_bW3EJUXgZQ.png&quot;</code></pre><ol><li>Load the image with <a href="https://github.com/JuliaImages/Images.jl"><code>Images.jl</code></a>:</li></ol><pre><code class="language-julia hljs">#using Images
+#img = load(target_path)
+nothing</code></pre><p><em>Quiz</em>:</p><ul><li>How to invert the color of the image?</li></ul><h3 id="Array-element-type-and-performance"><a class="docs-heading-anchor" href="#Array-element-type-and-performance">Array element type and performance</a><a id="Array-element-type-and-performance-1"></a><a class="docs-heading-anchor-permalink" href="#Array-element-type-and-performance" title="Permalink"></a></h3><p>Any type vector is flexible. You can add any element into it.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; vany = Any[]  # same as vany = []</code><code class="nohighlight hljs ansi" style="display:block;">Any[]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; typeof(vany)</code><code class="nohighlight hljs ansi" style="display:block;">Vector{Any}<span class="sgr90"> (alias for Array{Any, 1})</span></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; push!(vany, &quot;a&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">1-element Vector{Any}:
+ &quot;a&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; push!(vany, 1)</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Any}:
+  &quot;a&quot;
+ 1</code></pre><p>Fixed typed vector is more restrictive.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; vfloat64 = Float64[]</code><code class="nohighlight hljs ansi" style="display:block;">Float64[]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; vfloat64 |&gt; typeof</code><code class="nohighlight hljs ansi" style="display:block;">Vector{Float64}<span class="sgr90"> (alias for Array{Float64, 1})</span></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; push!(vfloat64, &quot;a&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: MethodError: Cannot `convert` an object of type <span class="sgr92">String</span> to an object of type <span class="sgr91">Float64</span>
+
+Closest candidates are:
+  convert(::Type{Float64}, <span class="sgr91">::Measures.AbsoluteLength</span>)
+<span class="sgr90">   @</span> <span class="sgr35">Measures</span> <span class="sgr90">~/.julia/packages/Measures/PKOxJ/src/<span class="sgr4">length.jl:12</span></span>
+  convert(::Type{T}, <span class="sgr91">::T</span>) where T&lt;:Number
+<span class="sgr90">   @</span> <span class="sgr90">Base</span> <span class="sgr90"><span class="sgr4">number.jl:6</span></span>
+  convert(::Type{T}, <span class="sgr91">::T</span>) where T
+<span class="sgr90">   @</span> <span class="sgr90">Base</span> <span class="sgr90"><span class="sgr4">Base.jl:84</span></span>
+  ...</code></pre><p>The performance of the vector with a fixed type is much better than the vector with any type.</p><pre><code class="language-julia-repl hljs">julia&gt; biganyv = collect(Any, 1:2:20000);
+
+julia&gt; @benchmark for i=1:length($biganyv)
+    $biganyv[i] += 1
 end
-&quot;&quot;&quot;)</code></pre><h3 id="Case-study:-Create-a-package-like-HappyMolecules"><a class="docs-heading-anchor" href="#Case-study:-Create-a-package-like-HappyMolecules">Case study: Create a package like HappyMolecules</a><a id="Case-study:-Create-a-package-like-HappyMolecules-1"></a><a class="docs-heading-anchor-permalink" href="#Case-study:-Create-a-package-like-HappyMolecules" title="Permalink"></a></h3><p>With <code>PkgTemplates</code>.</p><p><a href="https://github.com/CodingThrust/HappyMolecules.jl">https://github.com/CodingThrust/HappyMolecules.jl</a></p><pre><code class="language-julia hljs">julia&gt; isbitstype(Complex{Float64})
+BenchmarkTools.Trial: 10000 samples with 1 evaluation.
+ Range (min … max):  117.833 μs …  1.090 ms  ┊ GC (min … max): 0.00% … 71.28%
+ Time  (median):     124.458 μs              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   128.512 μs ± 39.121 μs  ┊ GC (mean ± σ):  1.55% ±  4.49%
 
-julia&gt; sizeof(Complex{Float32})
+  ▁   ▃▇█▅▂▂▅▆▄▂▃▄▃▃▄▄▄▃▂▂▂▂▁▁▁▁▁▁                             ▂
+  █▆▄▄█████████████████████████████████▇█▇▇▇█▇▇▇▆▆▄▆▆▆▅▅▅▅▅▅▂▄ █
+  118 μs        Histogram: log(frequency) by time       155 μs &lt;
 
-julia&gt; sizeof(Complex{Float64})</code></pre><p>But <code>Complex{BigFloat}</code> is not</p><pre><code class="language-julia hljs">julia&gt; sizeof(Complex{BigFloat})
+ Memory estimate: 156.25 KiB, allocs estimate: 10000.</code></pre><pre><code class="language-julia-repl hljs">julia&gt; bigfloatv = collect(Float64, 1:2:20000);
 
-julia&gt; isbitstype(Complex{BigFloat})</code></pre><p>The size of <code>Complex{BigFloat}</code> is not true! It returns the pointer size!</p><h3 id="How-to-measure-the-performance-of-your-CPU?"><a class="docs-heading-anchor" href="#How-to-measure-the-performance-of-your-CPU?">How to measure the performance of your CPU?</a><a id="How-to-measure-the-performance-of-your-CPU?-1"></a><a class="docs-heading-anchor-permalink" href="#How-to-measure-the-performance-of-your-CPU?" title="Permalink"></a></h3><p>The performance of a CPU is measured by the number of <strong>floating point operations per second</strong> (FLOPS) it can perform. The floating point operations include addition, subtraction, multiplication and division. The FLOPS can be related to multiple factors, such as the clock frequency, the number of cores, the number of instructions per cycle, and the number of floating point units. A simple way to measure the FLOPS is to benchmarking the speed of matrix multiplication.</p><pre><code class="language-julia hljs">julia&gt; using BenchmarkTools
+julia&gt; @benchmark for i=1:length($bigfloatv)
+    $bigfloatv[i] += 1
+end
+BenchmarkTools.Trial: 10000 samples with 40 evaluations.
+ Range (min … max):  908.325 ns …  2.020 μs  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     936.475 ns              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   955.204 ns ± 69.933 ns  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  ▃   ▇█  ▂▅▁  ▁     ▂                                         ▁
+  █▄▃▃██▇▆███▇▆█▆█▇▄▆█▇▆▆▆█▇▇▆▇▇▇▇▆▅▅▆▆▆▅▅▅▅▃▄▅▄▅▄▄▃▄▄▄▄▄▄▅▅▄▆ █
+  908 ns        Histogram: log(frequency) by time      1.24 μs &lt;
+
+ Memory estimate: 0 bytes, allocs estimate: 0.</code></pre><p>We can see that the performance of the vector with a fixed type can be 100 times faster than the vector with any type.</p><h2 id="Benchmark-and-profile"><a class="docs-heading-anchor" href="#Benchmark-and-profile">Benchmark and profile</a><a id="Benchmark-and-profile-1"></a><a class="docs-heading-anchor-permalink" href="#Benchmark-and-profile" title="Permalink"></a></h2><h3 id="How-to-measure-the-performance-of-your-CPU?"><a class="docs-heading-anchor" href="#How-to-measure-the-performance-of-your-CPU?">How to measure the performance of your CPU?</a><a id="How-to-measure-the-performance-of-your-CPU?-1"></a><a class="docs-heading-anchor-permalink" href="#How-to-measure-the-performance-of-your-CPU?" title="Permalink"></a></h3><p>The performance of a CPU is measured by the number of <strong>floating point operations per second</strong> (FLOPS) it can perform. The floating point operations include addition, subtraction, multiplication and division. The FLOPS can be related to multiple factors, such as the clock frequency, the number of cores, the number of instructions per cycle, and the number of floating point units. A simple way to measure the FLOPS is to benchmarking the speed of matrix multiplication.</p><pre><code class="language-julia-repl hljs">julia&gt; using BenchmarkTools
 
 julia&gt; A, B = rand(1000, 1000), rand(1000, 1000);
 
 julia&gt; @btime $A * $B;
-  12.122 ms (2 allocations: 7.63 MiB)</code></pre><p>The number of FLOPS in a <span>$n\times n\times n$</span> matrix multiplication is <span>$2n^3$</span>. The FLOPS can be calculated as: <span>$2 \times 1000^3 / (12.122 \times 10^{-3}) = 165~{\rm GFLOPS}$</span>.</p><h3 id="Case-study:-Vector-element-type-and-speed"><a class="docs-heading-anchor" href="#Case-study:-Vector-element-type-and-speed">Case study: Vector element type and speed</a><a id="Case-study:-Vector-element-type-and-speed-1"></a><a class="docs-heading-anchor-permalink" href="#Case-study:-Vector-element-type-and-speed" title="Permalink"></a></h3><p>Any type vector is flexible. You can add any element into it.</p><pre><code class="language-julia hljs">vany = Any[]  # same as vany = []
+  12.122 ms (2 allocations: 7.63 MiB)</code></pre><p>The number of FLOPS in a <span>$n\times n\times n$</span> matrix multiplication is <span>$2n^3$</span>. The FLOPS can be calculated as: <span>$2 \times 1000^3 / (12.122 \times 10^{-3}) = 165~{\rm GFLOPS}$</span>.</p><h3 id="Profiling"><a class="docs-heading-anchor" href="#Profiling">Profiling</a><a id="Profiling-1"></a><a class="docs-heading-anchor-permalink" href="#Profiling" title="Permalink"></a></h3><p>Profiling is a way to measure the performance of your code. It can help you to identify the bottleneck of your code and optimize it. The <a href="https://docs.julialang.org/en/v1/manual/profile/">Profile</a> module in Julia provides a set of tools to profile your code.</p><p>We can start the profiler by</p><pre><code class="language-julia-repl hljs">julia&gt; using Profile
 
-typeof(vany)
-
-push!(vany, &quot;a&quot;)
-
-push!(vany, 1)</code></pre><p>Fixed typed vector is more restrictive.</p><pre><code class="language-julia hljs">vfloat64 = Float64[]
-
-vfloat64 |&gt; typeof
-
-push!(vfloat64, &quot;a&quot;)</code></pre><p>Do not abuse the type system. e.g. a &quot;zero&quot; cost implementation</p><pre><code class="language-julia hljs">Val(3.0) # just a type
-
-f(::Val{1}) = Val(1)
-
-f(::Val{2}) = Val(1)</code></pre><p>It violates the <a href="https://docs.julialang.org/en/v1/manual/performance-tips/">Performance Tips</a>, since it transfers the run-time to compile time.</p><pre><code class="language-julia hljs">let biganyv = collect(Any, 1:2:20000)
-    @benchmark for i=1:length($biganyv)
-        $biganyv[i] += 1
-    end
-end</code></pre><pre><code class="language-julia hljs">let bigfloatv = collect(Float64, 1:2:20000)
-    @benchmark for i=1:length($bigfloatv)
-        $bigfloatv[i] += 1
-    end
-end</code></pre><pre><code class="language-julia hljs">fib(x::Int) = x &lt;= 2 ? 1 : fib(x-1) + fib(x-2)
-
-@benchmark fib(20)</code></pre><pre><code class="language-julia hljs">addup(::Val{x}, ::Val{y}) where {x, y} = Val(x + y)</code></pre><pre><code class="language-julia hljs">f(::Val{x}) where x = addup(f(Val(x-1)), f(Val(x-2)))</code></pre><pre><code class="language-julia hljs">@benchmark f(Val(20)) end</code></pre><h3 id="Example:-Image-processing"><a class="docs-heading-anchor" href="#Example:-Image-processing">Example: Image processing</a><a id="Example:-Image-processing-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Image-processing" title="Permalink"></a></h3><ol><li>Download an image from the internet:</li></ol><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
-    url = &quot;https://avatars.githubusercontent.com/u/8445510?v=4&quot;
-    target_path = tempname() * &quot;.png&quot;
-    download(url, target_path)
-&quot;&quot;&quot;)</code></pre><ol><li>Load the image with <code>Images.jl</code>:</li></ol><pre><code class="language-jl hljs">using Images
-img = load(target_path)
-
-filename = tempname() * &quot;.png&quot;
-save(filename, img)
-using Markdown
-Markdown.MD(&quot;![]($filename)&quot;)</code></pre><pre><code class="language-jl hljs">println(&quot;!&quot;)</code></pre><pre><code class="language-jl hljs">&quot;!&quot;</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../release/">« My First Package</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Friday 9 February 2024 15:56">Friday 9 February 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+julia&gt; Profile.init(n = 10^7, delay = 0.01) # set the number of samples and the delay between samples</code></pre><p>Then you can profile your code by running it.</p><pre><code class="language-julia-repl hljs">julia&gt; @profile A * B</code></pre><p>To view the profile result, you can use the <code>Profile.print()</code> function.</p><pre><code class="language-julia-repl hljs">julia&gt; Profile.print(; format=:flat, mincount=10)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../release/">« My First Package</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Friday 9 February 2024 20:03">Friday 9 February 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

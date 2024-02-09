@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Understanding Performance · Scientific Computing For Physicists</title><meta name="title" content="Understanding Performance · Scientific Computing For Physicists"/><meta property="og:title" content="Understanding Performance · Scientific Computing For Physicists"/><meta property="twitter:title" content="Understanding Performance · Scientific Computing For Physicists"/><meta name="description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:description" content="Documentation for Scientific Computing For Physicists."/><meta property="twitter:description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:url" content="https://book.jinguo-group.science/chap2/performance/"/><meta property="twitter:url" content="https://book.jinguo-group.science/chap2/performance/"/><link rel="canonical" href="https://book.jinguo-group.science/chap2/performance/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Scientific Computing For Physicists</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Become an Open-source Developer</span><ul><li><a class="tocitem" href="../../chap1/terminal/">Get a Terminal!</a></li><li><a class="tocitem" href="../../chap1/git/">Maintainability - Version Control</a></li><li><a class="tocitem" href="../../chap1/ci/">Correctness - Unit Tests</a></li></ul></li><li><span class="tocitem">Julia Programming Language</span><ul><li><a class="tocitem" href="../julia-setup/">Julia Programming Language</a></li><li><a class="tocitem" href="../julia-why/">Why Julia?</a></li><li><a class="tocitem" href="../julia-type/">Types and Multiple-dispatch</a></li><li><a class="tocitem" href="../release/">My First Package</a></li><li class="is-active"><a class="tocitem" href>Understanding Performance</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Julia Programming Language</a></li><li class="is-active"><a href>Understanding Performance</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Understanding Performance</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists/blob/main/docs/src/chap2/performance.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Understanding-Performance"><a class="docs-heading-anchor" href="#Understanding-Performance">Understanding Performance</a><a id="Understanding-Performance-1"></a><a class="docs-heading-anchor-permalink" href="#Understanding-Performance" title="Permalink"></a></h1><h3 id="Array-and-Broadcasting"><a class="docs-heading-anchor" href="#Array-and-Broadcasting">Array and Broadcasting</a><a id="Array-and-Broadcasting-1"></a><a class="docs-heading-anchor-permalink" href="#Array-and-Broadcasting" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; arr = [1, 2.0, &#39;c&#39;]</code><code class="nohighlight hljs ansi" style="display:block;">3-element Vector{Any}:
+ 1
+ 2.0
+  &#39;c&#39;: ASCII/Unicode U+0063 (category Ll: Letter, lowercase)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	typeof(arr)
+&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	isbitstype(typeof(arr))
+&quot;&quot;&quot;)</code></pre><p><strong>Boardcasting</strong></p><pre><code class="language-jl hljs">sc(&quot;&quot;&quot;
+	x = 0:0.1:π
+&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sc(&quot;&quot;&quot;
+	y = sin.(x)
+&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sc(&quot;&quot;&quot;
+	using Plots
+&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sc(&quot;&quot;&quot;
+	plot(x, y; label=&quot;sin&quot;)
+&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sc(&quot;&quot;&quot;
+	mesh = (1:100)&#39;
+&quot;&quot;&quot;)</code></pre><p><strong>Broadcasting over non-concrete element types may be type unstable.</strong></p><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	eltype(arr)
+&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	arr .+ 1
+&quot;&quot;&quot;)</code></pre><pre><code class="language-julia hljs">eltype(tp)</code></pre><h3 id="Julia-package-development"><a class="docs-heading-anchor" href="#Julia-package-development">Julia package development</a><a id="Julia-package-development-1"></a><a class="docs-heading-anchor-permalink" href="#Julia-package-development" title="Permalink"></a></h3><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	using TropicalNumbers
+&quot;&quot;&quot;)</code></pre><p>The file structure of a package</p><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	project_folder = dirname(dirname(pathof(TropicalNumbers)))
+&quot;&quot;&quot;)</code></pre><p>&lt;img src=&quot;./assets/images/julia_dev.png&quot; alt=&quot;image&quot; width=&quot;500&quot; height=&quot;auto&quot;&gt;</p><p><strong>Unit Test</strong></p><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	using Test
+&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	@test Tropical(3.0) + Tropical(2.0) == Tropical(3.0)
+&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	@test_throws BoundsError [1,2][3]
+&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	@test_broken 3 == 2
+&quot;&quot;&quot;)</code></pre><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+	@testset &quot;Tropical Number addition&quot; begin
+	@test Tropical(3.0) + Tropical(2.0) == Tropical(3.0)
+	@test_throws BoundsError [1][2]
+	@test_broken 3 == 2
+end
+&quot;&quot;&quot;)</code></pre><h3 id="Case-study:-Create-a-package-like-HappyMolecules"><a class="docs-heading-anchor" href="#Case-study:-Create-a-package-like-HappyMolecules">Case study: Create a package like HappyMolecules</a><a id="Case-study:-Create-a-package-like-HappyMolecules-1"></a><a class="docs-heading-anchor-permalink" href="#Case-study:-Create-a-package-like-HappyMolecules" title="Permalink"></a></h3><p>With <code>PkgTemplates</code>.</p><p><a href="https://github.com/CodingThrust/HappyMolecules.jl">https://github.com/CodingThrust/HappyMolecules.jl</a></p><pre><code class="language-julia hljs">julia&gt; isbitstype(Complex{Float64})
+
+julia&gt; sizeof(Complex{Float32})
+
+julia&gt; sizeof(Complex{Float64})</code></pre><p>But <code>Complex{BigFloat}</code> is not</p><pre><code class="language-julia hljs">julia&gt; sizeof(Complex{BigFloat})
+
+julia&gt; isbitstype(Complex{BigFloat})</code></pre><p>The size of <code>Complex{BigFloat}</code> is not true! It returns the pointer size!</p><h3 id="How-to-measure-the-performance-of-your-CPU?"><a class="docs-heading-anchor" href="#How-to-measure-the-performance-of-your-CPU?">How to measure the performance of your CPU?</a><a id="How-to-measure-the-performance-of-your-CPU?-1"></a><a class="docs-heading-anchor-permalink" href="#How-to-measure-the-performance-of-your-CPU?" title="Permalink"></a></h3><p>The performance of a CPU is measured by the number of <strong>floating point operations per second</strong> (FLOPS) it can perform. The floating point operations include addition, subtraction, multiplication and division. The FLOPS can be related to multiple factors, such as the clock frequency, the number of cores, the number of instructions per cycle, and the number of floating point units. A simple way to measure the FLOPS is to benchmarking the speed of matrix multiplication.</p><pre><code class="language-julia hljs">julia&gt; using BenchmarkTools
+
+julia&gt; A, B = rand(1000, 1000), rand(1000, 1000);
+
+julia&gt; @btime $A * $B;
+  12.122 ms (2 allocations: 7.63 MiB)</code></pre><p>The number of FLOPS in a <span>$n\times n\times n$</span> matrix multiplication is <span>$2n^3$</span>. The FLOPS can be calculated as: <span>$2 \times 1000^3 / (12.122 \times 10^{-3}) = 165~{\rm GFLOPS}$</span>.</p><h3 id="Case-study:-Vector-element-type-and-speed"><a class="docs-heading-anchor" href="#Case-study:-Vector-element-type-and-speed">Case study: Vector element type and speed</a><a id="Case-study:-Vector-element-type-and-speed-1"></a><a class="docs-heading-anchor-permalink" href="#Case-study:-Vector-element-type-and-speed" title="Permalink"></a></h3><p>Any type vector is flexible. You can add any element into it.</p><pre><code class="language-julia hljs">vany = Any[]  # same as vany = []
+
+typeof(vany)
+
+push!(vany, &quot;a&quot;)
+
+push!(vany, 1)</code></pre><p>Fixed typed vector is more restrictive.</p><pre><code class="language-julia hljs">vfloat64 = Float64[]
+
+vfloat64 |&gt; typeof
+
+push!(vfloat64, &quot;a&quot;)</code></pre><p>Do not abuse the type system. e.g. a &quot;zero&quot; cost implementation</p><pre><code class="language-julia hljs">Val(3.0) # just a type
+
+f(::Val{1}) = Val(1)
+
+f(::Val{2}) = Val(1)</code></pre><p>It violates the <a href="https://docs.julialang.org/en/v1/manual/performance-tips/">Performance Tips</a>, since it transfers the run-time to compile time.</p><pre><code class="language-julia hljs">let biganyv = collect(Any, 1:2:20000)
+    @benchmark for i=1:length($biganyv)
+        $biganyv[i] += 1
+    end
+end</code></pre><pre><code class="language-julia hljs">let bigfloatv = collect(Float64, 1:2:20000)
+    @benchmark for i=1:length($bigfloatv)
+        $bigfloatv[i] += 1
+    end
+end</code></pre><pre><code class="language-julia hljs">fib(x::Int) = x &lt;= 2 ? 1 : fib(x-1) + fib(x-2)
+
+@benchmark fib(20)</code></pre><pre><code class="language-julia hljs">addup(::Val{x}, ::Val{y}) where {x, y} = Val(x + y)</code></pre><pre><code class="language-julia hljs">f(::Val{x}) where x = addup(f(Val(x-1)), f(Val(x-2)))</code></pre><pre><code class="language-julia hljs">@benchmark f(Val(20)) end</code></pre><h3 id="Example:-Image-processing"><a class="docs-heading-anchor" href="#Example:-Image-processing">Example: Image processing</a><a id="Example:-Image-processing-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Image-processing" title="Permalink"></a></h3><ol><li>Download an image from the internet:</li></ol><pre><code class="language-jl hljs">sco(&quot;&quot;&quot;
+    url = &quot;https://avatars.githubusercontent.com/u/8445510?v=4&quot;
+    target_path = tempname() * &quot;.png&quot;
+    download(url, target_path)
+&quot;&quot;&quot;)</code></pre><ol><li>Load the image with <code>Images.jl</code>:</li></ol><pre><code class="language-jl hljs">using Images
+img = load(target_path)
+
+filename = tempname() * &quot;.png&quot;
+save(filename, img)
+using Markdown
+Markdown.MD(&quot;![]($filename)&quot;)</code></pre><pre><code class="language-jl hljs">println(&quot;!&quot;)</code></pre><pre><code class="language-jl hljs">&quot;!&quot;</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../release/">« My First Package</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Friday 9 February 2024 15:56">Friday 9 February 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

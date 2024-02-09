@@ -15,7 +15,7 @@ Everyone can register a package in the `General` registry. To do so, you need to
 We use [`PkgTemplate`](https://github.com/JuliaCI/PkgTemplates.jl).
 Open a Julia REPL and type the following commands to initialize a new package named `MyFirstPackage`:
 
-```julia
+```julia-repl
 julia> using PkgTemplates
 
 julia> tpl = Template(;
@@ -49,10 +49,9 @@ Many plugins are used in the above example:
 
 After running the above commands, a new directory named `MyFirstPackage` will be created in the folder `~/.julia/dev/` - the default location for Julia packages.
 
-> **A good package name?**
->
-> For a package that is intended to be registered in the `General` registry, it is recommended to use a name that follows the [Julia package naming guidelines](https://pkgdocs.julialang.org/v1/creating-packages/#Package-naming-guidelines).
-> Although the same registry may not have two packages with the same name, a package use the [UUID](https://docs.julialang.org/en/v1/stdlib/UUIDs/) rather than the name as its unique identifier, because name may not be unique when multiple registries are used together.
+!!! note "What makes a good package name?"
+    For a package that is intended to be registered in the `General` registry, it is recommended to use a name that follows the [Julia package naming guidelines](https://pkgdocs.julialang.org/v1/creating-packages/#Package-naming-guidelines).
+    Although the same registry may not have two packages with the same name, a package use the [UUID](https://docs.julialang.org/en/v1/stdlib/UUIDs/) rather than the name as its unique identifier, because name may not be unique when multiple registries are used together.
 
 The file structure of the package is as follows:
 ```bash
@@ -110,13 +109,13 @@ $ julia --project
 
 This will open a Julia REPL in the package environment. To check the package environment, you can type the following commands in the package mode (press `]`) of the REPL:
 
-```julia
+```julia-repl
 (MyFirstPackage) pkg> st
 Project MyFirstPackage v1.0.0-DEV
 Status `~/.julia/dev/MyFirstPackage/Project.toml` (empty project)
 ```
  After that, you can add a new dependency by typing:
-```julia
+```julia-repl
 (MyFirstPackage) pkg> add OMEinsum
 
 (MyFirstPackage) pkg> st
@@ -125,13 +124,13 @@ Status `~/.julia/dev/MyFirstPackage/Project.toml`
   [ebe7aa44] OMEinsum v0.8.1
 ```
 Press `backspace` to exit the package mode and then type
-```julia
+```julia-repl
 julia> using OMEinsum
 ```
 The dependency is added correctly if no error is thrown.
 
 Type `;` to enter the shell mode and then type
-```julia
+```julia-repl
 shell> cat Project.toml
 name = "MyFirstPackage"
 uuid = "594718ca-da39-4ff3-a299-6d8961b2aa49"
@@ -210,7 +209,7 @@ end
 ```
 
 To use this function, you can type the following commands in the package environment:
-```julia
+```julia-repl
 julia> using MyFirstPackage
 
 julia> MyFirstPackage.greet("Julia")
@@ -239,7 +238,7 @@ end
 ```
 
 To run the tests, you can use the following command in the package environment:
-```julia
+```julia-repl
 (MyFirstPackage) pkg> test
   ... 
   [8e850b90] libblastrampoline_jll v5.8.0+1

@@ -4,37 +4,32 @@
 Julia has rich type system, which is not limited to the **primitive types** that supported by the hardware. The type system is the key to the **multiple dispatch** feature of Julia.
 
 As an example, let us consider the type for complex numbers.
-```julia
+```@repl types
 Complex{Float64}
 ```
 where `Float64` is the **type parameter** of `Complex`. Type parameters are a part of a type, without which the type is not fully specified. A fully specified type is called a **concrete type**, which has a fixed memory layout and can be instantiated in memory. For example, the `Complex{Float64}` consists of two fields of type `Float64`, which are the real and imaginary parts of the complex number.
-```julia
-julia> fieldnames(Complex{Float64})
-(:re, :im)
-
-julia> fieldtypes(Complex{Float64})
-(Float64, Float64)
+```@repl types
+fieldnames(Complex{Float64})
+fieldtypes(Complex{Float64})
 ```
 
 Extending the example, we can define the type for a matrix of complex numbers.
 
-```julia
+```@repl types
 Array{Complex{Float64}, 2}
 ```
 `Array` type has two type parameters, the first one is the **element type** and the second one is the **dimension** of the array.
 
 One can get the type of value with `typeof` function.
 
-```julia
-julia> typeof(1+2im)
-
-julia> typeof(randn(Complex{Float64}, 2, 2))
+```@repl types
+typeof(1+2im)
+typeof(randn(Complex{Float64}, 2, 2))
 ```
 
 Then, what the type of a type?
-```julia
-julia> typeof(Complex{Float64})
-DataType
+```@repl types
+typeof(Complex{Float64})
 ```
 
 There is a very special type: `Tuple`, which is different from regular types in the following ways:
@@ -43,47 +38,41 @@ There is a very special type: `Tuple`, which is different from regular types in 
 - Tuple types are covariant in their parameters: `Tuple{Int}` is a subtype of `Tuple{Any}`. Therefore `Tuple{Any}` is considered an abstract type, and tuple types are only concrete if their parameters are.
 - Tuples do not have field names; fields are only accessed by index.
 
-```julia
-julia> tp = (1, 2.0, 'c')
-(1, 2.0, 'c')
-
-julia> typeof(tp)
-Tuple{Int64, Float64, Char}
-
-julia> tp[2]
-2.0
+```@repl types
+tp = (1, 2.0, 'c')
+typeof(tp)
+tp[2]
 ```
 
 ### Example: define you first type
 We first define of an abstract type `AbstractAnimal` with the keyword `abstract type`:
-```julia
-julia> abstract type AbstractAnimal{L} end
+```@repl animal
+abstract type AbstractAnimal{L} end
 ```
 where the type parameter `L` stands for the number of legs.
 Defining the number of legs as a type parameter or a field of a concrete type is a design choice. Providing more information in the type system can help the compiler to optimize the code, but it can also make the compiler generate more code.
 
 Abstract types can have subtypes. In the following we define a concrete subtype type `Dog` with 4 legs, which is a subtype of `AbstractAnimal{4}`.
-```julia
-julia> struct Dog <: AbstractAnimal{4}
+```@repl animal
+struct Dog <: AbstractAnimal{4}
 	color::String
 end
 ```
-
 where `<:` is the symbol for sybtyping， `A <: B` means A is a subtype of B.
 Concrete types can have fields, which are the data members of the type. However, they can not have subtypes.
 
 Similarly, we define a `Cat` with 4 legs, a `Cock` with 2 legs and a `Human` with 2 legs.
 
-```julia
-julia> struct Cat <: AbstractAnimal{4}
+```@repl animal
+struct Cat <: AbstractAnimal{4}
 	color::String
 end
 
-julia> struct Cock <: AbstractAnimal{2}
+struct Cock <: AbstractAnimal{2}
 	gender::Bool
 end
 
-julia> struct Human{FT <: Real} <: AbstractAnimal{2}
+struct Human{FT <: Real} <: AbstractAnimal{2}
 	height::FT
 	function Human(height::T) where T <: Real
 		if height <= 0 || height > 300
@@ -97,85 +86,57 @@ Here, the `Human` type has its own constructor. The `new` function is the defaul
 
 We can define a **fall back method** `fight` on the abstract type `AbstractAnimal`
 
-```julia
-julia> fight(a::AbstractAnimal, b::AbstractAnimal) = "draw"
+```@repl animal
+fight(a::AbstractAnimal, b::AbstractAnimal) = "draw"
 ```
 where `::` is a type assertion.
 This function will be invoked if two subtypes of `AbstractAnimal` are fed into the function `fight` and no more **explicit** methods are defined.
 
 We can define many more explicit methods with the same name.
 
-```julia
-julia> fight(dog::Dog, cat::Cat) = "win"
-fight (generic function with 2 methods)
-
-julia> fight(hum::Human, a::AbstractAnimal) = "win"
-fight (generic function with 3 methods)
-
-julia> fight(hum::Human, a::Union{Dog, Cat}) = "loss"
-fight (generic function with 4 methods)
-
-julia> fight(hum::AbstractAnimal, a::Human) = "loss"
-fight (generic function with 5 methods)
+```@repl animal
+fight(dog::Dog, cat::Cat) = "win"
+fight(hum::Human, a::AbstractAnimal) = "win"
+fight(hum::Human, a::Union{Dog, Cat}) = "loss"
+fight(hum::AbstractAnimal, a::Human) = "loss"
 ```
 where `Union{Dog, Cat}` is a **union type**. It is a type that can be either `Dog` or `Cat`.
 `Union` types are not concrete since they do not have a fixed memory layout, meanwhile, they can not be subtyped!
 Here, we defined 5 methods for the function `fight`. However, defining too many methods for the same function can be dangerous. You need to be careful about the ambiguity error!
 
 
-```julia
-julia> fight(Human(170), Human(180))
-ERROR: MethodError: fight(::Human{Int64}, ::Human{Int64}) is ambiguous.
-
-Candidates:
-  fight(hum::AbstractAnimal, a::Human)
-    @ Main REPL[37]:1
-  fight(hum::Human, a::AbstractAnimal)
-    @ Main REPL[35]:1
-
-Possible fix, define
-  fight(::Human, ::Human)
-
-Stacktrace:
- [1] top-level scope
-   @ REPL[38]:1
+```@repl animal; allow_error=true
+fight(Human(170), Human(180))
 ```
 
 It makes sense because we claim `Human` wins any other animals, but we also claim any animal losses to `Human`. When it comes to two `Human`s, the two functions are equally valid. To resolve the ambiguity, we can define a new method for the function `fight` as follows.
-```julia
-julia> fight(hum::Human{T}, hum2::Human{T}) where T<:Real = hum.height > hum2.height ? "win" : "loss"
+```@repl animal
+fight(hum::Human{T}, hum2::Human{T}) where T<:Real = hum.height > hum2.height ? "win" : "loss"
 ```
 
 Now, we can test the function `fight` with different combinations of animals.
-```julia
-julia> fight(Cock(true), Cat("red"))
-"draw"
-
-julia> fight(Dog("blue"), Cat("white"))
-"win"
-
-julia> fight(Human(180), Cat("white"))
-"loss"
-
-julia> fight(Human(170), Human(180))
-"loss"
+```@repl animal
+fight(Cock(true), Cat("red"))
+fight(Dog("blue"), Cat("white"))
+fight(Human(180), Cat("white"))
+fight(Human(170), Human(180))
 ```
 
 Quiz: How many method instances are generated for fight so far?
 
-```julia
+```@repl animal
 julia> methodinstances(fight)
 ```
 
 ### Julia number system
 The Julia type system is a tree, and `Any` is the root of type tree, i.e. it is a super type of any other type.
 The `Number` type is the root type of Julia number system, which is also a subtype of `Any`.
-```julia
-julia> Number <: Any
+```@repl number
+Number <: Any
 ```
 
 The type tree rooted on `Number` looks like:
-```julia
+```
 Number
 ├─ Base.MultiplicativeInverses.MultiplicativeInverse{T}
 │  ├─ Base.MultiplicativeInverses.SignedMultiplicativeInverse{T<:Signed}
@@ -193,18 +154,11 @@ Number
 
 There are utilities to analyze the type tree:
 
-```julia
-julia> subtypes(Number)
-3-element Vector{Any}:
- Base.MultiplicativeInverses.MultiplicativeInverse
- Complex
- Real
-
-julia> supertype(Float64)
-AbstractFloat
-
-julia> AbstractFloat <: Real
-true
+```@repl number
+using InteractiveUtils # hide
+subtypes(Number)
+supertype(Float64)
+AbstractFloat <: Real
 ```
 
 The leaf nodes of the type tree are called **concrete types**. They are the types that can be instantiated in memory. Among the concrete types, there are **primitive types** and **composite types**. Primitive types are built into the language, such as `Int64`, `Float64`, `Bool`, and `Char`, while composite types are built on top of primitive types, such as `Dict`, `Complex` and the user-defined types.
@@ -270,22 +224,22 @@ X = 8
 It turns out the `__radd__` method of `Y` is not called at all. This is because the `__radd__` method is only called when the object on the left-hand side does not have the `__add__` method by some artifical rules.
 
 Implement addition in Julian style is much easier. We can define the addition operation of two types `X` and `Y` as follows.
-```julia
-julia> struct X{T} <: Number
+```@repl number
+struct X{T} <: Number
 	num::T
 end
 
-julia> struct Y{T} <: Number
+struct Y{T} <: Number
 	num::T
 end
 
-julia> Base.:(+)(a::X, b::Y) = X(a.num + b.num);
+Base.:(+)(a::X, b::Y) = X(a.num + b.num);
 
-julia> Base.:(+)(a::Y, b::X) = X(a.num + b.num);
+Base.:(+)(a::Y, b::X) = X(a.num + b.num);
 
-julia> Base.:(+)(a::X, b::X) = X(a.num + b.num);
+Base.:(+)(a::X, b::X) = X(a.num + b.num);
 
-julia> Base.:(+)(a::Y, b::Y) = Y(a.num + b.num);
+Base.:(+)(a::Y, b::Y) = Y(a.num + b.num);
 ```
 
 Multiple dispatch seems to be more expressive than object-oriented programming.
@@ -319,32 +273,19 @@ Z = 8
 No matter how hard you try, you can not make the `__add__` method of `Z` to be called when the object is on the left-hand side.
 In Julia, this is not a problem at all. We can define the addition operation of `Z` as follows.
 
-```julia
-julia> struct Z{T} <: Number
+```@repl number
+struct Z{T} <: Number
     num::T
 end
-
-julia> Base.:(+)(a::X, b::Z) = Z(a.num + b.num);
-
-julia> Base.:(+)(a::Z, b::X) = Z(a.num + b.num);
-
-julia> Base.:(+)(a::Y, b::Z) = Z(a.num + b.num);
-
-julia> Base.:(+)(a::Z, b::Y) = Z(a.num + b.num);
-
-julia> Base.:(+)(a::Z, b::Z) = Z(a.num + b.num);
-
-julia> X(3) + Y(5)
-X{Int64}(8)
-
-julia> Y(3) + X(5)
-X{Int64}(8)
-
-julia> X(3) + Z(5)
-Z{Int64}(8)
-
-julia> Z(3) + Y(5)
-Z{Int64}(8)
+Base.:(+)(a::X, b::Z) = Z(a.num + b.num);
+Base.:(+)(a::Z, b::X) = Z(a.num + b.num);
+Base.:(+)(a::Y, b::Z) = Z(a.num + b.num);
+Base.:(+)(a::Z, b::Y) = Z(a.num + b.num);
+Base.:(+)(a::Z, b::Z) = Z(a.num + b.num);
+X(3) + Y(5)
+Y(3) + X(5)
+X(3) + Z(5)
+Z(3) + Y(5)
 ```
 
 There is a deeper reason why multiple dispatch is more expressive than object-oriented programming. *The Julia function space is exponentially large*!
@@ -365,13 +306,13 @@ The behavior of method `f` is completely determined by the first argument `self`
 
 ### Example: Computing Fibonacci number at compile time
 The Fibonacci number has a recursive definition:
-```julia
-julia> fib(x::Int) = x <= 2 ? 1 : fib(x-1) + fib(x-2)
-fib (generic function with 1 methods)
+```@repl number
+using BenchmarkTools
+fib(x::Int) = x <= 2 ? 1 : fib(x-1) + fib(x-2)
+addup(x::Int, y::Int) = x + y
+```
 
-julia> addup(x::Int, y::Int) = x + y
-addup (generic function with 1 methods)
-
+```julia-repl
 julia> @btime fib(40)
   278.066 ms (0 allocations: 0 bytes)
 102334155
@@ -381,26 +322,22 @@ Oops, it is really slow. There is definitely a better way to calculate the Fibon
 
 If you know the Julia type system, you can implement the Fibonacci number in a zero cost way. The trick is to use the type system to calculate the Fibonacci number at compile time. There is a type `Val` defined in the `Base` module, which is just a type with a type parameter. The type parameter can be a number:
 
-```julia
-julia> Val(3.0)
-Val{3.0}()
+```@repl number
+Val(3.0)
 ```
 
 We can define the addition operation of `Val` as the addition of the type parameters.
-```julia
-julia> addup(::Val{x}, ::Val{y}) where {x, y} = Val(x + y)
-addup (generic function with 2 methods)
-
-julia> addup(Val(5), Val(7))
-Val{12}()
+```@repl number
+addup(::Val{x}, ::Val{y}) where {x, y} = Val(x + y)
+addup(Val(5), Val(7))
 ```
 
 Finally, we can define the Fibonacci number in a zero cost way.
-```julia
-julia> fib(::Val{x}) where x = x <= 2 ? Val(1) : addup(fib(Val(x-1)), fib(Val(x-2)))
-fib (generic function with 2 methods)
+```@repl
+fib(::Val{x}) where x = x <= 2 ? Val(1) : addup(fib(Val(x-1)), fib(Val(x-2)))
+```
 
-
+```julia-repl
 julia> @btime fib(Val(40))
   0.792 ns (0 allocations: 0 bytes)
 Val{102334155}()

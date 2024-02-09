@@ -1,4 +1,5 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 LiveServer = "16fef848-5104-11e9-1b77-fb7a48bbb589"
 ScientificComputingForPhysicists = "8342b4c8-ab9c-40e3-a6fa-cecd975493fe"

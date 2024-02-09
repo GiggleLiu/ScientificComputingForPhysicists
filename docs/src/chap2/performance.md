@@ -1,10 +1,8 @@
 # Understanding Performance
 ### Array and Broadcasting
 
-```jl
-sco("""
-	arr = [1, 2.0, 'c']
-""")
+```@repl
+arr = [1, 2.0, 'c']
 ```
 
 ```jl

@@ -83,7 +83,7 @@ end
 The contents in the startup file is executed immediately after you open a new Julia session.
 
 Then you need to install [Revise](https://github.com/timholy/Revise.jl), which is an Julia package that can greatly improve the using experience of Julia. To install `Revise`, open Julia REPL and type
-```julia
+```julia-repl
 julia> using Pkg; Pkg.add("Revise")
 ```
 
@@ -94,7 +94,7 @@ If you don't know about `startup.jl` and where to find it, [here](https://docs.j
 
 
 As a final step, please verify your Julia configuration by openning a Julia REPL and type
-```julia
+```julia-repl
 julia> versioninfo()
 Julia Version 1.9.2
 Commit e4ee485e909 (2023-07-05 09:39 UTC)
@@ -127,14 +127,14 @@ A Julia REPL has four modes,
 1. **Julian mode** is the default mode that can interpret your Julia code.
 
 2. **Shell mode** is the mode that you can run shell commands. Press `;` in the Julian mode and type
-```julia
+```julia-repl
 shell> date
 Sun Nov  6 10:50:21 PM CST 2022
 ```
 To return to the Julian mode, type the <kbd>Backspace</kbd> key.
 
 3. **Package mode** is the mode that you can manage packages. Press `]` in the Julian mode and type
-```julia
+```julia-repl
 (@v1.8) pkg> st
 Status `~/.julia/environments/v1.8/Project.toml`
   [295af30f] Revise v3.4.0
@@ -142,7 +142,7 @@ Status `~/.julia/environments/v1.8/Project.toml`
 To return to the Julian mode, type the <kbd>Backspace</kbd> key.
 
 4. **Help mode** is the mode that you can access the docstrings of functions. Press `?` in the Julian mode and type
-```julia
+```julia-repl
 help> sum
 ... docstring for sum ...
 ```

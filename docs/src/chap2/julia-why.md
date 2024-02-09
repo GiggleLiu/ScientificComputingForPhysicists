@@ -27,12 +27,12 @@ Unlike **C/C++** and **Fortran**, *Julia is easy to use* and is becoming a trend
 ### My first program: Factorial
 
 Before we start, please make sure you have the needed packages installed. Type `]` in the Julia REPL to enter the package manager, and then type
-```julia
+```julia-repl
 pkg> add BenchmarkTools, MethodAnalysis
 ```
 Go back to the REPL by pressing `Backspace`.
 
-```julia
+```julia-repl
 julia> function jlfactorial(n)
            x = 1
            for i in 1:n
@@ -44,7 +44,7 @@ jlfactorial (generic function with 1 method)
 ```
 
 To make sure the performance is measured correctly, we use the `@btime` macro in the `BenchmarkTools` package to measure the performance of the function.
-```julia
+```julia-repl
 julia> @btime jlfactorial(x) setup=(x=5)
 2.208 ns (0 allocations: 0 bytes)
 120
@@ -78,7 +78,7 @@ $ gcc demo.c -fPIC -O3 -shared -o demo.so
 
 To call the function in Julia, one can use the `@ccall` macro in the `Libdl` package ([learn more](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)). Please open a Julia REPL and execute the following code:
 
-```julia
+```julia-repl
 julia> using Libdl
 
 julia> c_factorial(x) = Libdl.@ccall "./demo.so".c_factorial(x::Csize_t)::Int
@@ -86,7 +86,7 @@ julia> c_factorial(x) = Libdl.@ccall "./demo.so".c_factorial(x::Csize_t)::Int
 
 The benchmark result is as follows:
 
-```julia
+```julia-repl
 julia> using BenchmarkTools
 
 julia> @benchmark c_factorial(5)
@@ -129,7 +129,7 @@ One can also use the `PyCall` package to call the Python function in Julia.
 
 The computing time of the Python program is 144 ns, which is 20 times slower than the C program and 70 times slower than the Julia program.
 On the other hand, the python program is more flexible since its integer type is not limited by the machine word size.
-```julia
+```julia-repl
 julia> typemax(Int)
 9223372036854775807
 
@@ -162,7 +162,7 @@ Knowing the types of the variables is key to generate a fast binary. Given the i
 
 If all the types are inferred, the function is called **type stable**. One can use the `@code_warntype` macro to check if the function is type stable. For example, the `jlfactorial` function with integer input is type stable:
 
-```julia
+```julia-repl
 julia> @code_warntype jlfactorial(10)
 MethodInstance for jlfactorial(::Int64)
   from jlfactorial(n) @ Main REPL[4]:1
@@ -194,7 +194,7 @@ Body::Int64
 
 If the types are not inferred, the function is called **type unstable**. For example, the `badcode` function is type unstable:
 
-```julia
+```julia-repl
 julia> badcode(x) = x > 3 ? 1.0 : 3
 
 julia> @code_warntype badcode(4)
@@ -212,7 +212,7 @@ Body::Union{Float64, Int64}
 In this example, the output type `Union{Float64, Int64}` means the return type is either `Float64` or `Int64`. The function is type unstable because the return type is not fixed.
 Type unstable code is slow. In the following example, the `badcode` function is ~10 times slower than its type stable version `stable`:
 
-```julia
+```julia-repl
 julia> x = rand(1:10, 1000);
 
 julia> @benchmark badcode.($x)
@@ -253,7 +253,7 @@ LLVM is a set of compiler and toolchain technologies that can be used to develop
 
 In Julia, one can use the `@code_llvm` macro to show the LLVM intermediate representation of a function.
 
-```julia
+```julia-repl
 julia> @code_llvm jlfactorial(10)
 
 or any instruction set architecture. LLVM is the backend of multiple languages, including Julia, Rust, Swift and Kotlin.
@@ -339,7 +339,7 @@ L32:                                              ; preds = %L17, %middle.block,
 
 The LLVM intermediate representation is then compiled to binary code by the LLVM compiler. The binary code can be printed by the `@code_native` macro.
 
-```julia
+```julia-repl
 julia> @code_native jlfactorial(10)
 	.section	__TEXT,__text,regular,pure_instructions
 	.build_version macos, 14, 0
@@ -420,7 +420,7 @@ LBB0_9:                                 ; %L32
 
 Single function definition may have multiple method instances.
 
-```julia
+```julia-repl
 julia> methods(jlfactorial)
 # 1 method for generic function "jlfactorial" from Main:
  [1] jlfactorial(n)
@@ -429,7 +429,7 @@ julia> methods(jlfactorial)
 
 Whenever the function is called with a new input type, the Julia compiler will generate a new method instance for the function. The method instance is then stored in the method table, and can be analyzed by the `MethodAnalysis` package.
 
-```julia
+```julia-repl
 julia> using MethodAnalysis
 
 julia> methodinstances(jlfactorial)

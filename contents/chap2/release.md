@@ -118,6 +118,8 @@ The validity of specifying compatibility is based on the consensus among the dev
 Please check the Julia documentation about [package compatibility](https://pkgdocs.julialang.org/v1/compatibility/) for advanced usage.
 
 ### Develop the package
+1. Edit the source code of the package
+
 The source code of the package is located in the `src` folder of the package path.
 *File*: `src/MyFirstPackage.jl`
 ```julia
@@ -165,6 +167,8 @@ julia> MyFirstPackage.greet("Julia")
 "Hello, Julia!"
 ```
 
+2. Write tests for the package
+
 We always need to write tests for the package. The test code of the package is located in the `test` folder of the package path.
 
 *File*: `test/runtests.jl`
@@ -201,7 +205,49 @@ private sum   |    2      2  0.3s
 
 Cheers! All tests passed.
 
+3. Write documentation for the package
+
+The documentation is built with [Documenter.jl](https://documenter.juliadocs.org/stable/). The build script is `docs/make.jl`. To **build the documentation**, you can use the following command in the package path:
+```bash
+$ cd docs
+$ julia --project make.jl
+```
+Instantiate the documentation environment if necessary. For seamless **debugging** of documentation, it is highly recommended using the [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) package.
+
+
 ### Open-source the package
+To open-source the package, you need to push the package to a public repository on GitHub.
+
+1. First create a GitHub repository with the same as the name of the package. In this example, the repository name should be `GiggleLiu/MyFirstPackage.jl`. To check the remote repository of the package, you can use the following command in the package path:
+   ```bash
+   $ git remote -v
+   origin	git@github.com:GiggleLiu/MyFirstPackage.jl.git (fetch)
+   origin	git@github.com:GiggleLiu/MyFirstPackage.jl.git (push)
+   ```
+
+2. Then push the package to the remote repository:
+   ```bash
+   $ git add -A
+   $ git commit -m "Initial commit"
+   $ git push
+   ```
+
+3. After that, you need to check if all your GitHub Actions are passing. You can check the status of the GitHub Actions from the badge in the `README.md` file of the package repository. The configuration of GitHub Actions is located in the `.github/workflows` folder of the package path. Its file structure is as follows:
+   ```bash
+   .github
+   ├── dependabot.yml
+   └── workflows
+       ├── CI.yml
+       ├── CompatHelper.yml
+       └── TagBot.yml
+   ```
+   - The `CI.yml` file contains the configuration for the CI of the package, which is used to automate the process of
+      - **testing** the package after a pull request is opened or the main branch is updated,
+      - building the **documentation** after a pull request is merged.
+   - The `TagBot.yml` file contains the configuration for the TagBot, which is used to automate the process of tagging a release after a pull request is merged.
+   - The `CompatHelper.yml` file contains the configuration for the CompatHelper, which is used to automate the process of updating the `[compat]` section of the `Project.toml` file after a pull request is merged.
+
+   Configuring GitHub Actions is a bit complicated, which is beyond the scope of this book. You can refer to another package's GitHub Actions configuration file for reference, e.g. [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl).
 
 ### Register the package
 
@@ -234,17 +280,7 @@ $ tree . -L 1 -a
 └── test
 ```
 - `.git` and `.gitignore`: the files that are used by Git. The `.gitingore` file contains the files that should be ignored by Git.
-- `.github`: the folder that contains the GitHub Actions configuration files. Its file structure is as follows:
-  ```bash
-  .github
-  └── workflows
-      ├── TagBot.yml
-      └── ci.yml
-  ```
-  - The `ci.yml` file contains the configuration for the CI of the package, which is used to automate the process of
-    - **testing** the package after a pull request is opened or the main branch is updated,
-    - building the **documentation** after a pull request is merged.
-  - The `TagBot.yml` file contains the configuration for the TagBot, which is used to automate the process of tagging a release after a pull request is merged.
+- `.github`: the folder that contains the GitHub Actions configuration files.
 - `LICENSE`: the file that contains the license of the package. The MIT license is used in this package. Please check the [Choosing a license](#sec:license) section for more information.
 - `README.md`: the manual that shows up in the GitHub repository of the package, which contains the description of the package.
 - `Project.toml`: the file that contains the metadata of the package, including the name, UUID, version, dependencies and compatibility of the package.
@@ -300,12 +336,7 @@ $ tree . -L 1 -a
   [targets]
   test = ["Test", "Documenter", "LinearAlgebra", "ProgressMeter", "SymEngine", "Random", "Zygote", "DoubleFloats", "TropicalNumbers", "ForwardDiff", "Polynomials", "CUDA"]
   ```
-- `docs`: the folder that contains the documentation of the package. The documentation is built with [Documenter.jl](https://documenter.juliadocs.org/stable/). The build script is `docs/make.jl`. To **build the documentation**, you can use the following command in the package path:
-  ```bash
-  $ cd docs
-  $ julia --project make.jl
-  ```
-  Instantiate the documentation environment if necessary. For seamless **debugging** of documentation, it is highly recommended using the [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) package.
+- `docs`: the folder that contains the documentation of the package.
 - `src`: the folder that contains the source code of the package.
 - `ext`: the folder that contains the extension of the package, which is related with the `[weakdeps]` section in the `Project.toml` file. A package "extension" is a module that is automatically loaded when a specified set of other packages (its "extension dependencies") are loaded in the current Julia session. As a using case, consider you want to add the CUDA support to your package, but you don't want to force all users to install `CUDA` package if they don't need it, then adding `CUDA` as a weak dependency and move this feature `ext` folder is a good choice. Please check the Julia documentation about [package extensions](https://docs.julialang.org/en/v1/manual/code-loading/#man-extensions) for more information.
 - `test`: the folder that contains the test code of the package. The main test file is `runtests.jl`, which is executed by GitHub Actions. If you want to run local tests, you can use the following command in the package path:

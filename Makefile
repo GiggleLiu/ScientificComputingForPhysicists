@@ -1,21 +1,17 @@
-JL = julia --project
+JL = julia --project=docs
 
 default: init build serve
 
 init:
-	$(JL) -e 'using Pkg; Pkg.activate("."); Pkg.instantiate(); Pkg.precompile()'
+	$(JL) -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 update:
-	$(JL) -e 'using Pkg; Pkg.activate("."); Pkg.update(); Pkg.precompile()'
-
-build:
-	$(JL) -e 'using BookTemplate; BookTemplate.build()'
+	$(JL) -e 'using Pkg; Pkg.update(); Pkg.precompile()'
 
 serve:
-	$(JL) -e 'using Books; serve()'
+	$(JL) -e 'using LiveServer; servedocs()'
 
 clean:
-	rm -rf _build
-	rm -rf _gen
+	rm -rf docs/build
 
 .PHONY: init build serve

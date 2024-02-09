@@ -1,0 +1,4 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+LiveServer = "16fef848-5104-11e9-1b77-fb7a48bbb589"
+ScientificComputingForPhysicists = "8342b4c8-ab9c-40e3-a6fa-cecd975493fe"

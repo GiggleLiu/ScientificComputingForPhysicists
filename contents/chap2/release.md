@@ -48,75 +48,158 @@ After running the above commands, a new directory named `MyFirstPackage` will be
 ### Specify the dependency
 The file that contains the metadata of the package, including the name, UUID, version, dependencies and compatibility of the package. To **add a new dependency**, you can use the following command in the package path:
 ```bash
+$ cd ~/.julia/dev/MyFirstPackage
+
 $ julia --project
 ```
-to enter the package environment, and then type `]` to enter the package manager mode. After that, you can add a new dependency by typing:
+
+This will open a Julia REPL in the package environment. To check the package environment, you can type the following commands in the package mode (press `]`) of the REPL:
+
 ```julia
-pkg> add PackageName
+(MyFirstPackage) pkg> st
+Project MyFirstPackage v1.0.0-DEV
+Status `~/.julia/dev/MyFirstPackage/Project.toml` (empty project)
+```
+ After that, you can add a new dependency by typing:
+```julia
+(MyFirstPackage) pkg> add OMEinsum
+
+(MyFirstPackage) pkg> st
+Project MyFirstPackage v1.0.0-DEV
+Status `~/.julia/dev/MyFirstPackage/Project.toml`
+  [ebe7aa44] OMEinsum v0.8.1
+```
+Press `backspace` to exit the package mode and then type
+```julia
+julia> using OMEinsum
+```
+The dependency is added correctly if no error is thrown.
+
+Type `;` to enter the shell mode and then type
+```julia
+shell> cat Project.toml
+name = "MyFirstPackage"
+uuid = "594718ca-da39-4ff3-a299-6d8961b2aa49"
+authors = ["GiggleLiu"]
+version = "1.0.0-DEV"
+
+[deps]
+OMEinsum = "ebe7aa44-baf0-506c-a96f-8464559b3922"
+
+[compat]
+julia = "1.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
+```
+You will see that the dependency `OMEinsum` is added to the `[deps]` section of the `Project.toml` file.
+
+We also need to specify which version of `OMEinsum` is **compatible** with the current package. To do so, you need to edit the `[compat]` section of the `Project.toml` file with your favorite editor.
+```toml
+[compat]
+julia = "1.10"
+OMEinsum = "0.8"
 ```
 
-The **compatibility**, which is used to specify the version of the package that is compatible with the current package, needs to be updated manually. It is specified in the `[compat]` section of the `Project.toml` file.
-The most widely used dependency version specifier is `=`, which means matching the first nonzero component of the version number. For example:
+Here, we have used the most widely used dependency version specifier `=`, which means matching the first nonzero component of the version number. For example:
 
 - `1` matches `1.0.0`, `1.1.0`, `1.1.1`, but not `2.0.0`.
-- `0.1` matches `0.1.0`, `0.1.1`, `0.1.2`, but not `0.2.0`.
+- `0.8` matches `0.8.0`, `0.8.1`, `0.8.2`, but not `0.9.0` or `0.7.0`.
 - `1.2` matches `1.2.0`, `1.3.1`, but not `1.2.0` or `2.0.0`.
+
+The validity of specifying compatibility is based on the consensus among the developers:
+
+- whenever an exported function is changed in a package, the first nonzero component of the version number should be increased.
+- version number starts with `0` is considered as a development version, and it is not stable.
 
 Please check the Julia documentation about [package compatibility](https://pkgdocs.julialang.org/v1/compatibility/) for advanced usage.
 
-File: `Project.toml`
-```toml
-name = "OMEinsum"
-uuid = "ebe7aa44-baf0-506c-a96f-8464559b3922"
-authors = ["Andreas Peter <andreas.peter.ch@gmail.com>"]
-version = "0.8.1"
+### Develop the package
+The source code of the package is located in the `src` folder of the package path.
+*File*: `src/MyFirstPackage.jl`
+```julia
+module MyFirstPackage
 
-[deps]
-AbstractTrees = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
-BatchedRoutines = "a9ab73d0-e05c-5df1-8fde-d6a4645b8d8e"
-ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
-OMEinsumContractionOrders = "6f22d1fd-8eed-4bb7-9776-e7d684900715"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-TupleTools = "9d95972d-f1c8-5527-a6e0-b4b365fa01f6"
+# Write your package code here.
 
-[weakdeps]
-CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
-
-[extensions]
-CUDAExt = "CUDA"
-
-[compat]
-AbstractTrees = "0.3, 0.4"
-BatchedRoutines = "0.2"
-CUDA = "4, 5"
-ChainRulesCore = "1"
-Combinatorics = "1.0"
-MacroTools = "0.5"
-OMEinsumContractionOrders = "0.8"
-TupleTools = "1.2, 1.3"
-julia = "1"
-
-[extras]
-Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-DoubleFloats = "497a8b3b-efae-58df-a0af-a86822472b78"
-ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
-ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-TropicalNumbers = "b3a74e9c-7526-4576-a4eb-79c0d4c32334"
-Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
-
-[targets]
-test = ["Test", "Documenter", "LinearAlgebra", "ProgressMeter", "SymEngine", "Random", "Zygote", "DoubleFloats", "TropicalNumbers", "ForwardDiff", "Polynomials", "CUDA"]
+end
 ```
 
-### Develop the package
+Let us add a simple function to the package:
+```julia
+module MyFirstPackage
+# import the OMEinsum package (not really used in this example)
+using OMEinsum
+
+# export `greet` as a public function
+export greet
+
+"""
+    greet(name::String)
+
+Return a greeting message to the input `name`.
+"""
+function greet(name::String)
+    # `$` is used to interpolate the variable `name` into the string
+    return "Hello, $(name)!"
+end
+
+# this function is not exported
+function private_sum(v::AbstractVector{<:Real})
+    # we implement the sum function by using the `@ein_str` macro
+    # from the OMEinsum package
+    return ein"i->"(v)
+end
+
+end
+```
+
+To use this function, you can type the following commands in the package environment:
+```julia
+julia> using MyFirstPackage
+
+julia> MyFirstPackage.greet("Julia")
+"Hello, Julia!"
+```
+
+We always need to write tests for the package. The test code of the package is located in the `test` folder of the package path.
+
+*File*: `test/runtests.jl`
+```julia
+using Test
+using MyFirstPackage
+
+@testset "greet" begin
+    @test greet("Julia") == "Hello, Julia!"
+end
+
+@testset "private sum" begin
+    # because we have not exported the `private_sum` function,
+    # we need to use the full path to call it
+    @test MyFirstPackage.private_sum([1, 2, 3]) == 6
+    @test MyFirstPackage.private_sum(Int[]) == 0
+end
+```
+
+To run the tests, you can use the following command in the package environment:
+```julia
+(MyFirstPackage) pkg> test
+  ... 
+  [8e850b90] libblastrampoline_jll v5.8.0+1
+Precompiling project...
+  1 dependency successfully precompiled in 1 seconds. 21 already precompiled.
+     Testing Running tests...
+Test Summary:  | Pass  Total  Time
+MyFirstPackage |    1      1  0.0s
+Test Summary: | Pass  Total  Time
+private sum   |    2      2  0.3s
+     Testing MyFirstPackage tests passed
+```
+
+Cheers! All tests passed.
 
 ### Open-source the package
 
@@ -165,6 +248,58 @@ $ tree . -L 1 -a
 - `LICENSE`: the file that contains the license of the package. The MIT license is used in this package. Please check the [Choosing a license](#sec:license) section for more information.
 - `README.md`: the manual that shows up in the GitHub repository of the package, which contains the description of the package.
 - `Project.toml`: the file that contains the metadata of the package, including the name, UUID, version, dependencies and compatibility of the package.
+
+  *File*: `Project.toml`
+  ```toml
+  name = "OMEinsum"
+  uuid = "ebe7aa44-baf0-506c-a96f-8464559b3922"
+  authors = ["Andreas Peter <andreas.peter.ch@gmail.com>"]
+  version = "0.8.1"
+  
+  [deps]
+  AbstractTrees = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
+  BatchedRoutines = "a9ab73d0-e05c-5df1-8fde-d6a4645b8d8e"
+  ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+  Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
+  LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+  MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
+  OMEinsumContractionOrders = "6f22d1fd-8eed-4bb7-9776-e7d684900715"
+  Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+  TupleTools = "9d95972d-f1c8-5527-a6e0-b4b365fa01f6"
+  
+  [weakdeps]
+  CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+  
+  [extensions]
+  CUDAExt = "CUDA"
+  
+  [compat]
+  AbstractTrees = "0.3, 0.4"
+  BatchedRoutines = "0.2"
+  CUDA = "4, 5"
+  ChainRulesCore = "1"
+  Combinatorics = "1.0"
+  MacroTools = "0.5"
+  OMEinsumContractionOrders = "0.8"
+  TupleTools = "1.2, 1.3"
+  julia = "1"
+  
+  [extras]
+  Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+  DoubleFloats = "497a8b3b-efae-58df-a0af-a86822472b78"
+  ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+  LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+  Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
+  ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+  Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+  SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
+  Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+  TropicalNumbers = "b3a74e9c-7526-4576-a4eb-79c0d4c32334"
+  Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+  
+  [targets]
+  test = ["Test", "Documenter", "LinearAlgebra", "ProgressMeter", "SymEngine", "Random", "Zygote", "DoubleFloats", "TropicalNumbers", "ForwardDiff", "Polynomials", "CUDA"]
+  ```
 - `docs`: the folder that contains the documentation of the package. The documentation is built with [Documenter.jl](https://documenter.juliadocs.org/stable/). The build script is `docs/make.jl`. To **build the documentation**, you can use the following command in the package path:
   ```bash
   $ cd docs

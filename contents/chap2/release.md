@@ -242,12 +242,12 @@ To open-source the package, you need to push the package to a public repository 
        └── TagBot.yml
    ```
    - The `CI.yml` file contains the configuration for the CI of the package, which is used to automate the process of
-      - **testing** the package after a pull request is opened or the main branch is updated,
-      - building the **documentation** after a pull request is merged.
-   - The `TagBot.yml` file contains the configuration for the TagBot, which is used to automate the process of tagging a release after a pull request is merged.
-   - The `CompatHelper.yml` file contains the configuration for the CompatHelper, which is used to automate the process of updating the `[compat]` section of the `Project.toml` file after a pull request is merged.
+      - **Testing** the package after a pull request is opened, or the main branch is updated. This process can be automated with the [julia-runtest](https://github.com/julia-actions/julia-runtest) action.
+      - Building the **documentation** after the main branch is updated. Please check the [Documenter documentation](https://documenter.juliadocs.org/stable/man/hosting/) for more information.
+   - The `TagBot.yml` file contains the configuration for the [TagBot](https://github.com/JuliaRegistries/TagBot), which is used to automate the process of tagging a release after a pull request is merged.
+   - The `CompatHelper.yml` file contains the configuration for the [CompatHelper](https://github.com/JuliaRegistries/CompatHelper.jl), which is used to automate the process of updating the `[compat]` section of the `Project.toml` file after a pull request is merged.
 
-   Configuring GitHub Actions is a bit complicated, which is beyond the scope of this book. You can refer to another package's GitHub Actions configuration file for reference, e.g. [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl).
+   Configuring GitHub Actions is a bit complicated. For beginners, it is a good practise to mimic the configuration of another package, e.g. [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl).
 
 ### Register the package
 

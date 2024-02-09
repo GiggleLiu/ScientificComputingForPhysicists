@@ -11,7 +11,7 @@ Everyone can register a package in the `General` registry. To do so, you need to
 4. [**Open-source the package**](#Open-source-the-package) by pushing the package to a public repository on GitHub. GitHub Actions can be used to automate the process of testing, building the documentation, and tagging a release so that other developers can contribute to the package easily.
 5. [**Register the package**](#Register-the-package) in the `General` registry by creating a pull request to the `General` registry.
 
-### Create a package
+## Create a package
 We use [`PkgTemplate`](https://github.com/JuliaCI/PkgTemplates.jl).
 Open a Julia REPL and type the following commands to initialize a new package named `MyFirstPackage`:
 
@@ -99,7 +99,7 @@ tree .
 - `src`: the folder that contains the source code of the package.
 - `test`: the folder that contains the test code of the package, which contains the main test file `runtests.jl`.
 
-### Specify the dependency
+## Specify the dependency
 The file that contains the metadata of the package, including the name, UUID, version, dependencies and compatibility of the package. To **add a new dependency**, you can use the following command in the package path:
 ```bash
 $ cd ~/.julia/dev/MyFirstPackage
@@ -171,7 +171,7 @@ The validity of specifying compatibility is based on the consensus among the dev
 
 Please check the Julia documentation about [package compatibility](https://pkgdocs.julialang.org/v1/compatibility/) for advanced usage.
 
-### Develop the package
+## Develop the package
 Developers develop packages in the package environment. The package development process includes:
 
 1. Edit the source code of the package
@@ -264,7 +264,7 @@ $ julia --project make.jl
 Instantiate the documentation environment if necessary. For seamless **debugging** of documentation, it is highly recommended using the [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) package.
 
 
-### Open-source the package
+## Open-source the package
 To open-source the package, you need to push the package to a public repository on GitHub.
 
 1. First create a GitHub repository with the same as the name of the package. In this example, the repository name should be `GiggleLiu/MyFirstPackage.jl`. To check the remote repository of the package, you can use the following command in the package path:
@@ -298,13 +298,13 @@ To open-source the package, you need to push the package to a public repository 
 
    Configuring GitHub Actions is a bit complicated. For beginners, it is a good practise to mimic the configuration of another package, e.g. [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl).
 
-### Register the package
+## Register the package
 Package registration is the process of adding the package to the `General` registry. To do so, you need to create a pull request to the `General` registry and wait for the pull request to be reviewed and merged.
 This process can be automated by the [Julia registrator](https://github.com/JuliaRegistries/Registrator.jl). If the pull request meets all guidelines, your pull request will be merged after a few days. Then, your package is available to the public. 
 
 A good practice is to **tag a release** after the pull request is merged so that your package version update can be reflected in your GitHub repository. This process can be automated by the [TagBot](https://github.com/JuliaRegistries/TagBot).
 
-### Case study: The file structure of [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl)
+## Case study: The file structure of [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl)
 
 ![](../assets/images/omeinsum.png)
 

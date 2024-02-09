@@ -1,5 +1,5 @@
 # Types and Multiple-dispatch
-### Julia Types
+## Julia Types
 
 Julia has rich type system, which is not limited to the **primitive types** that supported by the hardware. The type system is the key to the **multiple dispatch** feature of Julia.
 
@@ -44,7 +44,9 @@ typeof(tp)
 tp[2]
 ```
 
-### Example: define you first type
+## Multiple dispatch
+**Multiple dispatch** is a feature of some programming languages in which a function or method can be dynamically dispatched based on the **run-time** type. The **dispatch** is the process of selecting the method to invoke based on the type of the arguments.
+
 We first define of an abstract type `AbstractAnimal` with the keyword `abstract type`:
 ```@repl animal
 abstract type AbstractAnimal{L} end
@@ -128,7 +130,7 @@ Quiz: How many method instances are generated for fight so far?
 julia> methodinstances(fight)
 ```
 
-### Julia number system
+## Example: Julia number system
 The Julia type system is a tree, and `Any` is the root of type tree, i.e. it is a super type of any other type.
 The `Number` type is the root type of Julia number system, which is also a subtype of `Any`.
 ```@repl number
@@ -304,7 +306,7 @@ class T1:
 ```
 The behavior of method `f` is completely determined by the first argument `self`, which means *object-oriented programming is equivalent to single dispatch*.
 
-### Example: Computing Fibonacci number at compile time
+## Example: Computing Fibonacci number at compile time
 The Fibonacci number has a recursive definition:
 ```@repl number
 using BenchmarkTools
@@ -345,6 +347,6 @@ Val{102334155}()
 Wow, it computes in no time! However, this trick is not recommended in the [Julia performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/). This implementation simply transfers the run-time computation to the compile time.
 On the other hand, we find the compiling time of the function `fib` is much shorter than the run-time. The recursive form turns out to be optimized away by the Julia compiler. But still, it is not recommended to abuse the type system.
 
-### Summary
+## Summary
 * *Multiple dispatch* is a feature of some programming languages in which a function or method can be dynamically dispatched based on the **run-time** type.
 * Julia's multiple dispatch provides exponential large function space, which allows extending the number system easily.

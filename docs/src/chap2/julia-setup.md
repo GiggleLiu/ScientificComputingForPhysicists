@@ -1,4 +1,4 @@
-# Julia Programming Language
+# Setup Julia
 
 `Julia` is a high-level, high-performance, dynamic programming language. From
 the designing stage, `Julia` is intended to address the needs of
@@ -12,9 +12,7 @@ ecosystem](https://juliahub.com/).
 We will devlve deeper into `Julia` later in the chapter. For now, we will just
 install `Julia` and setup the environment.
 
-## Setup Julia
-
-### Step 1: Installing Julia 
+## Step 1: Installing Julia 
 For Linux/Mac users, please open a terminal and type the following command to install [Julia](https://julialang.org/) with [juliaup](https://github.com/JuliaLang/juliaup). `Juliaup` is a tool to manage Julia versions and installations. It allows you to install multiple versions of Julia and switch between them easily.
 
 ```Bash
@@ -55,7 +53,7 @@ julia
 <!-- ![REPL Session](https://miro.medium.com/v2/resize:fit:4800/format:webp/1*lxjWRvH3EzSa1N3Pg4iNag.png) -->
 - If you wish to install a specific version of Julia, please refer to the [documentation](https://github.com/JuliaLang/juliaup).
 
-### Step 2: Package Management
+## Step 2: Package Management
 - `Julia` has a mature eco-system for scientific computing.
 - `Pkg` is the built-in package manager for Julia.
 - To enter the package manager, press `]` in the REPL.
@@ -65,7 +63,7 @@ julia
 - To exit the package manager press `backspace` key
 - [Read More](https://pkgdocs.julialang.org/v1/managing-packages/)
 
-### Step 3. Configure the startup file
+## Step 3. Configure the startup file
 First create a new file `~/.julia/config/startup.jl` by executing the following commands 
 
 `mkdir -r ~/.julia/config`
@@ -111,16 +109,12 @@ Environment:
   JULIA_PKG_SERVER = http://cn-southeast.pkg.juliacn.com/ 
 ```
 
-### Step 4. Download an editor: VSCode
+## Step 4. Download an editor: VSCode
 
 Install VSCode by downloading the correct binary for your platform from [here](https://code.visualstudio.com/download).
-Open VSCode and open the `Extensions` tab on the left side-bar of the window, search `Julia` and install the most popular extension.
-[read more...](https://github.com/julia-vscode/julia-vscode)
-<!-- ![VSCode Julia Layout](https://code.visualstudio.com/assets/docs/languages/julia/overview.png) -->
+Open VSCode and open the `Extensions` tab on the left side-bar of the window, search `Julia` and install the most popular extension: [julia-vscode](https://github.com/julia-vscode/julia-vscode)
 
-You are ready to go, cheers!
-
-### The four modes of Julia REPL
+## The four modes of Julia REPL
 
 A Julia REPL has four modes,
 

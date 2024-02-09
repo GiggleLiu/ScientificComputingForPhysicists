@@ -7,7 +7,7 @@ Maintaining a software project is not easy, especially when it comes to multiple
 
 The solution to the above problems is **version-control**. Among all version control software, **git** is the most popular one.
 
-### Create a git repository
+## Create a git repository
 
 A git repository, also known as a repo, is basically a directory where your project lives and git keeps track of your file's history. To get started, you start with a terminal and type
 
@@ -26,7 +26,7 @@ git status
 - Line 5: commits the changes to the repository, which will create a **snapshot** of your current work.
 - Line 6: shows the status of the working directory, staging area, and repository. If the above commands are executed correctly, the output should be `nothing to commit, working tree clean`.
 
-### Track the changes
+## Track the changes - checkout, diff, log
 **Git** enables developers to track changes in their codebase. Continuing the previous example, we can analyze the repository with the following commands:
 
 ```bash
@@ -61,7 +61,7 @@ Date:   Mon Feb 5 14:23:41 2024 +0800
 
 You can use `git reset` to reset the current HEAD to the specified snapshot, which can be useful when you committed something bad by accident.
 
-### Work with remote repositories
+## Work on cloud - remotes
 
 A server to store git repository, or **remote** in git terminology, is required for the collaboration purpose. Remote repositories can be hosted on git hosting services like GitHub, GitLab, or Bitbucket.
 After creating a new empty repository (no README files) on a git hosting service ([How to create a new github repo?](https://docs.github.com/en/get-started/quickstart/create-a-repo)), a URL for cloning the repo will show up, which that usually starts with `git` or `https`. Let us denote this URL as `<url>` and continue the previous example:
@@ -76,7 +76,7 @@ git push origin main
 - Line 2: shows the URL of all remotes, including the `origin` remote we just added.
 - Line 3: push commits to the `main` branch of the remote repository `origin`. This command sometimes could fail due to another commit pushed to the remote earlier, where the commit may from another machine or another person. To resolve the issue, you can use `git pull origin main` to fetch the latest snapshot on the remote. `git pull` may also fail, because the remote commit may be incompatible with the local commit, e.g. the same file has been changed. In this worst case, you need to merge two commits manually (link).
 
-### Develop features safely - branches
+## Develop features safely - branches
 
 So far, we worked with a single branch `main`. A **branch** in git is a lightweight pointer to a specific commit.
 Working on a single branch is dangerous due to the following reasons:
@@ -116,7 +116,7 @@ git merge me/feature
 git push origin main
 ```
 
-### Working with others - issues and pull requests
+## Working with others - issues and pull requests
 
 When working with others, you may want to propose changes to a repository and discuss them with others. This is where **issues** and **pull requests** come in. Issues and pull requests are features of git hosting services like GitHub and GitLab.
 - **Issue** is relatively simple, it is a way to report a bug or request a feature.
@@ -126,7 +126,7 @@ When working with others, you may want to propose changes to a repository and di
     To update the main branch, one should use pull requests as much as possible, even if you have write access to the repository. It is a good practice to discuss the changes with others before merging them to the main branch. A pull request also makes the changes more traceable, which is useful when you want to revert the changes.
 
 
-### Summary: a cheat sheet
+## Git cheat sheet
 
 It is not possible to cover all the feature of git. We will list a few useful commands and resources for git learning.
 

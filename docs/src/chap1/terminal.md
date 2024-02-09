@@ -1,14 +1,16 @@
 # Get a Terminal!
 
-You need to get a working terminal to follow the instructions in this book, because every cool guy uses a terminal.
+You need to get a working terminal to follow the instructions in this book, because every cool guy needs a terminal.
 
-### Linux operating system
+## Linux operating system
 
 Using Linux is the most straight-forward way to get a terminal. Just like Windows, IOS, and macOS, Linux is an operating system. In fact, Android, one of the most popular platforms on the planet, is powered by the Linux operating system. It is free to use, [open source](https://opensource.com/resources/what-open-source), widely used on clusters and good at automating your works. Linux kernel and Linux distribution are different concepts.
 - The **Linux kernel** is started by [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds) in 1991.
-- A **Linux distribution** is an [operating system](https://en.wikipedia.org/wiki/Operating_system) made from a software collection that includes the [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and, often, a [package management system](https://en.wikipedia.org/wiki/Package_management_system). The Linux distribution used in this course is [Ubuntu](https://ubuntu.com/desktop).
+- A **Linux distribution** is an [operating system](https://en.wikipedia.org/wiki/Operating_system) made from a software collection that includes the [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and, often, a [package management system](https://en.wikipedia.org/wiki/Package_management_system).
 
-### Shell (or Terminal)
+The Linux distribution used in this course is [Ubuntu](https://ubuntu.com/desktop).
+
+## Shell (or Terminal)
 
 Although you can use a **graphical user interface** (GUI) to interact with your Linux distribution, you will find that the **command line interface** (CLI) is more efficient and powerful. The CLI is also known as the **shell** or **terminal**.
 
@@ -53,7 +55,7 @@ tar     # an archiving utility
 - [MIT Open course: Missing semester](https://missing.csail.mit.edu/2020/shell-tools/)
 - [Get started with the Linux command line and the Shell](https://learn.microsoft.com/en-us/training/paths/shell/)
 
-### Editor in terminal - Vim
+## Editor in terminal - Vim
 
 To edit files in the terminal, you can use `Vim` - the default text editor in most Linux distributions.
 `Vim` has three primary modes, each tailored for specific tasks. The primary modes include
@@ -73,9 +75,9 @@ u       # undo
 CTRL-R  # redo
 ```
 
-All the commands must be executed in the **normal mode**. To learn more about Vim, please check this [lecture](https://missing.csail.mit.edu/2020/editors/).
+All the commands must be executed in the **normal mode** (press `ESC` if not). To learn more about Vim, please check this [lecture](https://missing.csail.mit.edu/2020/editors/).
 
-### Connect to the remote - SSH
+## Connect to the remote - SSH
 
 The Secure Shell (SSH) protocol is a method for securely sending commands to a computer over an unsecured network. SSH uses cryptography to authenticate and encrypt connections between devices. It is widely used to:
 - push code to a remote git repository,
@@ -117,10 +119,11 @@ ssh-copy-id amat5315
 ```
 Try connecting to the remote machine again, you will find that you don't need to type the password anymore.
 
-**How does SSH key pair work?**
-The SSH key pair is a pair of asymmetric keys, one is the public key and the other is the private key.
-In the above example, the public key is uploaded to the remote machine and the private key is stored on the local machine. The public key can be shared with anyone, but the private key must be kept secret.
+!!! note "How does an SSH key pair work?"
 
-To connect to a server, the server needs to know that you are the one who with the right to access it. To do so, the server will need to check if you have the private key that corresponds to the public key stored on the server. If you have the private key, you will be granted access to the server.
+    The SSH key pair is a pair of asymmetric keys, one is the public key and the other is the private key.
+    In the above example, the public key is uploaded to the remote machine and the private key is stored on the local machine. The public key can be shared with anyone, but the private key must be kept secret.
 
-The secret of the SSH key pair is that **the public key can be used to encrypt a message that can only be decrypted by the private key**, i.e. the public key is more like a lock and the private key is the key to unlock the lock. This is the foundation of the SSH protocol. So server can send you a message encrypted by your public key, and only you can decrypt it with your private key. This is how the server knows that you are the one who has the private key without actually sending the private key to the server.
+    To connect to a server, the server needs to know that you are the one who with the right to access it. To do so, the server will need to check if you have the private key that corresponds to the public key stored on the server. If you have the private key, you will be granted access to the server.
+
+    The secret of the SSH key pair is that **the public key can be used to encrypt a message that can only be decrypted by the private key**, i.e. the public key is more like a lock and the private key is the key to unlock the lock. This is the foundation of the SSH protocol. So server can send you a message encrypted by your public key, and only you can decrypt it with your private key. This is how the server knows that you are the one who has the private key without actually sending the private key to the server.

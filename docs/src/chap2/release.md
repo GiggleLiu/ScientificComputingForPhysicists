@@ -5,11 +5,11 @@ Julia package manager can install the correct version of a package and its depen
 
 Everyone can register a package in the `General` registry. To do so, you need to:
 
-1. [**Create a package**](#create-a-package).
-2. [**Specify the dependency**](#specify-the-dependency) of your package in the `Project.toml` file, like which version of a package your package depends on.
-3. [**Develop the package**](#develop-the-package) by writing the source code, tests, and documentation.
-4. [**Open-source the package**](#open-source-the-package) by pushing the package to a public repository on GitHub. GitHub Actions can be used to automate the process of testing, building the documentation, and tagging a release so that other developers can contribute to the package easily.
-5. [**Register the package**](#register-the-package) in the `General` registry by creating a pull request to the `General` registry.
+1. [**Create a package**](#Create-a-package).
+2. [**Specify the dependency**](#Specify-the-dependency) of your package in the `Project.toml` file, like which version of a package your package depends on.
+3. [**Develop the package**](#Develop-the-package) by writing the source code, tests, and documentation.
+4. [**Open-source the package**](#Open-source-the-package) by pushing the package to a public repository on GitHub. GitHub Actions can be used to automate the process of testing, building the documentation, and tagging a release so that other developers can contribute to the package easily.
+5. [**Register the package**](#Register-the-package) in the `General` registry by creating a pull request to the `General` registry.
 
 ### Create a package
 We use [`PkgTemplate`](https://github.com/JuliaCI/PkgTemplates.jl).

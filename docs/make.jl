@@ -26,7 +26,31 @@ makedocs(;
                 "chap2/julia-type.md",
                 "chap2/release.md",
                 "chap2/performance.md",
-        ]
+        ],
+        "Tensors (×)" => [
+            "chap3/array.md",
+            "chap3/linalg.md",
+            "chap3/factorization.md",
+            "chap3/fft.md",
+            "chap3/tensors.md",
+            "chap3/cuda.md",
+        ],
+        "Optimization (×)" => [
+            "chap4/combinatorial.md",
+            "chap4/optimization.md",
+            "chap4/ad.md",
+        ],
+        "Randomness (×)" => [
+            "chap5/montecarlo.md",
+        ],
+        "Sparsity (×)" => [
+            "chap6/sparse.md",
+            "chap6/compressedsensing.md",
+        ],
+        "High Performance Computing (×)" => [
+            "chap7/hpc.md",
+            "chap7/cuda.md",
+        ],
     ],
 )
 

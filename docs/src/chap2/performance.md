@@ -76,7 +76,7 @@ y = sin.(x) .+ cos.(3 .* x);
 ```
 
 ```@example broadcast
-using Plots  # for high-quality plots, we suggest using `Makie.jl`
+using Plots; gr(dpi=100)  # for high-quality plots, we suggest using `Makie.jl`
 Plots.plot(x, y; label="sin(x) + cos(3x)")
 ```
 
@@ -267,7 +267,7 @@ Then you can profile your code by running it.
 
 To view the profile result, you can use the `Profile.print()` function.
 ```@repl profile
-Profile.print(; C=true)
+Profile.print(; C=true, mincount=3)
 ```
 
 The majority of the time is spent in the GEMM function of the BLAS library, which is a highly optimized library for matrix multiplication. The performance of the matrix multiplication is close to the theoretical peak performance of the CPU.
@@ -348,7 +348,7 @@ y = P3(1.0, 0.0, 0.0)
 history = [y]
 rk4(lorenz, y; t0=0.0, Δt=0.001, Nt=100000, history)
 
-using Plots
+using Plots; gr(dpi=100)
 plot([h.x for h in history], [h.y for h in history], [h.z for h in history], legend=false)
 ```
 

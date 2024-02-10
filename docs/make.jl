@@ -11,6 +11,7 @@ makedocs(;
         canonical="https://book.jinguo-group.science",
         edit_link="main",
         assets=String[],
+        size_threshold=2000000,
     ),
     pages=[
         "Home" => "index.md",

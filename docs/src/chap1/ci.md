@@ -8,6 +8,7 @@ Unit tests are composed of a series of individual test cases, each of which veri
 In Julia, there exists a helpful module called [Test](https://docs.julialang.org/en/v1/stdlib/Test/) to help you do unit testing.
 
 ## Automate your workflow - CI/CD
+How to let everyone know that your unit tests are passing not only on your local machine, and the code is ready to be merged into the main branch? How to ensure that the code is always in a working state and the results are reproducible? This is where **CI/CD** comes in.
 CI/CD, which stands for continuous integration and continuous delivery/deployment, aims to streamline and accelerate the software development lifecycle.
 CI/CD are often integrated with git hosting services, e.g. [Github Actions](https://docs.github.com/en/actions). Typical CI/CD pipelines include the following steps:
 

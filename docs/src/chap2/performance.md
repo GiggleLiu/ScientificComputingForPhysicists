@@ -269,3 +269,77 @@ To view the profile result, you can use the `Profile.print()` function.
 ```julia-repl
 julia> Profile.print(; format=:flat, mincount=10)
 ```
+
+### Optimizing the performance of Lorenz attractor
+
+```@repl profile
+struct P3{T}
+    x::T
+    y::T
+    z::T
+end
+
+Base.zero(::Type{P3{T}}) where T = P3(zero(T), zero(T), zero(T))
+Base.zero(::P3{T}) where T = P3(zero(T), zero(T), zero(T))
+
+
+@inline function Base.:(+)(a::P3, b::P3)
+    P3(a.x + b.x, a.y + b.y, a.z + b.z)
+end
+
+@inline function Base.:(/)(a::P3, b::Real)
+    P3(a.x/b, a.y/b, a.z/b)
+end
+
+@inline function Base.:(*)(a::Real, b::P3)
+    P3(a*b.x, a*b.y, a*b.z)
+end
+
+
+@inline function lorenz(t, y, θ)
+    P3(10*(y.y-y.x), y.x*(27-y.z)-y.y, y.x*y.y-8/3*y.z)
+end
+
+@inline function rk4_step(f, t, y, θ, Δt)
+    k1 = Δt * f(t, y, θ)
+    k2 = Δt * f(t+Δt/2, y + k1 / 2, θ)
+    k3 = Δt * f(t+Δt/2, y + k2 / 2, θ)
+    k4 = Δt * f(t+Δt, y + k3, θ)
+    return y + k1/6 + k2/3 + k3/3 + k4/6
+end
+
+function rk4(f, y0::T, θ; t0, Δt, Nt) where T
+    history = zeros(T, Nt+1)
+    rk4!(f, history, y0, θ, t0, Δt, Nt)
+end
+
+@noinline function rk4!(f, history, y0, θ, t0, Δt, Nt)
+    @inbounds history[1] = y0
+    for i=1:Nt
+        @inbounds history[i+1] = rk4_step(f, t0+(i-1)*Δt, history[i], θ, Δt)
+    end
+    return history
+end
+
+@time history = rk4(lorenz, P3(1.0, 0.0, 0.0), nothing; t0=0.0, Δt=0.001, Nt=100000);
+```
+
+```@example profile
+using Plots
+
+plot([h.x for h in history], [h.y for h in history], [h.z for h in history], legend=false)
+```
+
+```@repl profile
+using Profile, ProfileCanvas
+Profile.init(n = 10^7, delay = 1e-3)
+```
+
+```@example profile
+@profview rk4(lorenz, P3(1.0, 0.0, 0.0), nothing; t0=0.0, Δt=0.0001, Nt=1000000)
+```
+
+
+```@example profile
+@profview_allocs rk4(lorenz, P3(1.0, 0.0, 0.0), nothing; t0=0.0, Δt=0.0001, Nt=1000000)
+```

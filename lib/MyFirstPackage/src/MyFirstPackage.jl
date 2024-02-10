@@ -4,6 +4,7 @@ using OMEinsum
 
 # export `greet` as a public function
 export greet
+export lorenz, rk4, P3
 
 """
     greet(name::String)
@@ -22,5 +23,7 @@ function private_sum(v::AbstractVector{<:Real})
     # from the OMEinsum package
     return ein"i->"(v)[]
 end
+
+include("lorenz.jl")
 
 end

@@ -21,23 +21,27 @@ end
 end
 
 
-function lorenz(t, y, θ)
+function lorenz(t, y)
     P3(10*(y.y-y.x), y.x*(27-y.z)-y.y, y.x*y.y-8/3*y.z)
 end
 
-function rk4_step(f, t, y, θ, Δt)
-    k1 = Δt * f(t, y, θ)
-    k2 = Δt * f(t+Δt/2, y + k1 / 2, θ)
-    k3 = Δt * f(t+Δt/2, y + k2 / 2, θ)
-    k4 = Δt * f(t+Δt, y + k3, θ)
+function rk4_step(f, t, y, Δt)
+    k1 = Δt * f(t, y)
+    k2 = Δt * f(t+Δt/2, y + k1 / 2)
+    k3 = Δt * f(t+Δt/2, y + k2 / 2)
+    k4 = Δt * f(t+Δt, y + k3)
     return y + k1/6 + k2/3 + k3/3 + k4/6
 end
 
-function rk4(f, y0, θ; t0, Δt, Nt)
+function rk4(f, y0; t0, Δt, Nt, history=nothing)
     y = y0
     for i=1:Nt
-        y = rk4_step(f, t0+(i-1)*Δt, y, θ, Δt)
+        y = rk4_step(f, t0+(i-1)*Δt, y, Δt)
+        record!(history, y)
     end
     return y
 end
+
+record!(v::AbstractVector, y) = push!(v, y)
+record!(::Nothing, y) = nothing
 

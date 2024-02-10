@@ -239,10 +239,11 @@ We can see that the performance of the vector with a fixed type can be 100 times
 ## Benchmark and profile
 ### How to measure the performance of your CPU?
 The performance of a CPU is measured by the number of **floating point operations per second** (FLOPS) it can perform. The floating point operations include addition, subtraction, multiplication and division. The FLOPS can be related to multiple factors, such as the clock frequency, the number of cores, the number of instructions per cycle, and the number of floating point units. A simple way to measure the FLOPS is to benchmarking the speed of matrix multiplication.
+```@repl profile
+A, B = rand(1000, 1000), rand(1000, 1000);
+```
 ```julia-repl
 julia> using BenchmarkTools
-
-julia> A, B = rand(1000, 1000), rand(1000, 1000);
 
 julia> @btime $A * $B;
   12.122 ms (2 allocations: 7.63 MiB)
@@ -254,35 +255,40 @@ The number of FLOPS in a $n\times n\times n$ matrix multiplication is $2n^3$. Th
 Profiling is a way to measure the performance of your code. It can help you to identify the bottleneck of your code and optimize it. The [Profile](https://docs.julialang.org/en/v1/manual/profile/) module in Julia provides a set of tools to profile your code.
 
 We can start the profiler by
-```julia-repl
-julia> using Profile
-
-julia> Profile.init(n = 10^7, delay = 0.01) # set the number of samples and the delay between samples
+```@repl profile
+using Profile
+Profile.init(n = 10^7, delay = 0.001) # set the number of samples and the delay between samples
 ```
 
 Then you can profile your code by running it.
-```julia-repl
-julia> @profile A * B
+```@repl profile
+@profile A * B;
 ```
 
 To view the profile result, you can use the `Profile.print()` function.
-```julia-repl
-julia> Profile.print(; format=:flat, mincount=10)
+```@repl profile
+Profile.print(; C=true)
 ```
 
-### Optimizing the performance of Lorenz attractor
+The majority of the time is spent in the GEMM function of the BLAS library, which is a highly optimized library for matrix multiplication. The performance of the matrix multiplication is close to the theoretical peak performance of the CPU.
 
-```@repl profile
+### Example: Optimizing the performance of Lorenz attractor
+
+Consider we have a simple implementation of the [Lorenz attractor](https://en.wikipedia.org/wiki/Lorenz_system) using the [Runge-Kutta method](https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods). The code is as follows:
+```@example profile
+# Point in 3D space
 struct P3{T}
     x::T
     y::T
     z::T
 end
 
+# Overload the zero function
 Base.zero(::Type{P3{T}}) where T = P3(zero(T), zero(T), zero(T))
 Base.zero(::P3{T}) where T = P3(zero(T), zero(T), zero(T))
 
 
+# Overload the addition, subtraction, division and multiplication
 @inline function Base.:(+)(a::P3, b::P3)
     P3(a.x + b.x, a.y + b.y, a.z + b.z)
 end
@@ -296,50 +302,79 @@ end
 end
 
 
-@inline function lorenz(t, y, θ)
+# define the Lorenz attractor
+function lorenz(t, y)
     P3(10*(y.y-y.x), y.x*(27-y.z)-y.y, y.x*y.y-8/3*y.z)
 end
 
-@inline function rk4_step(f, t, y, θ, Δt)
-    k1 = Δt * f(t, y, θ)
-    k2 = Δt * f(t+Δt/2, y + k1 / 2, θ)
-    k3 = Δt * f(t+Δt/2, y + k2 / 2, θ)
-    k4 = Δt * f(t+Δt, y + k3, θ)
+# define the single step update for the Runge-Kutta method of order 4
+# f: the function to be integrated
+# t: the current time
+# y: the current value
+# Δt: the current time step
+function rk4_step(f, t, y, Δt)
+    k1 = Δt * f(t, y)
+    k2 = Δt * f(t+Δt/2, y + k1 / 2)
+    k3 = Δt * f(t+Δt/2, y + k2 / 2)
+    k4 = Δt * f(t+Δt, y + k3)
     return y + k1/6 + k2/3 + k3/3 + k4/6
 end
 
-function rk4(f, y0::T, θ; t0, Δt, Nt) where T
-    history = zeros(T, Nt+1)
-    rk4!(f, history, y0, θ, t0, Δt, Nt)
-end
-
-@noinline function rk4!(f, history, y0, θ, t0, Δt, Nt)
-    @inbounds history[1] = y0
+# define the Runge-Kutta method of order 4
+# f: the function to be integrated
+# y0: the initial value
+# t0: the initial time
+# Δt: the time step
+# Nt: the number of steps
+function rk4(f, y0; t0, Δt, Nt, history=nothing)
+    y = y0
     for i=1:Nt
-        @inbounds history[i+1] = rk4_step(f, t0+(i-1)*Δt, history[i], θ, Δt)
+        y = rk4_step(f, t0+(i-1)*Δt, y, Δt)
+        # record the history
+        record!(history, y)
     end
-    return history
+    return y
 end
 
-@time history = rk4(lorenz, P3(1.0, 0.0, 0.0), nothing; t0=0.0, Δt=0.001, Nt=100000);
+# record the history: if history is a vector, push the value to the vector
+record!(v::AbstractVector, y) = push!(v, y)
+record!(::Nothing, y) = nothing
+nothing # hide
 ```
 
+If we run the code, we can see the Lorenz attractor.
 ```@example profile
-using Plots
+y = P3(1.0, 0.0, 0.0)
+history = [y]
+rk4(lorenz, y; t0=0.0, Δt=0.001, Nt=100000, history)
 
+using Plots
 plot([h.x for h in history], [h.y for h in history], [h.z for h in history], legend=false)
 ```
 
-```@repl profile
-using Profile, ProfileCanvas
-Profile.init(n = 10^7, delay = 1e-3)
+The performance of the code 
+```julia-repl
+julia> @benchmark rk4(lorenz, P3(1.0, 0.0, 0.0); t0=0.0, Δt=0.001, Nt=100000, history=[])
+BenchmarkTools.Trial: 1479 samples with 1 evaluation.
+ Range (min … max):  3.167 ms …   7.822 ms  ┊ GC (min … max): 0.00% … 56.98%
+ Time  (median):     3.263 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   3.381 ms ± 321.910 μs  ┊ GC (mean ± σ):  3.06% ±  6.93%
+
+  ▂▃▅█▇▅▄▃▃▁▁▂▂▁                              ▁▂▂▁             
+  ██████████████▇▅▄▄▅▁▄▄▁▁▄▁▁▄▁▁▁▁▁▁▁▁▁▁▁▁▅▇▆▆████▇▇▆▅▆▅▄▅▅▅▄ █
+  3.17 ms      Histogram: log(frequency) by time      4.43 ms <
+
+ Memory estimate: 4.88 MiB, allocs estimate: 100011.
 ```
+
+It is reasonable to suspect that the performance bottleneck is the `record!` function, because the `history` is a vector of element type `Any`.
+In order to verify our intuition, we can profile the code to see the performance bottleneck.
 
 ```@example profile
-@profview rk4(lorenz, P3(1.0, 0.0, 0.0), nothing; t0=0.0, Δt=0.0001, Nt=1000000)
+Profile.clear()   # clear the previous profile result
+@profile rk4(lorenz, P3(1.0, 0.0, 0.0); t0=0.0, Δt=0.001, Nt=5000000, history=[]) # record the profile
+Profile.print(format=:flat, mincount=5)  # show the profile result, only show the functions that are called more than 5 times
 ```
+The `print` also supports other formats, such as `:tree`.
 
-
-```@example profile
-@profview_allocs rk4(lorenz, P3(1.0, 0.0, 0.0), nothing; t0=0.0, Δt=0.0001, Nt=1000000)
-```
+In this example, we can see that the `record!` function has only a few counts, each count stands for $10^{-3}s$. So the `record!` function is not the performance bottleneck. The performance bottleneck is the `rk4` function.

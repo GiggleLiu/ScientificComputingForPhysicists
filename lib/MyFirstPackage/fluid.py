@@ -46,7 +46,7 @@ u0 = 0.1							# initial and in-flow speed
 four9ths = 4.0/9.0					# abbreviations for lattice-Boltzmann weight factors
 one9th   = 1.0/9.0
 one36th  = 1.0/36.0
-performanceData = False				# set to True if performance data is desired
+performanceData = True				# set to True if performance data is desired
 
 # Initialize all the arrays to steady rightward flow:
 n0 = four9ths * (numpy.ones((height,width)) - 1.5*u0**2)	# particle densities along 9 directions

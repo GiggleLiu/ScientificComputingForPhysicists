@@ -1,10 +1,11 @@
 module MyFirstPackage
 # import the OMEinsum package
-using OMEinsum
+using LinearAlgebra
 
 # export `greet` as a public function
 export greet
 export lorenz, rk4, P3
+export Point, D2Q9, LatticeBoltzmann, step!, lb_sample, equilibrium_density, velocity
 
 """
     greet(name::String)
@@ -17,13 +18,7 @@ function greet(name::String)
 end
 
 
-# this function is not exported
-function private_sum(v::AbstractVector{<:Real})
-    # we implement the sum function by using the `@ein_str` macro
-    # from the OMEinsum package
-    return ein"i->"(v)[]
-end
-
 include("lorenz.jl")
+include("fluid.jl")
 
 end

@@ -8,3 +8,19 @@
 Implement Lattice Boltzmann Fluid Dynamics in Julia.
 
 Reference: https://physics.weber.edu/schroeder/fluids/
+
+## Get started
+    
+To install the package, use the following command in Julia's REPL:
+```julia
+using Pkg
+Pkg.add("MyFirstPackage")
+```
+
+## Example
+
+```julia
+using MyFirstPackage
+
+# 
+```

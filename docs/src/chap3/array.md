@@ -163,17 +163,16 @@ scatter(vec(getindex.(mesh2, 1)), vec(getindex.(mesh2, 2)), label="mesh2", ratio
 ### Case study: Image processing
 
 1. Download an image from the internet:
-```@example image
+```julia
 url = "https://avatars.githubusercontent.com/u/8445510?v=4"
 target_path = tempname() * ".png"
 download(url, target_path)
 ```
 
 2. Load the image with [`Images.jl`](https://github.com/JuliaImages/Images.jl):
-```@example image
-#using Images
-#img = load(target_path)
-nothing
+```@juliaexample image
+using Images
+img = load(target_path)
 ```
 
 *Quiz*:

@@ -17,10 +17,5 @@ using Pkg
 Pkg.add("MyFirstPackage")
 ```
 
-## Example
-
-```julia
-using MyFirstPackage
-
-# 
-```
+## Examples
+Please check the [examples](examples) folder for more details.

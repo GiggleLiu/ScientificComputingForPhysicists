@@ -13,34 +13,39 @@ Base.:+(x::Point, y::Point) = Point(x.data .+ y.data)
 Base.isapprox(x::Point, y::Point; kwargs...) = all(isapprox.(x.data, y.data; kwargs...))
 Base.getindex(p::Point, i::Int) = p.data[i]
 
-abstract type LatticeBoltzmannConfig{N} end
-struct D2Q9 <: LatticeBoltzmannConfig{9} end
+abstract type AbstractLBConfig{D, N} end
+struct D2Q9 <: AbstractLBConfig{2, 9} end
 directions(::D2Q9) = (
-        Point(0, 0),
-        Point(1, 0),
-        Point(0, 1),
-        Point(-1, 0),
-        Point(0, -1),
         Point(1, 1),
         Point(-1, 1),
+        Point(1, 0),
+        Point(0, -1),
+        Point(0, 0),
+        Point(0, 1),
+        Point(-1, 0),
+        Point(1, -1),
         Point(-1, -1),
-        Point(1, -1)
     )
 
-weights(::D2Q9) = (4/9, 1/9, 1/9, 1/9, 1/9, 1/36, 1/36, 1/36, 1/36)
+function flip_direction_index(::D2Q9, i::Int)
+    return 10 - i
+end
+weights(::D2Q9) = (1/36, 1/36, 1/9, 1/9, 4/9, 1/9, 1/9, 1/36, 1/36)
 
 struct MultiComponentDensity{N, T <: Real}
     data::NTuple{N, T}
 end
 density(rho::MultiComponentDensity) = sum(rho.data)
-function velocity(lb::LatticeBoltzmannConfig, rho::MultiComponentDensity)
+function velocity(lb::AbstractLBConfig, rho::MultiComponentDensity)
     return mapreduce((r, d) -> r * d, +, rho.data, directions(lb)) / density(rho)
 end
+Base.:+(x::MultiComponentDensity, y::MultiComponentDensity) = MultiComponentDensity(x.data .+ y.data)
+Base.:*(x::Real, y::MultiComponentDensity) = MultiComponentDensity(x .* y.data)
 
 function _equilibrium_density(ρ, u, ωi, ei)
     return ρ * ωi * (1 + 3 * dot(ei, u) + 9/2 * dot(ei, u)^2 - 3/2 * dot(u, u))
 end
-function equilibrium_density(lb::LatticeBoltzmannConfig{N}, ρ, u) where N
+function equilibrium_density(lb::AbstractLBConfig{D, N}, ρ, u) where {D, N}
     ws, ds = weights(lb), directions(lb)
     return MultiComponentDensity(
         ntuple(i->_equilibrium_density(ρ, u, ws[i], ds[i]), N)
@@ -54,91 +59,92 @@ using Test
     @test velocity(lb, ds) ≈ Point(0.1, 0.0)
 end
 
+function stream!(lb::AbstractLBConfig{2, N}, newgrid::AbstractMatrix{D}, grid::AbstractMatrix{D}, barrier::AbstractMatrix{Bool}) where {N, T, D<:MultiComponentDensity{N, T}}
+    ds = directions(lb)
+    for ci in CartesianIndices(newgrid)
+        i, j = ci.I
+        m, n = size(grid)
+        newgrid[ci] = MultiComponentDensity(ntuple(N) do k
+            ei = ds[k]
+            i2, j2 = mod1(i - ei[1], m), mod1(j - ei[2], n)
+            if barrier[i2, j2]
+                grid[i, j].data[flip_direction_index(lb, k)]
+            else
+                grid[i2, j2].data[k]
+            end
+        end)
+    end
+end
+
+function collide(lb::AbstractLBConfig{D, N}, rho; viscosity = 0.02) where {D, N}
+    omega = 1 / (3 * viscosity + 0.5)   # "relaxation" parameter
+    # Recompute macroscopic quantities:
+    v = velocity(lb, rho)
+    return (1 - omega) * rho + omega * equilibrium_density(lb, density(rho), v)
+end
+
+# ∂uy/∂x−∂ux/∂y, the curl of the velocity field:
+function curl(u::Matrix{Point2D{T}}) where T 
+    return map(CartesianIndices(u)) do ci
+        i, j = ci.I
+        m, n = size(u)
+        uy = u[mod1(i + 1, m), j][2] - u[mod1(i - 1, m), j][2]
+        ux = u[i, mod1(j + 1, n)][1] - u[i, mod1(j - 1, n)][1]
+        return uy - ux # a factor of 1/2 is missing here?
+    end
+end
+
+struct LatticeBoltzmann{D, N, T, MT<:AbstractMatrix{MultiComponentDensity{N, T}}, BT<:AbstractMatrix{Bool}}
+    config::AbstractLBConfig{D, N}
+    grid::MT
+    gridcache::MT
+    barrier::BT
+end
+function LatticeBoltzmann(config::AbstractLBConfig{D, N}, grid::AbstractMatrix{<:MultiComponentDensity}, barrier::AbstractMatrix{Bool}) where {D, N}
+    @assert size(grid) == size(barrier)
+    return LatticeBoltzmann(config, grid, similar(grid), barrier)
+end
+
+function step!(lb::LatticeBoltzmann)
+    copyto!(lb.gridcache, lb.grid)
+    stream!(lb.config, lb.grid, lb.gridcache, lb.barrier)
+    lb.grid .= collide.(Ref(lb.config), lb.grid)
+    return lb
+end
+
 function lattice_boltzmann(; 
         height = 80,                       # lattice dimensions
         width = 200,
-        u0 = Point(0.1, 0.0)                           # initial and in-flow speed
+        u0 = Point(0.0, 0.1)                           # initial and in-flow speed
     )
+    # Initialize all the arrays to steady rightward flow:
     rho = equilibrium_density(D2Q9(), 1.0, u0)
     rgrid = fill(rho, height, width)
-    # Initialize all the arrays to steady rightward flow:
-    ugrid = velocity.(grid)
-end
 
-function barrier_setup(height, width)
     # Initialize barriers:
     barrier = falses(height, width)                          # True wherever there's a barrier
     mid = div(height, 2)
     barrier[mid-8:mid+8, div(height,2)] .= true              # simple linear barrier
-    barrierN = circshift(barrier, (1, 0))                    # sites just north of barriers
-    barrierS = circshift(barrier, (-1, 0))                   # sites just south of barriers
-    barrierE = circshift(barrier, (0, 1))                    # etc.
-    barrierW = circshift(barrier, (0, -1))
-    barrierNE = circshift(barrierN, (0, 1))
-    barrierNW = circshift(barrierN, (0, -1))
-    barrierSE = circshift(barrierS, (0, 1))
-    barrierSW = circshift(barrierS, (0, -1))
+
+    return LatticeBoltzmann(D2Q9(), rgrid, barrier)
 end
 
-function stream!(lb::D2Q9, grid::Array{MultiComponentDensity, 2})
-    nN  = circshift(nN, (1, 0))
-    nNE = circshift(nNE, (1, 1))
-    nNW = circshift(nNW, (1, -1))
-    nS  = circshift(nS, (-1, 0))
-    nSE = circshift(nSE, (-1, 1))
-    nSW = circshift(nSW, (-1, -1))
-    nE  = circshift(nE, (0, 1))
-    nW  = circshift(nW, (0, -1))
-
-    # Use tricky boolean arrays to handle barrier collisions (bounce-back):
-    nN[barrierN] = nS[barrier]
-    nS[barrierS] = nN[barrier]
-    nE[barrierE] = nW[barrier]
-    nW[barrierW] = nE[barrier]
-    nNE[barrierNE] = nSW[barrier]
-    nNW[barrierNW] = nSE[barrier]
-    nSE[barrierSE] = nNW[barrier]
-    nSW[barrierSW] = nNE[barrier]
-end
-
-function collide(lb::LatticeBoltzmannConfig{N}, rho; viscosity = 0.02)
-    omega = 1 / (3 * viscosity + 0.5)   # "relaxation" parameter
-    # Recompute macroscopic quantities:
-    v = velocity(lb, rho)
-    return (1 - omega) * rho + omega * equilibrium_density(lb, rho, v)
-end
-
-function curl(u::Matrix{Point2D{T}}) where T
-    return map(CartesianIndices(u)) do ci
-        i, j = ci.I
-        uy = u[i, j + 1].y - u[i, j - 1].y
-        ux = u[i + 1, j].x - u[i - 1, j].x
-        return uy - ux
-    end
-    # return circshift(uy, (0, -1)) - circshift(uy, (0, 1)) - circshift(ux, (-1, 0)) + circshift(ux, (1, 0))
-end
+# Animation:
+using Makie: RGBA
+using Makie, GLMakie
 
 # Set up the visualization with Makie:
-vorticity = Observable(curl(ux, uy)')
+lb = lattice_boltzmann()
+vorticity = Observable(curl(velocity.(Ref(lb.config), lb.grid))')
 fig, ax, plot = image(vorticity, colormap = :jet, colorrange = (-0.1, 0.1))
 
 # Add barrier visualization:
-using Makie: RGBA
-barrier_img = map(x -> x ? RGBA(0, 0, 0, 1) : RGBA(0, 0, 0, 0), barrier)
+barrier_img = map(x -> x ? RGBA(0, 0, 0, 1) : RGBA(0, 0, 0, 0), lb.barrier)
 image!(ax, barrier_img')
 
-# Animation:
-function update_scene(frame)
-    for step in 1:20
-        stream()
-        collide()
-    end
-    vorticity[] = curl(ux, uy)'
-end
-
-using LinearAlgebra, Makie, GLMakie
-Makie.inline!(true)
-
 record(fig, "lattice_boltzmann_simulation.mp4", 1:100; framerate = 10) do i
-    update_scene(i)
+    for i=1:20
+        step!(lb)
+    end
+    vorticity[] = curl(velocity.(Ref(lb.config), lb.grid))'
 end

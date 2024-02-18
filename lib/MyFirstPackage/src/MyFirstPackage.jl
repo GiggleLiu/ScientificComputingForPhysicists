@@ -5,7 +5,7 @@ using LinearAlgebra
 # export `greet` as a public function
 export greet
 export lorenz, rk4, P3
-export Point, D2Q9, LatticeBoltzmann, step!, lb_sample, equilibrium_density, velocity
+export Point, D2Q9, LatticeBoltzmann, step!, lb_sample, equilibrium_density, velocity, curl
 
 """
     greet(name::String)

@@ -6,3 +6,5 @@
 [![Coverage](https://codecov.io/gh/GiggleLiu/MyFirstPackage.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/GiggleLiu/MyFirstPackage.jl)
 
 Implement Lattice Boltzmann Fluid Dynamics in Julia.
+
+Reference: https://physics.weber.edu/schroeder/fluids/

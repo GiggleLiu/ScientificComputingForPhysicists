@@ -1,36 +1,57 @@
-struct P3{T}
-    x::T
-    y::T
-    z::T
+"""
+    Point{D, T}
+
+A point in D-dimensional space, with coordinates of type T.
+
+# Examples
+```jldoctest
+julia> p1 = Point(1.0, 2.0)
+Point{2, Float64}((1.0, 2.0))
+
+julia> p2 = Point(3.0, 4.0)
+Point{2, Float64}((3.0, 4.0))
+
+julia> p1 + p2
+Point{2, Float64}((4.0, 6.0))
+```
+"""
+struct Point{D, T <: Real}
+    data::NTuple{D, T}
+end
+const Point2D{T} = Point{2, T}
+const Point3D{T} = Point{3, T}
+Point(x::Real...) = Point((x...,))
+LinearAlgebra.dot(x::Point, y::Point) = mapreduce(*, +, x.data .* y.data)
+Base.:*(x::Real, y::Point) = Point(x .* y.data)
+Base.:/(y::Point, x::Real) = Point(y.data ./ x)
+Base.:+(x::Point, y::Point) = Point(x.data .+ y.data)
+Base.isapprox(x::Point, y::Point; kwargs...) = all(isapprox.(x.data, y.data; kwargs...))
+Base.getindex(p::Point, i::Int) = p.data[i]
+Base.broadcastable(p::Point) = p.data
+Base.iterate(p::Point, args...) = iterate(p.data, args...)
+
+struct Lorenz
+    σ::Float64
+    ρ::Float64
+    β::Float64
 end
 
-Base.zero(::Type{P3{T}}) where T = P3(zero(T), zero(T), zero(T))
-Base.zero(::P3{T}) where T = P3(zero(T), zero(T), zero(T))
-
-
-@inline function Base.:(+)(a::P3, b::P3)
-    P3(a.x + b.x, a.y + b.y, a.z + b.z)
+function field(p::Lorenz, u)
+    x, y, z = u
+    Point(p.σ*(y-x), x*(p.ρ-z)-y, x*y-p.β*z)
 end
 
-@inline function Base.:(/)(a::P3, b::Real)
-    P3(a.x/b, a.y/b, a.z/b)
-end
-
-@inline function Base.:(*)(a::Real, b::P3)
-    P3(a*b.x, a*b.y, a*b.z)
-end
-
-
-function lorenz(t, y)
-    P3(10*(y.y-y.x), y.x*(27-y.z)-y.y, y.x*y.y-8/3*y.z)
-end
-
+# Ronge-Kutta 4th order method
 function rk4_step(f, t, y, Δt)
     k1 = Δt * f(t, y)
     k2 = Δt * f(t+Δt/2, y + k1 / 2)
     k3 = Δt * f(t+Δt/2, y + k2 / 2)
     k4 = Δt * f(t+Δt, y + k3)
     return y + k1/6 + k2/3 + k3/3 + k4/6
+end
+
+function rk4_step(l::Lorenz, u, Δt)
+    return rk4_step((t, u) -> field(l, u), zero(Δt), u, Δt)
 end
 
 function rk4(f, y0; t0, Δt, Nt, history=nothing)

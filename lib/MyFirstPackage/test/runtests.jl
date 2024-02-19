@@ -1,8 +1,8 @@
 using Test
 using MyFirstPackage
 
-@testset "MyFirstPackage" begin
-    @test greet("Julia") == "Hello, Julia!"
+@testset "lorenz" begin
+    include("lorenz.jl")
 end
 
 @testset "fluid" begin

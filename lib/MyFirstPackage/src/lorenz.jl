@@ -41,8 +41,12 @@ function field(p::Lorenz, u)
     Point(p.σ*(y-x), x*(p.ρ-z)-y, x*y-p.β*z)
 end
 
-# Ronge-Kutta 4th order method
-function rk4_step(f, t, y, Δt)
+abstract type AbstractIntegrator end
+struct RungeKutta{K} <: AbstractIntegrator end
+struct Euclidean <: AbstractIntegrator end
+
+# Runge-Kutta 4th order method
+function integrate_step(f, ::RungeKutta{4}, t, y, Δt)
     k1 = Δt * f(t, y)
     k2 = Δt * f(t+Δt/2, y + k1 / 2)
     k3 = Δt * f(t+Δt/2, y + k2 / 2)
@@ -50,19 +54,11 @@ function rk4_step(f, t, y, Δt)
     return y + k1/6 + k2/3 + k3/3 + k4/6
 end
 
-function rk4_step(l::Lorenz, u, Δt)
-    return rk4_step((t, u) -> field(l, u), zero(Δt), u, Δt)
+# Euclidean integration
+function integrate_step(f, ::Euclidean, t, y, Δt)
+    return y + Δt * f(t, y)
 end
 
-function rk4(f, y0; t0, Δt, Nt, history=nothing)
-    y = y0
-    for i=1:Nt
-        y = rk4_step(f, t0+(i-1)*Δt, y, Δt)
-        record!(history, y)
-    end
-    return y
+function integrate_step(lz::Lorenz, int::AbstractIntegrator, u, Δt)
+    return integrate_step((t, u) -> field(lz, u), int, zero(Δt), u, Δt)
 end
-
-record!(v::AbstractVector, y) = push!(v, y)
-record!(::Nothing, y) = nothing
-

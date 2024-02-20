@@ -19,8 +19,8 @@ Open a Julia REPL and type the following commands to initialize a new package na
 julia> using PkgTemplates
 
 julia> tpl = Template(;
-    user="GiggleLiu",
-    authors="GiggleLiu",
+    user="GiggleLiu",  # replace!
+    authors="GiggleLiu",  # replace!
     julia=v"1.10",
     plugins=[
         License(; name="MIT"),
@@ -152,10 +152,10 @@ test = ["Test"]
 You will see that the dependency `OMEinsum` is added to the `[deps]` section of the `Project.toml` file.
 
 We also need to specify which version of `OMEinsum` is **compatible** with the current package. To do so, you need to edit the `[compat]` section of the `Project.toml` file with your favorite editor.
-```toml
+```
 [compat]
 julia = "1.10"
-OMEinsum = "0.8"
+OMEinsum = "0.8"  # added line
 ```
 
 Here, we have used the most widely used dependency version specifier `=`, which means matching the first nonzero component of the version number. For example:

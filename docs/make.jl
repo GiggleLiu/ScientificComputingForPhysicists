@@ -54,6 +54,11 @@ makedocs(;
     ],
 )
 
+# set site url
+open(joinpath(@__DIR__, "build", "CNAME"), "w") do io
+    println(io, "book.jinguo-group.science")
+end
+
 deploydocs(;
     repo="github.com/GiggleLiu/ScientificComputingForPhysicists.jl",
     devbranch="main",

@@ -24,8 +24,8 @@ makedocs(;
                 "chap2/julia-setup.md",
                 "chap2/julia-why.md",
                 "chap2/julia-type.md",
-                "chap2/release.md",
-                "chap2/performance.md",
+                "chap2/julia-release.md",
+                "chap2/julia-performance.md",
         ],
         "Tensors (×)" => [
             "chap3/array.md",

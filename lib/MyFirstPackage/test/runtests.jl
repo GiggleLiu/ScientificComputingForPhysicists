@@ -1,11 +1,10 @@
 using Test
 using MyFirstPackage
 
-@testset "MyFirstPackage" begin
-    @test greet("Julia") == "Hello, Julia!"
+@testset "lorenz" begin
+    include("lorenz.jl")
 end
 
-@testset "private sum" begin
-    @test MyFirstPackage.private_sum([1, 2, 3]) == 6
-    @test MyFirstPackage.private_sum(Int[]) == 0
+@testset "fluid" begin
+    include("fluid.jl")
 end

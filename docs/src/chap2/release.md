@@ -174,7 +174,7 @@ Please check the Julia documentation about [package compatibility](https://pkgdo
 ## Develop the package
 Developers develop packages in the package environment. The package development process includes:
 
-1. Edit the source code of the package
+### 1. Edit the source code
 The source code of the package is located in the `src` folder of the package path.
 
 Let us add a simple function to the package. The source code of the package is as follows:
@@ -232,7 +232,7 @@ julia> MyFirstPackage.greet("Julia")
       ```
     - In VSCode: Click the `Julia env: ...` button in the bottom of the window and then select the package path.
 
-1. Write tests for the package
+### 2. Write tests
 
 We always need to write tests for the package. The test code of the package is located in the `test` folder of the package path.
 
@@ -270,20 +270,38 @@ private sum   |    2      2  0.3s
 
 Cheers! All tests passed.
 
-3. Write documentation for the package
+### 3. Write documentation
 
-The documentation is built with [Documenter.jl](https://documenter.juliadocs.org/stable/). The build script is `docs/make.jl`. To **build the documentation**, you can use the following command in the package path:
+The documentation is built with [Documenter.jl](https://documenter.juliadocs.org/stable/). The build script is `docs/make.jl`. To **build the documentation**, you can first enter the package environment and then type the following commands in a terminal:
 ```bash
 $ cd docs
-$ julia --project make.jl
+$ julia --project
 ```
-Instantiate the documentation environment if necessary. For seamless **debugging** of documentation, it is highly recommended using the [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) package.
+
+Instantiate or update the documentation environment if necessary. 
+```julia-repl
+(docs) pkg> dev ..
+
+(docs) pkg> instantiate # or `up`
+```
+where `dev ..` is used to add the `MyFirstPackage` under development to the documentation environment.
+
+Then build the documentation by typing
+```julia-repl
+julia> include("make.jl")
+```
+where `include` is a built-in function in Julia that includes the source code of the documentation build file `make.jl` into the current environment.
+
+The generated HTML files are located in the `docs/build` folder of the package path. To preview the documentation, just open the `index.html` file in a web browser.
+
+!!! note "Live preview of documentation"
+    For seamless **previewing** of documentation on updates, it is highly recommended using the [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) package.
 
 
 ## Open-source the package
 To open-source the package, you need to push the package to a public repository on GitHub.
 
-1. First create a GitHub repository with the same as the name of the package. In this example, the repository name should be `GiggleLiu/MyFirstPackage.jl`. To check the remote repository of the package, you can use the following command in the package path:
+1. First create a GitHub repository with the same name as the package. In this example, the repository name should be `MyFirstPackage.jl`. To check the remote repository of the package, you can use the following command in the package path:
    ```bash
    $ git remote -v
    origin	git@github.com:GiggleLiu/MyFirstPackage.jl.git (fetch)
@@ -315,7 +333,8 @@ To open-source the package, you need to push the package to a public repository 
    Configuring GitHub Actions is a bit complicated. For beginners, it is a good practise to mimic the configuration of another package, e.g. [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl).
 
 ## Register the package
-Package registration is the process of adding the package to the `General` registry. To do so, you need to create a pull request to the `General` registry and wait for the pull request to be reviewed and merged.
+Once your package is ready to be published, you need to register the package in the [`General`](https://github.com/JuliaRegistries/General) registry. The `General` registry is a central GitHub repository of metadata about all registered Julia packages.
+To register the package, you need to create a pull request to the `General` registry and wait for the pull request to be reviewed and merged.
 This process can be automated by the [Julia registrator](https://github.com/JuliaRegistries/Registrator.jl). If the pull request meets all guidelines, your pull request will be merged after a few days. Then, your package is available to the public. 
 
 A good practice is to **tag a release** after the pull request is merged so that your package version update can be reflected in your GitHub repository. This process can be automated by the [TagBot](https://github.com/JuliaRegistries/TagBot).

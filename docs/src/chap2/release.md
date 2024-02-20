@@ -202,13 +202,13 @@ end
 function private_sum(v::AbstractVector{<:Real})
     # we implement the sum function by using the `@ein_str` macro
     # from the OMEinsum package
-    return ein"i->"(v)
+    return ein"i->"(v)[]
 end
 
 end
 ```
 
-To use this function, you can type the following commands in the package environment:
+To use this function, you can type the following commands in the **package environment**:
 ```julia-repl
 julia> using MyFirstPackage
 
@@ -216,7 +216,23 @@ julia> MyFirstPackage.greet("Julia")
 "Hello, Julia!"
 ```
 
-2. Write tests for the package
+!!! note "How to enter package environment?"
+    - In shell: type
+      ```bash
+      $ cd ~/.julia/dev/MyFirstPackage
+      $ julia --project
+      ```
+    - In REPL: press `]` to enter the package mode and then type
+      ```julia-repl
+      pkg> activate path/to/package
+      ```
+      to enter the package environment. To deactivate the package environment, type
+      ```julia-repl
+      pkg> activate
+      ```
+    - In VSCode: Click the `Julia env: ...` button in the bottom of the window and then select the package path.
+
+1. Write tests for the package
 
 We always need to write tests for the package. The test code of the package is located in the `test` folder of the package path.
 

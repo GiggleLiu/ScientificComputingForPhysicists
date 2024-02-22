@@ -16,7 +16,7 @@ record(fig, "lorenz.mp4", 1:120) do frame
     global y
     for i in 1:50
         # update arrays inplace
-        y = rk4_step(lz, y, 0.01)
+        y = integrate_step(lz, RungeKutta{4}(), y, 0.01)
         push!(points[], Point3f(y...))
         push!(colors[], frame)
     end

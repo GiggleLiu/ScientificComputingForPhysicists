@@ -21,7 +21,7 @@ end
 const Point2D{T} = Point{2, T}
 const Point3D{T} = Point{3, T}
 Point(x::Real...) = Point((x...,))
-LinearAlgebra.dot(x::Point, y::Point) = mapreduce(*, +, x.data .* y.data)
+LinearAlgebra.dot(x::Point, y::Point) = mapreduce(*, +, x.data, y.data)
 Base.:*(x::Real, y::Point) = Point(x .* y.data)
 Base.:/(y::Point, x::Real) = Point(y.data ./ x)
 Base.:+(x::Point, y::Point) = Point(x.data .+ y.data)

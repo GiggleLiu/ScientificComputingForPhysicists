@@ -116,18 +116,14 @@ Status `~/.julia/dev/MyFirstPackage/Project.toml` (empty project)
 ```
  After that, you can add a new dependency by typing:
 ```julia-repl
-(MyFirstPackage) pkg> add OMEinsum
+(MyFirstPackage) pkg> add LinearAlgebra
 
 (MyFirstPackage) pkg> st
 Project MyFirstPackage v1.0.0-DEV
-Status `~/.julia/dev/MyFirstPackage/Project.toml`
-  [ebe7aa44] OMEinsum v0.8.1
+Status `~/jcode/ScientificComputingForPhysicists/lib/MyFirstPackage/Project.toml`
+  [37e2e46d] LinearAlgebra
 ```
-Press `backspace` to exit the package mode and then type
-```julia-repl
-julia> using OMEinsum
-```
-The dependency is added correctly if no error is thrown.
+The dependency is added correctly if no error is thrown. Press `backspace` to exit the package mode.
 
 Type `;` to enter the shell mode and then type
 ```julia-repl
@@ -138,7 +134,7 @@ authors = ["GiggleLiu"]
 version = "1.0.0-DEV"
 
 [deps]
-OMEinsum = "ebe7aa44-baf0-506c-a96f-8464559b3922"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [compat]
 julia = "1.10"
@@ -149,13 +145,13 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 [targets]
 test = ["Test"]
 ```
-You will see that the dependency `OMEinsum` is added to the `[deps]` section of the `Project.toml` file.
+You will see that the dependency `LinearAlgebra` is added to the `[deps]` section of the `Project.toml` file.
 
-We also need to specify which version of `OMEinsum` is **compatible** with the current package. To do so, you need to edit the `[compat]` section of the `Project.toml` file with your favorite editor.
+We also need to specify which version of `LinearAlgebra` is **compatible** with the current package. To do so, you need to edit the `[compat]` section of the `Project.toml` file with your favorite editor.
 ```
 [compat]
 julia = "1.10"
-OMEinsum = "0.8"  # added line
+LinearAlgebra = "1"  # added line
 ```
 
 Here, we have used the most widely used dependency version specifier `=`, which means matching the first nonzero component of the version number. For example:
@@ -182,38 +178,114 @@ Let us add a simple function to the package. The source code of the package is a
 *File*: `src/MyFirstPackage.jl`
 ```julia
 module MyFirstPackage
-# import the OMEinsum package (not really used in this example)
-using OMEinsum
+# import packages
+using LinearAlgebra
 
-# export `greet` as a public function
-export greet
+# export interfaces
+export Lorenz, integrate_step
+export Point, Point2D, Point3D
+export RungeKutta, Euclidean
 
-"""
-    greet(name::String)
-
-Return a greeting message to the input `name`.
-"""
-function greet(name::String)
-    # `$` is used to interpolate the variable `name` into the string
-    return "Hello, $(name)!"
-end
-
-# this function is not exported
-function private_sum(v::AbstractVector{<:Real})
-    # we implement the sum function by using the `@ein_str` macro
-    # from the OMEinsum package
-    return ein"i->"(v)[]
-end
+# `include` other source files into this module
+include("lorenz.jl")
 
 end
 ```
+
+We implement the [Lorenz system](https://en.wikipedia.org/wiki/Lorenz_system) in the `lorenz.jl` file. The source code of the package is as follows:
+
+*File*: `src/lorenz.jl`
+~~~julia
+"""
+    Point{D, T}
+
+A point in D-dimensional space, with coordinates of type T.
+
+# Examples
+```jldoctest
+julia> p1 = Point(1.0, 2.0)
+Point{2, Float64}((1.0, 2.0))
+
+julia> p2 = Point(3.0, 4.0)
+Point{2, Float64}((3.0, 4.0))
+
+julia> p1 + p2
+Point{2, Float64}((4.0, 6.0))
+```
+"""
+# define a point in D-dimensional space
+struct Point{D, T <: Real}
+    data::NTuple{D, T}  # a tuple of D elements of type T
+end
+Point(x::Real...) = Point((x...,))  # `...` is the splat operator
+# define 2D and 3D points
+const Point2D{T} = Point{2, T}
+const Point3D{T} = Point{3, T}
+
+# define the dot product of two coordinate vectors
+# `mapreduce` is a high-order function that applies a function to each element 
+# of an iterable and then reduces the result to a single value.
+LinearAlgebra.dot(x::Point, y::Point) = mapreduce(*, +, x.data, y.data)
+# implement the operations of the point
+# `Base` is the standard library of Julia
+# `Base.isapprox` is used to define a new method for the function `isapprox` in the `Base` module
+# for arithmetic operations like `*`, `*`, `+`, an extra `:` is required to avoid ambiguity
+Base.:*(x::Real, y::Point) = Point(x .* y.data) # `.` is the broadcast operator
+Base.:/(y::Point, x::Real) = Point(y.data ./ x)
+Base.:+(x::Point, y::Point) = Point(x.data .+ y.data)
+Base.isapprox(x::Point, y::Point; kwargs...) = all(isapprox.(x.data, y.data; kwargs...))
+# `all` returns true if all elements of the iterable are true
+
+# define the index and broadcastable functions
+Base.getindex(p::Point, i::Int) = p.data[i] # for `p[i]` like operations
+Base.broadcastable(p::Point) = p.data # for `x .+ y` like operations
+Base.iterate(p::Point, args...) = iterate(p.data, args...) # for `[p...]` like operations
+
+# the Lorenz system
+struct Lorenz
+    σ::Float64
+    ρ::Float64
+    β::Float64
+end
+
+# the differential equation of the Lorenz system
+function field(p::Lorenz, u)
+    x, y, z = u
+    Point(p.σ*(y-x), x*(p.ρ-z)-y, x*y-p.β*z)
+end
+
+# abstract type for integrators, which allows us to switch between different integration methods
+abstract type AbstractIntegrator end
+# Runge-Kutta 4th order method
+# https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods
+struct RungeKutta{K} <: AbstractIntegrator end
+# Euclidean method
+struct Euclidean <: AbstractIntegrator end
+
+function integrate_step(f, ::RungeKutta{4}, t, y, Δt)
+    k1 = Δt * f(t, y)
+    k2 = Δt * f(t+Δt/2, y + k1 / 2)
+    k3 = Δt * f(t+Δt/2, y + k2 / 2)
+    k4 = Δt * f(t+Δt, y + k3)
+    return y + k1/6 + k2/3 + k3/3 + k4/6
+end
+
+# Euclidean integration
+function integrate_step(f, ::Euclidean, t, y, Δt)
+    return y + Δt * f(t, y)
+end
+
+function integrate_step(lz::Lorenz, int::AbstractIntegrator, u, Δt)
+    return integrate_step((t, u) -> field(lz, u), int, zero(Δt), u, Δt)
+end
+~~~
 
 To use this function, you can type the following commands in the **package environment**:
 ```julia-repl
 julia> using MyFirstPackage
 
-julia> MyFirstPackage.greet("Julia")
-"Hello, Julia!"
+julia> Point(2.0, 3.0)
+Point2D{Float64}((2.0, 3.0))
 ```
 
 !!! note "How to enter package environment?"
@@ -241,15 +313,28 @@ We always need to write tests for the package. The test code of the package is l
 using Test
 using MyFirstPackage
 
-@testset "greet" begin
-    @test greet("Julia") == "Hello, Julia!"
+@testset "lorenz" begin
+    include("lorenz.jl")
+end
+```
+
+*File*: `test/lorenz.jl`
+```julia
+using Test, MyFirstPackage
+
+@testset "Point" begin
+    p1 = Point(1.0, 2.0)
+    p2 = Point(3.0, 4.0)
+    @test p1 + p2 ≈ Point(4.0, 6.0)
 end
 
-@testset "private sum" begin
-    # because we have not exported the `private_sum` function,
-    # we need to use the full path to call it
-    @test MyFirstPackage.private_sum([1, 2, 3]) == 6
-    @test MyFirstPackage.private_sum(Int[]) == 0
+@testset "step" begin
+    lz = Lorenz(10.0, 28.0, 8/3)
+    int = RungeKutta{4}()
+    r1 = integrate_step(lz, int, Point(1.0, 1.0, 1.0), 0.0001)
+    eu = Euclidean()
+    r2 = integrate_step(lz, eu, Point(1.0, 1.0, 1.0), 0.0001)
+    @test isapprox(r1, r2; rtol=1e-5)
 end
 ```
 
@@ -259,12 +344,12 @@ To run the tests, you can use the following command in the package environment:
   ... 
   [8e850b90] libblastrampoline_jll v5.8.0+1
 Precompiling project...
-  1 dependency successfully precompiled in 1 seconds. 21 already precompiled.
+  1 dependency successfully precompiled in 1 seconds. 2 already precompiled.
      Testing Running tests...
-Test Summary:  | Pass  Total  Time
-MyFirstPackage |    1      1  0.0s
 Test Summary: | Pass  Total  Time
-private sum   |    2      2  0.3s
+lorenz        |    2      2  0.1s
+Test Summary: | Pass  Total  Time
+fluid         |    1      1  0.1s
      Testing MyFirstPackage tests passed
 ```
 

@@ -62,5 +62,6 @@ end
 deploydocs(;
     repo="github.com/GiggleLiu/ScientificComputingForPhysicists.jl",
     devbranch="main",
-    devurl="",
+    devurl="dev",
+    versions=["dev"=>"dev"]
 )

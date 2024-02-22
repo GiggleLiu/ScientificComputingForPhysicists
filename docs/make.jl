@@ -1,10 +1,7 @@
-using ScientificComputingForPhysicists
 using Documenter
 
-DocMeta.setdocmeta!(ScientificComputingForPhysicists, :DocTestSetup, :(using ScientificComputingForPhysicists); recursive=true)
-
 makedocs(;
-    modules=[ScientificComputingForPhysicists],
+    modules=Module[],
     authors="GiggleLiu",
     sitename="Scientific Computing For Physicists",
     format=Documenter.HTML(;

@@ -1,7 +1,3 @@
-```@meta
-CurrentModule = ScientificComputingForPhysicists
-```
-
 # ScientificComputingForPhysicists
 
 ```@index

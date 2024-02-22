@@ -60,5 +60,5 @@ deploydocs(;
     repo="github.com/GiggleLiu/ScientificComputingForPhysicists.jl",
     devbranch="main",
     devurl="dev",
-    versions=["dev"=>"dev"]
+    versions=["stable"=>"dev", "dev"=>"dev"]
 )

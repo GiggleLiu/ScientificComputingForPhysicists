@@ -32,22 +32,25 @@ end
 weights(::D2Q9) = (1/36, 1/36, 1/9, 1/9, 4/9, 1/9, 1/9, 1/36, 1/36)
 
 # the density of the fluid, each component is the density of a velocity
-struct MultiComponentDensity{N, T <: Real}
-    data::NTuple{N, T}
+struct Cell{N, T <: Real}
+    density::NTuple{N, T}
 end
 # the total desnity of the fluid
-density(rho::MultiComponentDensity) = sum(rho.data)
+density(cell::Cell) = sum(cell.density)
+# the density of the fluid in a specific direction,
+# where the direction is an integer
+density(cell::Cell, direction::Int) = cell.density[direction]
 
 """
-    velocity(lb::AbstractLBConfig, rho::MultiComponentDensity)
+    velocity(lb::AbstractLBConfig, rho::Cell)
 
 Compute the velocity of the fluid from the density of the fluid.
 """
-function velocity(lb::AbstractLBConfig, rho::MultiComponentDensity)
-    return mapreduce((r, d) -> r * d, +, rho.data, directions(lb)) / density(rho)
+function velocity(lb::AbstractLBConfig, rho::Cell)
+    return mapreduce((r, d) -> r * d, +, rho.density, directions(lb)) / density(rho)
 end
-Base.:+(x::MultiComponentDensity, y::MultiComponentDensity) = MultiComponentDensity(x.data .+ y.data)
-Base.:*(x::Real, y::MultiComponentDensity) = MultiComponentDensity(x .* y.data)
+Base.:+(x::Cell, y::Cell) = Cell(x.density .+ y.density)
+Base.:*(x::Real, y::Cell) = Cell(x .* y.density)
 
 """
     equilibrium_density(lb::AbstractLBConfig, ρ, u)
@@ -56,27 +59,28 @@ Compute the equilibrium density of the fluid from the total density and the velo
 """
 function equilibrium_density(lb::AbstractLBConfig{D, N}, ρ, u) where {D, N}
     ws, ds = weights(lb), directions(lb)
-    return MultiComponentDensity(
-        ntuple(i->_equilibrium_density(ρ, u, ws[i], ds[i]), N)
+    return Cell(
+        ntuple(i-> ρ * ws[i] * _equilibrium_density(u, ds[i]), N)
     )
 end
-function _equilibrium_density(ρ, u, ωi, ei)
-    return ρ * ωi * (1 + 3 * dot(ei, u) + 9/2 * dot(ei, u)^2 - 3/2 * dot(u, u))
+function _equilibrium_density(u, ei)
+    # the equilibrium density of the fluid with a specific mean velocity
+    return (1 + 3 * dot(ei, u) + 9/2 * dot(ei, u)^2 - 3/2 * dot(u, u))
 end
 
 # streaming step
-function stream!(lb::AbstractLBConfig{2, N}, newgrid::AbstractMatrix{D}, grid::AbstractMatrix{D}, barrier::AbstractMatrix{Bool}) where {N, T, D<:MultiComponentDensity{N, T}}
+function stream!(lb::AbstractLBConfig{2, N}, newgrid::AbstractMatrix{D}, grid::AbstractMatrix{D}, barrier::AbstractMatrix{Bool}) where {N, T, D<:Cell{N, T}}
     ds = directions(lb)
     @inbounds for ci in CartesianIndices(newgrid)
         i, j = ci.I
-        newgrid[ci] = MultiComponentDensity(ntuple(N) do k
+        newgrid[ci] = Cell(ntuple(N) do k
             ei = ds[k]
             m, n = size(grid)
             i2, j2 = mod1(i - ei[1], m), mod1(j - ei[2], n)
             if barrier[i2, j2]
-                grid[i, j].data[flip_direction_index(lb, k)]
+                density(grid[i, j], flip_direction_index(lb, k))
             else
-                grid[i2, j2].data[k]
+                density(grid[i2, j2], k)
             end
         end)
     end
@@ -90,11 +94,13 @@ function collide(lb::AbstractLBConfig{D, N}, rho; viscosity = 0.02) where {D, N}
     return (1 - omega) * rho + omega * equilibrium_density(lb, density(rho), v)
 end
 
-# ∂uy/∂x−∂ux/∂y, the curl of the velocity field:
 """
     curl(u::AbstractMatrix{Point2D{T}})
 
-Compute the curl of the velocity field.
+Compute the curl of the velocity field in 2D, which is defined as:
+```math
+∂u_y/∂x−∂u_x/∂y
+```
 """
 function curl(u::Matrix{Point2D{T}}) where T 
     return map(CartesianIndices(u)) do ci
@@ -117,13 +123,13 @@ A lattice Boltzmann simulation with D dimensions, N velocities, and lattice conf
 - `gridcache::MT`: cache for the density of the fluid
 - `barrier::BT`: barrier configuration
 """
-struct LatticeBoltzmann{D, N, T, CFG<:AbstractLBConfig{D, N}, MT<:AbstractMatrix{MultiComponentDensity{N, T}}, BT<:AbstractMatrix{Bool}}
+struct LatticeBoltzmann{D, N, T, CFG<:AbstractLBConfig{D, N}, MT<:AbstractMatrix{Cell{N, T}}, BT<:AbstractMatrix{Bool}}
     config::CFG
     grid::MT
     gridcache::MT
     barrier::BT
 end
-function LatticeBoltzmann(config::AbstractLBConfig{D, N}, grid::AbstractMatrix{<:MultiComponentDensity}, barrier::AbstractMatrix{Bool}) where {D, N}
+function LatticeBoltzmann(config::AbstractLBConfig{D, N}, grid::AbstractMatrix{<:Cell}, barrier::AbstractMatrix{Bool}) where {D, N}
     @assert size(grid) == size(barrier)
     return LatticeBoltzmann(config, grid, similar(grid), barrier)
 end
@@ -141,16 +147,16 @@ function step!(lb::LatticeBoltzmann)
 end
 
 """
-    lb_sample(; height = 80, width = 200, u0 = Point(0.0, 0.1))
+    example_d2q9(; height = 80, width = 200, u0 = Point(0.0, 0.1))
 
-Create a lattice Boltzmann simulation with the given parameters.
+A D2Q9 lattice Boltzmann simulation example. A simple linear barrier is added to the lattice.
 
 ### Arguments
 - `height::Int`: height of the lattice
 - `width::Int`: width of the lattice
 - `u0::Point2D`: initial and in-flow speed
 """
-function lb_sample(; 
+function example_d2q9(; 
         height = 80,                       # lattice dimensions
         width = 200,
         u0 = Point(0.0, 0.1)                           # initial and in-flow speed

@@ -12,7 +12,7 @@ fig, ax, l = lines(points, color = colors,
     axis = (; type = Axis3, protrusions = (0, 0, 0, 0), 
               viewmode = :fit, limits = (-30, 30, -30, 30, 0, 50)))
 
-record(fig, "lorenz.mp4", 1:120) do frame
+record(fig, joinpath(@__DIR__, "lorenz.mp4"), 1:120) do frame
     global y
     for i in 1:50
         # update arrays inplace

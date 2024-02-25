@@ -3,7 +3,7 @@ using Makie, GLMakie
 using MyFirstPackage
 
 # Set up the visualization with Makie:
-lb = lb_sample()
+lb = example_d2q9()
 vorticity = Observable(curl(velocity.(Ref(lb.config), lb.grid))')
 fig, ax, plot = image(vorticity, colormap = :jet, colorrange = (-0.1, 0.1))
 
@@ -14,7 +14,7 @@ image!(ax, barrier_img')
 using BenchmarkTools
 @benchmark step!($(deepcopy(lb)))
 
-record(fig, "lattice_boltzmann_simulation.mp4", 1:100; framerate = 10) do i
+record(fig, joinpath(@__DIR__, "lattice_boltzmann_simulation.mp4"), 1:100; framerate = 10) do i
     for i=1:20
         step!(lb)
     end

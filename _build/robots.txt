@@ -1,0 +1,4 @@
+Sitemap: https://book.jinguo-group.science/sitemap.xml
+
+User-agent: *
+Disallow:

@@ -84,7 +84,7 @@ The BGK model has a nice property that it conserves:
 
 The following code is a part of the package `MyFirstPackage` that we created in the previous section: [My First Package](@ref).
 
-*File*: `src/fluid.jl`
+*File*: `src/fluid.jl` (Step 1-6)
 
 #### Step 1. Define the lattice Boltzmann configuration
 Let us start by defining an abstract type for lattice Boltzmann configurations and a concrete type that implements the D2Q9 lattice.
@@ -311,6 +311,27 @@ function example_d2q9(;
 end
 ```
 
+#### Step 7. Include the above file into the package module
+
+*File*: `src/MyFirstPackage.jl`
+```julia
+module MyFirstPackage
+# import packages
+using LinearAlgebra
+
+# export interfaces
+export Lorenz, integrate_step
+export Point, Point2D, Point3D
+export RungeKutta, Euclidean
+export D2Q9, LatticeBoltzmann, step!, equilibrium_density, momentum, curl, example_d2q9, density
+
+include("lorenz.jl")
+include("fluid.jl")
+
+end
+```
+
+
 ### Using the package
 *File*: `examples/barrier.jl`
 
@@ -318,10 +339,7 @@ end
 using Makie: RGBA # for visualization
 using Makie, GLMakie
 using MyFirstPackage # our package
-```
 
-### Simulation and visualization
-```julia
 # Set up the visualization with Makie:
 lb = example_d2q9()
 vorticity = Observable(curl(momentum.(Ref(lb.config), lb.grid))')
@@ -330,30 +348,8 @@ fig, ax, plot = image(vorticity, colormap = :jet, colorrange = (-0.1, 0.1))
 # Show barrier
 barrier_img = map(x -> x ? RGBA(0, 0, 0, 1) : RGBA(0, 0, 0, 0), lb.barrier)
 image!(ax, barrier_img')
-```
 
-### Benchmarking
-```julia
-using BenchmarkTools
-@benchmark step!($(deepcopy(lb)))
-```
-
-### Profiling (!!!)
-
-```julia
-julia> using Profile
-
-julia> Profile.init(n = 10^7)
-
-julia> @profile for i in 1:100
-           step!(lb)
-       end
-    
-julia> Profile.print()
-```
-
-### Recording the simulation
-```julia
+# Recording the simulation
 record(fig, joinpath(@__DIR__, "barrier.mp4"), 1:100; framerate = 10) do i
     for i=1:20
         step!(lb)
@@ -362,8 +358,8 @@ record(fig, joinpath(@__DIR__, "barrier.mp4"), 1:100; framerate = 10) do i
 end
 ```
 
-### To run
-Install dependencies
+To ensure the reproducibility of the code, we need to create a local environment and install the required packages.
+
 ```julia-pkg
 pkg> activate("examples")
 
@@ -372,14 +368,149 @@ pkg> dev .
 pkg> add Makie GLMakie BenchmarkTools
 ```
 
-Type `Backspace` to exit the package mode.
+Type `Backspace` to exit the package mode. To execute the code, type
 
 ```julia
 julia> include("examples/barrier.jl")
 ```
 
+You should see a new file `barrier.mp4` in the `examples` directory, which is the recording of the simulation.
+```@raw html
 <video width="320" height="240" controls>
-  <source src="barrier.mp4" type="video/mp4">
+  <source src="/assets/images/barrier.mp4" type="video/mp4">
 </video>
+```
 
-Please find the video `barrier.mp4` in the same folder as this file if the video does not show up.
+### Benchmarking
+```julia
+julia> using BenchmarkTools
+
+julia> @benchmark step!($(deepcopy(lb)))
+BenchmarkTools.Trial: 3637 samples with 1 evaluation.
+ Range (min … max):  1.323 ms …  1.899 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     1.363 ms              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   1.374 ms ± 30.730 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+             ▁▇█▆▄▃▃▂▂▂▁▂▂▂▂▁▁▁▁▁▁                           ▁
+  ▃▁▁▃▃▃▃▁▁▁▃█████████████████████████▆▆▆▆▅▆▆▆▆▅▅▆▆▃▅▅▄▆▆▅▃▆ █
+  1.32 ms      Histogram: log(frequency) by time     1.49 ms <
+
+ Memory estimate: 0 bytes, allocs estimate: 0.
+```
+
+### Profiling - identify the performance bottleneck
+> *Premature optimization is the root of all evil -- Donald Knuth*
+
+Performance optimization comes after the correctness of the code, and it should be based on the profiling result.
+Profiling is mainly used to identify the performance bottleneck of your code. The [Profile](https://docs.julialang.org/en/v1/manual/profile/) module in Julia provides a set of tools to profile your code.
+
+```julia-repl
+julia> using Profile
+
+julia> Profile.init(n = 10^7, delay = 0.001) # set the number of samples and the delay between samples
+```
+
+Then you can profile your code by wrapping the code with `@profile` macro.
+```julia-repl
+julia> @profile for i in 1:100
+           step!(lb)
+       end
+```
+In order to collect enough samples, we run the `step!` function for 100 times.
+To view the profile result, you can use the `Profile.print` function.
+```julia-repl
+julia> Profile.print(; mincount=10) # only show functions with ≥10 counts
+Overhead ╎ [+additional indent] Count File:Line; Function
+=========================================================
+            ... truncated message ...
+  ╎    ╎    ╎    ╎ 88  …rc/fluid.jl:144; step!(lb::LatticeBoltzm…
+  ╎    ╎    ╎    ╎  88  …rc/fluid.jl:76; stream!(lb::D2Q9, newgr…
+33╎    ╎    ╎    ╎   88  …e/ntuple.jl:19; ntuple
+  ╎    ╎    ╎    ╎    18  …rc/fluid.jl:79; (::MyFirstPackage.var…
+  ╎    ╎    ╎    ╎     10  …perators.jl:830; mod1
+ 1╎    ╎    ╎    ╎    16  …rc/fluid.jl:80; (::MyFirstPackage.var…
+  ╎    ╎    ╎    ╎     15  …actarray.jl:1291; getindex
+  ╎    ╎    ╎    ╎    ╎ 13  …actarray.jl:1323; _getindex
+ 1╎    ╎    ╎    ╎    ╎  13  …actarray.jl:702; checkbounds
+  ╎    ╎    ╎    ╎    ╎   12  …actarray.jl:681; checkbounds
+  ╎    ╎    ╎    ╎ 13  …rc/fluid.jl:145; step!(lb::LatticeBoltzm…
+  ╎    ╎    ╎    ╎  13  …roadcast.jl:911; materialize!
+  ╎    ╎    ╎    ╎   13  …roadcast.jl:914; materialize!
+  ╎    ╎    ╎    ╎    13  …roadcast.jl:956; copyto!
+  ╎    ╎    ╎    ╎     13  …roadcast.jl:1003; copyto!
+  ╎    ╎    ╎    ╎    ╎ 12  …simdloop.jl:77; macro expansion
+  ╎    ╎    ╎    ╎    ╎  12  …roadcast.jl:1004; macro expansion
+  ╎    ╎    ╎    ╎    ╎   12  …roadcast.jl:636; getindex
+Total snapshots: 112. Utilization: 100% across all threads and tasks. Use the `groupby` kwarg to break down by thread and/or task.
+```
+
+Alternatively, you can use the format `:flat` to show the profile result in a flat view.
+```julia-repl
+julia> Profile.print(; mincount=10, format=:flat)
+ Count  Overhead File                                                        Line Function
+ =====  ======== ====                                                        ==== ========
+            ... truncated message ...
+    10         0 @MyFirstPackage/src/fluid.jl                                  63 #6
+    11        11 @MyFirstPackage/src/fluid.jl                                   ? (::MyFirstPackage.var"#8#9"{D2Q9, Matrix{MyFirstPackage.Cell{9, Float64}}, BitMatrix, N…
+    20         0 @MyFirstPackage/src/fluid.jl                                  79 (::MyFirstPackage.var"#8#9"{D2Q9, Matrix{MyFirstPackage.Cell{9, Float64}}, BitMatrix, N…
+    17         0 @MyFirstPackage/src/fluid.jl                                  80 (::MyFirstPackage.var"#8#9"{D2Q9, Matrix{MyFirstPackage.Cell{9, Float64}}, BitMatrix, N…
+    15         3 @MyFirstPackage/src/fluid.jl                                  94 collide(lb::D2Q9, rho::MyFirstPackage.Cell{9, Float64}; viscosity::Float64)
+    11         1 @MyFirstPackage/src/fluid.jl                                  62 equilibrium_density(lb::D2Q9, ρ::Float64, u::Point2D{Float64})
+    97         0 @MyFirstPackage/src/fluid.jl                                 144 step!(lb::LatticeBoltzmann{2, 9, Float64, D2Q9, Matrix{MyFirstPackage.Cell{9, Float64}}…
+    10         0 @MyFirstPackage/src/fluid.jl                                 145 step!(lb::LatticeBoltzmann{2, 9, Float64, D2Q9, Matrix{MyFirstPackage.Cell{9, Float64}}…
+    97         0 @MyFirstPackage/src/fluid.jl                                  76 stream!(lb::D2Q9, newgrid::Matrix{MyFirstPackage.Cell{9, Float64}}, grid::Matrix{MyFirs…
+Total snapshots: 120. Utilization: 100% across all threads and tasks. Use the `groupby` kwarg to break down by thread and/or task.
+```
+
+The printed result shows that the `stream!` step is more costly than the `collide` step, which should be the focus of optimization.
+
+!!! note "How profiling works"
+    Profiling is a statistical method to measure the performance of your code. It works by sampling the function call stack of
+    the running code at a certain frequency.
+
+Let use look at the `stream!` function to see which part of the code is more costly.
+```julia-repl
+julia> Profile.clear()   # clear the previous profile result
+
+julia> @profile for i in 1:300
+    MyFirstPackage.stream!(lb.config, lb.grid, lb.gridcache, lb.barrier)
+end
+
+Profile.print(format=:flat, mincount=30)  # show the profile result, only show the functions that are called more than 5 times
+            ... truncated message ...
+  ╎    ╎    ╎    ╎ 263 …rc/fluid.jl:76; stream!(lb::D2Q9, newgri…
+77╎    ╎    ╎    ╎  259 …e/ntuple.jl:19; ntuple
+  ╎    ╎    ╎    ╎   57  …rc/fluid.jl:79; (::MyFirstPackage.var"…
+28╎    ╎    ╎    ╎    28  @Base/int.jl:86; -
+  ╎    ╎    ╎    ╎    29  …perators.jl:830; mod1
+  ╎    ╎    ╎    ╎     27  @Base/int.jl:287; mod
+  ╎    ╎    ╎    ╎    ╎ 27  @Base/div.jl:319; fld
+  ╎    ╎    ╎    ╎    ╎  27  @Base/div.jl:354; div
+  ╎    ╎    ╎    ╎    ╎   25  @Base/int.jl:1068; -
+25╎    ╎    ╎    ╎    ╎    25  @Base/int.jl:86; -
+ 3╎    ╎    ╎    ╎   51  …rc/fluid.jl:80; (::MyFirstPackage.var"…
+  ╎    ╎    ╎    ╎    48  …actarray.jl:1291; getindex
+  ╎    ╎    ╎    ╎     46  …actarray.jl:1323; _getindex
+ 3╎    ╎    ╎    ╎    ╎ 46  …actarray.jl:702; checkbounds
+  ╎    ╎    ╎    ╎    ╎  43  …actarray.jl:681; checkbounds
+  ╎    ╎    ╎    ╎    ╎   39  …actarray.jl:728; checkbounds_indi…
+  ╎    ╎    ╎    ╎    ╎    39  …actarray.jl:728; checkbounds_ind…
+  ╎    ╎    ╎    ╎    ╎     39  …actarray.jl:763; checkindex
+38╎    ╎    ╎    ╎    ╎    ╎ 39  @Base/int.jl:86; -
+  ╎    ╎    ╎    ╎   29  …rc/fluid.jl:83; (::MyFirstPackage.var"…
+29╎    ╎    ╎    ╎    29  …sentials.jl:14; getindex
+Total snapshots: 264. Utilization: 100% across all threads and tasks. Use the `groupby` kwarg to break down by thread and/or task.
+```
+
+The line 79 in file `src/fluid.jl` costs `57/264` samples, which is the following line of code:
+```julia
+i2, j2 = mod1(i - ei[1], m), mod1(j - ei[2], n)
+```
+
+The line 80 in file `src/fluid.jl` costs `51/264` samples, which is the following line of code:
+```julia
+if barrier[i2, j2]
+```
+and most of the time is spent on the `checkbounds` function.
+
+Could we remove the boundary check? Please refer to the [Julia Performance Tips](https://docs.julialang.org/en/v1/manual/performance-tips/) for more information.

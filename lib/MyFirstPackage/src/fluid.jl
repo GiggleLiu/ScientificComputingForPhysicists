@@ -7,7 +7,7 @@ An abstract type for lattice Boltzmann configurations.
 abstract type AbstractLBConfig{D, N} end
     
 """
-    D2Q9
+    D2Q9 <: AbstractLBConfig{2, 9}
 
 A lattice Boltzmann configuration for 2D, 9-velocity model.
 """
@@ -42,11 +42,11 @@ density(cell::Cell) = sum(cell.density)
 density(cell::Cell, direction::Int) = cell.density[direction]
 
 """
-    velocity(lb::AbstractLBConfig, rho::Cell)
+    momentum(lb::AbstractLBConfig, rho::Cell)
 
-Compute the velocity of the fluid from the density of the fluid.
+Compute the momentum of the fluid from the density of the fluid.
 """
-function velocity(lb::AbstractLBConfig, rho::Cell)
+function momentum(lb::AbstractLBConfig, rho::Cell)
     return mapreduce((r, d) -> r * d, +, rho.density, directions(lb)) / density(rho)
 end
 Base.:+(x::Cell, y::Cell) = Cell(x.density .+ y.density)
@@ -55,7 +55,7 @@ Base.:*(x::Real, y::Cell) = Cell(x .* y.density)
 """
     equilibrium_density(lb::AbstractLBConfig, ρ, u)
 
-Compute the equilibrium density of the fluid from the total density and the velocity.
+Compute the equilibrium density of the fluid from the total density and the momentum.
 """
 function equilibrium_density(lb::AbstractLBConfig{D, N}, ρ, u) where {D, N}
     ws, ds = weights(lb), directions(lb)
@@ -64,7 +64,7 @@ function equilibrium_density(lb::AbstractLBConfig{D, N}, ρ, u) where {D, N}
     )
 end
 function _equilibrium_density(u, ei)
-    # the equilibrium density of the fluid with a specific mean velocity
+    # the equilibrium density of the fluid with a specific momentum
     return (1 + 3 * dot(ei, u) + 9/2 * dot(ei, u)^2 - 3/2 * dot(u, u))
 end
 
@@ -90,14 +90,14 @@ end
 function collide(lb::AbstractLBConfig{D, N}, rho; viscosity = 0.02) where {D, N}
     omega = 1 / (3 * viscosity + 0.5)   # "relaxation" parameter
     # Recompute macroscopic quantities:
-    v = velocity(lb, rho)
+    v = momentum(lb, rho)
     return (1 - omega) * rho + omega * equilibrium_density(lb, density(rho), v)
 end
 
 """
     curl(u::AbstractMatrix{Point2D{T}})
 
-Compute the curl of the velocity field in 2D, which is defined as:
+Compute the curl of the momentum field in 2D, which is defined as:
 ```math
 ∂u_y/∂x−∂u_x/∂y
 ```

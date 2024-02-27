@@ -34,7 +34,7 @@ where $(i, j)$ is the position of the cell in the lattice and $\mathbf{v}$ is th
 The particles move with different velocities $\mathbf v$ and collide with each other, driving the fluid to reach an equilibrium state,
 where the energy of the particles is governed by the Boltzmann distribution
 ```math
-\rho_{eq}(E) \sim e^{-\frac{E}{k_BT}} ({\rm or }\; e^{- {\rm const.} \times |\mathbf{v}|^2}),
+\rho_{\rm eq}(E) \sim e^{-\frac{E}{k_BT}} ({\rm or }\; e^{- {\rm const.} \times |\mathbf{v}|^2}),
 ```
 where $k_B$ is the Boltzmann constant, $T$ is the temperature,
 and $E = \frac{1}{2}m|\mathbf{v}|^2$ is the energy of the particles.
@@ -64,7 +64,7 @@ Lattice Boltzmann Method (LBM) contains two steps:
 
 The collision step is based on the Bhatnagar-Gross-Krook (BGK) model, which is a simplified version of the Boltzmann equation. The collision step is defined as
 
-$\rho\leftarrow(1-\omega)\rho_0+\omega\rho_\mathrm{eq}$
+$\rho\leftarrow(1-\omega)\rho_0+\omega\rho_\mathrm{\rm eq}$
 
 where
 $\rho$ is the updated density
@@ -86,7 +86,8 @@ The following code is a part of the package `MyFirstPackage` that we created in 
 
 *File*: `src/fluid.jl`
 
-Step 1. Let us start by defining an abstract type for lattice Boltzmann configurations and a concrete type that implements the D2Q9 lattice.
+#### Step 1. Define the lattice Boltzmann configuration
+Let us start by defining an abstract type for lattice Boltzmann configurations and a concrete type that implements the D2Q9 lattice.
 
 ```julia
 """
@@ -125,7 +126,8 @@ end
 ```
 
 
-Step 3: Define the `Cell` type for storing the state $\rho_{ij}(\mathbf{v})$ of a cell.
+#### Step 2: Define the `Cell` type for storing the state
+The cell state is defined by the density of the fluid in different directions, $\rho_{ij}(\mathbf{v})$.
 
 ```julia
 # the density of the fluid, each component is the density of a velocity
@@ -139,7 +141,7 @@ density(cell::Cell) = sum(cell.density)
 density(cell::Cell, direction::Int) = cell.density[direction]
 ```
 
-Expect the total density, the momentum is also conserved, which is defined as the `momentum` of the fluid.
+Expect the total density, the momentum $\mathbf{u}$ is also conserved, which is defined as the `momentum` of the fluid.
 
 ```julia
 """
@@ -159,7 +161,7 @@ Base.:+(x::Cell, y::Cell) = Cell(x.density .+ y.density)
 Base.:*(x::Real, y::Cell) = Cell(x .* y.density)
 ```
 
-Step 4. Implement the streaming step.
+#### Step 3. Implement the streaming step
 ```julia
 # streaming step
 function stream!(
@@ -187,9 +189,15 @@ function stream!(
 end
 ```
 
-Step 5. Implement the collision step.
+#### Step 4. Implement the collision step
 
-By the Bhatnagar-Gross-Krook (BGK) model, the collision step drives the fluid towards an equilibrium state. The equilibrium density $\rho_{eq}(\rho_{\rm tot}, \mu)$.
+By the Bhatnagar-Gross-Krook (BGK) model, the collision step drives the fluid towards an equilibrium state. The equilibrium density is completely determined by the total density and the momentum of the fluid:
+```math
+\rho_{\rm eq}(\mathbf{v}_i) \approx \rho_{\rm tot} w_i \left(1 + 3\mathbf{v}_i\cdot\mathbf{u} + \frac{9}{2}(\mathbf{v}_i\cdot\mathbf{u})^2 - \frac{3}{2}\mathbf{u}\cdot\mathbf{u}\right)
+```
+where $\rho_{\rm tot}$ is the total density, $\mathbf{u}$ is the momentum, $w_i \sim e^{-|\mathbf{v}_i|^2}$ is the distribution of velocities with mean-velocity zero, and $v_i$ is the velocity vector.
+
+The detailed derivation of the equilibrium density could be found in the first reference at the top of this page.
 
 ```julia
 """
@@ -203,9 +211,7 @@ function equilibrium_density(lb::AbstractLBConfig{D, N}, ρ, u) where {D, N}
         ntuple(i-> ρ * ws[i] * _equilibrium_density(u, ds[i]), N)
     )
 end
-```
 
-```julia
 # the distribution of the 9 velocities at the equilibrium state
 weights(::D2Q9) = (1/36, 1/36, 1/9, 1/9, 4/9, 1/9, 1/9, 1/36, 1/36)
 function _equilibrium_density(u, ei)
@@ -214,7 +220,7 @@ function _equilibrium_density(u, ei)
 end
 ```
 
-
+The collision step that implements the BGK model is defined as follows:
 ```julia
 # collision step, applied on a single cell
 function collide(lb::AbstractLBConfig{D, N}, rho; viscosity = 0.02) where {D, N}
@@ -225,7 +231,45 @@ function collide(lb::AbstractLBConfig{D, N}, rho; viscosity = 0.02) where {D, N}
 end
 ```
 
-### Curl - for visualization
+#### Step 5. Implement the lattice Boltzmann simulation
+
+```julia
+"""
+    LatticeBoltzmann{D, N, T, CFG, MT, BT}
+
+A lattice Boltzmann simulation with D dimensions, N velocities, and lattice configuration CFG.
+"""
+
+struct LatticeBoltzmann{D, N, T, CFG<:AbstractLBConfig{D, N}, MT<:AbstractMatrix{Cell{N, T}}, BT<:AbstractMatrix{Bool}}
+    config::CFG # lattice configuration
+    grid::MT    # density of the fluid
+    gridcache::MT # cache for the density of the fluid
+    barrier::BT # barrier configuration
+end
+
+function LatticeBoltzmann(config::AbstractLBConfig{D, N}, grid::AbstractMatrix{<:Cell}, barrier::AbstractMatrix{Bool}) where {D, N}
+    @assert size(grid) == size(barrier)
+    return LatticeBoltzmann(config, grid, similar(grid), barrier)
+end
+```
+
+A single step of the lattice Boltzmann simulation is defined as follows, which directly modifies the `grid` field of the `LatticeBoltzmann` type.
+
+```julia
+"""
+    step!(lb::LatticeBoltzmann)
+
+Perform a single step of the lattice Boltzmann simulation.
+"""
+function step!(lb::LatticeBoltzmann)
+    copyto!(lb.gridcache, lb.grid)
+    stream!(lb.config, lb.grid, lb.gridcache, lb.barrier)
+    lb.grid .= collide.(Ref(lb.config), lb.grid)
+    return lb
+end
+```
+
+For better visualization, we define a function to compute the curl of the momentum field in 2D, which is defined as:
 ~~~julia
 """
     curl(u::AbstractMatrix{Point2D{T}})
@@ -246,46 +290,8 @@ function curl(u::Matrix{Point2D{T}}) where T
 end
 ~~~
 
-### Lattice Boltzmann simulation
 
-```julia
-"""
-    LatticeBoltzmann{D, N, T, CFG, MT, BT}
-
-A lattice Boltzmann simulation with D dimensions, N velocities, and lattice configuration CFG.
-"""
-
-struct LatticeBoltzmann{D, N, T, CFG<:AbstractLBConfig{D, N}, MT<:AbstractMatrix{Cell{N, T}}, BT<:AbstractMatrix{Bool}}
-    config::CFG # lattice configuration
-    grid::MT    # density of the fluid
-    gridcache::MT # cache for the density of the fluid
-    barrier::BT # barrier configuration
-end
-```
-```julia
-function LatticeBoltzmann(config::AbstractLBConfig{D, N}, grid::AbstractMatrix{<:Cell}, barrier::AbstractMatrix{Bool}) where {D, N}
-    @assert size(grid) == size(barrier)
-    return LatticeBoltzmann(config, grid, similar(grid), barrier)
-end
-```
-
-### Single step simulation
-
-```julia
-"""
-    step!(lb::LatticeBoltzmann)
-
-Perform a single step of the lattice Boltzmann simulation.
-"""
-function step!(lb::LatticeBoltzmann)
-    copyto!(lb.gridcache, lb.grid)
-    stream!(lb.config, lb.grid, lb.gridcache, lb.barrier)
-    lb.grid .= collide.(Ref(lb.config), lb.grid)
-    return lb
-end
-```
-
-### The example simulation
+#### Step 6. Find the example simulation
 
 A D2Q9 lattice Boltzmann simulation example. A simple linear barrier is added to the lattice.
 ```julia

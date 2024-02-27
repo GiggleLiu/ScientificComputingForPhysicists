@@ -1,16 +1,17 @@
-# Fluid dynamics simulation with Julia
+# Project: Fluid dynamics
 
 ## Fluid Dynamics Simulation
+
+Fluid dynamics is the study of the movement of fluids, including air and water. In this project, we will use the Lattice Boltzmann Method (LBM) to simulate fluid dynamics, which is a mesoscopic method based on the kinetic theory of gases.
 
 |  | micro | meso | macro |
 | --- | --- | --- | --- |
 | **Scale** | $10^{-9}$m | $10^{-9} -10^{-6}$m | $>10^{6}$m |
 | **Physics** | molecular | probabilistic | continuous |
-| **Gov. equations** | Newton | Boltzmann | Navier-Stokes equations |
+| **Gov. Eq.** | Newton | Boltzmann | Navier-Stokes equations |
 | **Method** | Molecular Dynamics | Lattice Boltzmann | Computational Fluid Dynamics |
 
-
-### If you want to systematically understand LBM
+This book does not aim to provide a comprehensive understanding of fluid dynamics. If you are interested in learning more about fluid dynamics, you can refer to the following resources:
 
 - [Fluid Dynamics Simulation (in Python, Java and Javascript)](https://physics.weber.edu/schroeder/fluids/)
 
@@ -19,49 +20,36 @@
 
 ### Lattice Boltzmann Method (LBM)
 
-```@raw html
-<img src="/assets/images/lattice.png" alt="image" width="auto" height="auto">
+The general idea of LBM is to simulate the fluid dynamics by modeling the movement of particles in a lattice, a grid of cells, without keeping track of the individual particles.
+The state of a cell in the lattice is defined by the density of particles moving in different directions, i.e. 
+```math
+{\rm state}(i, j) \equiv \rho_{ij}(\mathbf{v})
 ```
-
-For each cell, we define a density distribution function $\rho_{ij}(\mathbf{v})$.
-
-A box of particles collide frequently, they will reach a state of equilibrium.
-
-Question: What defines the equilibrium state, i.e. what is the distribution of particle energy?
-
-### Boltzmann Distribution $p(E) = e^{-\lambda E}$
+where $(i, j)$ is the position of the cell in the lattice and $\mathbf{v}$ is the velocity of the particles.
 
 ```@raw html
-<img src="/assets/images/Boltzman.png" alt="image" width="auto" height="auto">
+<img src="/assets/images/lattice.png" alt="image" width=300 height="auto">
 ```
 
-
-where $\lambda \sim 1/T$ and $E = \frac{1}{2}mv^2$.
-
-### Define a cell
-
-```julia
-# density moving to direction
-density(cell, direction)
-# total density
-density(cell)
+The particles move with different velocities $\mathbf v$ and collide with each other, driving the fluid to reach an equilibrium state,
+where the energy of the particles is governed by the Boltzmann distribution
+```math
+\rho_{eq}(E) \sim e^{-\frac{E}{k_BT}} ({\rm or }\; e^{- {\rm const.} \times |\mathbf{v}|^2}),
 ```
+where $k_B$ is the Boltzmann constant, $T$ is the temperature,
+and $E = \frac{1}{2}m|\mathbf{v}|^2$ is the energy of the particles.
 
-### D2Q9 model - discrete velocities
+## D2Q9 model
+
+The lattice Boltzmann method uses a discrete set of velocities, which is a simplification of the continuous velocity space. One of the simplest models is the D2Q9 model, which contains
+- a 2D lattice, and
+- 9 discrete velocities: $(0,0)$, $(1,0), (0,1), (-1,0), (0,-1)$, $(1,1), (-1,1), (-1,-1), (1,-1)$.
 
 ```@raw html
-<img src="/assets/images/D2Q9.png" alt="image" width="auto" height="auto">
+<img src="/assets/images/D2Q9.png" alt="image" width=500 height="auto">
 ```
 
-
-```julia
-directions = [(0,0), (1,0), (0,1), (-1,0), (0,-1),
-    (1,1), (-1,1), (-1,-1), (1,-1)]
-```
-
-### An algorithm to approximate the fluid dynamics
-
-Lattice Boltzmann Method (LBM), which contains two steps:
+Lattice Boltzmann Method (LBM) contains two steps:
 1. Streaming - particles move to neighboring cells
 2. Collision - particles collide and exchange momentum
 
@@ -69,13 +57,14 @@ Lattice Boltzmann Method (LBM), which contains two steps:
 ### Streaming
 
 ```@raw html
-<img src="/assets/images/stream.png" alt="image" width="auto" height="auto">
+<img src="/assets/images/stream.png" alt="image" width=500 height="auto">
 ```
 
 ### Collision - Bhatnagar-Gross-Krook (BGK) model.
 
-$\rho\leftarrow(1-\omega)\rho_0+\omega\rho_\mathrm{eq}$
+The collision step is based on the Bhatnagar-Gross-Krook (BGK) model, which is a simplified version of the Boltzmann equation. The collision step is defined as
 
+$\rho\leftarrow(1-\omega)\rho_0+\omega\rho_\mathrm{eq}$
 
 where
 $\rho$ is the updated density
@@ -83,24 +72,21 @@ $\rho_0$ is the density before collision, and
 $\rho_{\text{eq}}$ is the equilibrium density
 $\omega = \Delta t/\tau$, where $\tau$ is the (relative) relaxation time
 
-### Equilibrium density
-
 ```@raw html
-<img src="/assets/images/Equilibrium density.png" alt="image" width="auto" height="auto">
+<img src="/assets/images/Equilibrium density.png" alt="image" width=500 height="auto">
 ```
 
-- total density $\rho$ is conserved
-- momentum $\rho\mathbf{u}$ is conserved
+The BGK model has a nice property that it conserves:
+- total density $\rho$
+- momentum $\rho\mathbf{u}$
 
+## Julia implementation
 
-### Live coding
-
-Reference: https://physics.weber.edu/schroeder/fluids/
-
-
-### Abstract type for lattice Boltzmann configurations
+The following code is a part of the package `MyFirstPackage` that we created in the previous section: [My First Package](@ref).
 
 *File*: `src/fluid.jl`
+
+Step 1. Let us start by defining an abstract type for lattice Boltzmann configurations and a concrete type that implements the D2Q9 lattice.
 
 ```julia
 """
@@ -111,11 +97,11 @@ An abstract type for lattice Boltzmann configurations.
 abstract type AbstractLBConfig{D, N} end
 ```
 
-### D2Q9
+The D2Q9 lattice Boltzman configuration is defined as follows:
 
 ```julia
 """
-    D2Q9
+    D2Q9 <: AbstractLBConfig{2, 9}
 
 A lattice Boltzmann configuration for 2D, 9-velocity model.
 """
@@ -129,7 +115,7 @@ directions(::D2Q9) = (
     )
 ```
 
-### Utility functions for D2Q9
+The `directions` function returns the 9 discrete velocities in the D2Q9 model. The velocities are ordered in a specific way, which enables us to define a function to flip the velocity vector. This is useful for handling the boundaries and barriers in the lattice.
 
 ```julia
 # directions[k] is the opposite of directions[flip_direction_index(k)
@@ -139,47 +125,77 @@ end
 ```
 
 
-### (Grid) Cell
+Step 3: Define the `Cell` type for storing the state $\rho_{ij}(\mathbf{v})$ of a cell.
 
 ```julia
 # the density of the fluid, each component is the density of a velocity
 struct Cell{N, T <: Real}
     density::NTuple{N, T}
 end
-# the total desnity of the fluid
+# the total density of the fluid
 density(cell::Cell) = sum(cell.density)
 # the density of the fluid in a specific direction,
 # where the direction is an integer
 density(cell::Cell, direction::Int) = cell.density[direction]
 ```
 
-### Total momentum
+Expect the total density, the momentum is also conserved, which is defined as the `momentum` of the fluid.
 
 ```julia
 """
-    velocity(lb::AbstractLBConfig, rho::Cell)
+    momentum(lb::AbstractLBConfig, rho::Cell)
 
-Compute the velocity of the fluid from the density of the fluid.
+Compute the momentum of the fluid from the density of the fluid.
 """
-function velocity(lb::AbstractLBConfig, rho::Cell)
+function momentum(lb::AbstractLBConfig, rho::Cell)
     return mapreduce((r, d) -> r * d, +, rho.density, directions(lb)) / density(rho)
 end
 ```
 
+Let us also define the addition and multiplication operations for the `Cell` type.
 
-### Linear combination of densities
 ```julia
 Base.:+(x::Cell, y::Cell) = Cell(x.density .+ y.density)
 Base.:*(x::Real, y::Cell) = Cell(x .* y.density)
 ```
 
-### Equilibrium density
+Step 4. Implement the streaming step.
+```julia
+# streaming step
+function stream!(
+        lb::AbstractLBConfig{2, N},  # lattice configuration
+        newgrid::AbstractMatrix{D}, # the updated grid
+        grid::AbstractMatrix{D}, # the original grid
+        barrier::AbstractMatrix{Bool} # the barrier configuration
+    ) where {N, T, D<:Cell{N, T}}
+    ds = directions(lb)
+    @inbounds for ci in CartesianIndices(newgrid)
+        i, j = ci.I
+        newgrid[ci] = Cell(ntuple(N) do k # collect the densities
+            ei = ds[k]
+            m, n = size(grid)
+            i2, j2 = mod1(i - ei[1], m), mod1(j - ei[2], n)
+            if barrier[i2, j2]
+                # if the cell is a barrier, the fluid flows back
+                density(grid[i, j], flip_direction_index(lb, k))
+            else
+                # otherwise, the fluid flows to the neighboring cell
+                density(grid[i2, j2], k)
+            end
+        end)
+    end
+end
+```
+
+Step 5. Implement the collision step.
+
+By the Bhatnagar-Gross-Krook (BGK) model, the collision step drives the fluid towards an equilibrium state. The equilibrium density $\rho_{eq}(\rho_{\rm tot}, \mu)$.
 
 ```julia
 """
     equilibrium_density(lb::AbstractLBConfig, ρ, u)
 
-Compute the equilibrium density of the fluid from the total density and the velocity.
+Compute the equilibrium density of the fluid from the total density and the momentum.
 """
 function equilibrium_density(lb::AbstractLBConfig{D, N}, ρ, u) where {D, N}
     ws, ds = weights(lb), directions(lb)
@@ -193,40 +209,18 @@ end
 # the distribution of the 9 velocities at the equilibrium state
 weights(::D2Q9) = (1/36, 1/36, 1/9, 1/9, 4/9, 1/9, 1/9, 1/36, 1/36)
 function _equilibrium_density(u, ei)
-    # the equilibrium density of the fluid with a specific mean velocity
+    # the equilibrium density of the fluid with a specific mean momentum
     return (1 + 3 * dot(ei, u) + 9/2 * dot(ei, u)^2 - 3/2 * dot(u, u))
 end
 ```
 
-### Streaming step
-```julia
-# streaming step
-function stream!(lb::AbstractLBConfig{2, N}, newgrid::AbstractMatrix{D}, grid::AbstractMatrix{D}, barrier::AbstractMatrix{Bool}) where {N, T, D<:Cell{N, T}}
-    ds = directions(lb)
-    @inbounds for ci in CartesianIndices(newgrid)
-        i, j = ci.I
-        newgrid[ci] = Cell(ntuple(N) do k
-            ei = ds[k]
-            m, n = size(grid)
-            i2, j2 = mod1(i - ei[1], m), mod1(j - ei[2], n)
-            if barrier[i2, j2]
-                density(grid[i, j], flip_direction_index(lb, k))
-            else
-                density(grid[i2, j2], k)
-            end
-        end)
-    end
-end
-```
-
-### Collision step
 
 ```julia
 # collision step, applied on a single cell
 function collide(lb::AbstractLBConfig{D, N}, rho; viscosity = 0.02) where {D, N}
     omega = 1 / (3 * viscosity + 0.5)   # "relaxation" parameter
     # Recompute macroscopic quantities:
-    v = velocity(lb, rho)
+    v = momentum(lb, rho)
     return (1 - omega) * rho + omega * equilibrium_density(lb, density(rho), v)
 end
 ```
@@ -236,7 +230,7 @@ end
 """
     curl(u::AbstractMatrix{Point2D{T}})
 
-Compute the curl of the velocity field in 2D, which is defined as:
+Compute the curl of the momentum field in 2D, which is defined as:
 ```math
 ∂u_y/∂x−∂u_x/∂y
 ```
@@ -324,7 +318,7 @@ using MyFirstPackage # our package
 ```julia
 # Set up the visualization with Makie:
 lb = example_d2q9()
-vorticity = Observable(curl(velocity.(Ref(lb.config), lb.grid))')
+vorticity = Observable(curl(momentum.(Ref(lb.config), lb.grid))')
 fig, ax, plot = image(vorticity, colormap = :jet, colorrange = (-0.1, 0.1))
 
 # Show barrier
@@ -358,7 +352,7 @@ record(fig, joinpath(@__DIR__, "barrier.mp4"), 1:100; framerate = 10) do i
     for i=1:20
         step!(lb)
     end
-    vorticity[] = curl(velocity.(Ref(lb.config), lb.grid))'
+    vorticity[] = curl(momentum.(Ref(lb.config), lb.grid))'
 end
 ```
 

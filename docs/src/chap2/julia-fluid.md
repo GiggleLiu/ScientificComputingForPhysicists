@@ -378,3 +378,8 @@ Type `Backspace` to exit the package mode.
 julia> include("examples/barrier.jl")
 ```
 
+<video width="320" height="240" controls>
+  <source src="barrier.mp4" type="video/mp4">
+</video>
+
+Please find the video `barrier.mp4` in the same folder as this file if the video does not show up.

@@ -4,3 +4,5 @@ Manifest.toml
 .DS_Store
 *.pdf
 docs/build/
+_build/
+_gen/

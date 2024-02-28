@@ -10,7 +10,7 @@ Julia packages can be found on [JuliaHub](https://juliahub.com/ui/Packages), mos
 Unlike **Python**, *Julia is designed for high performance* ([arXiv:1209.5145](https://arxiv.org/abs/1209.5145)).
 It is a dynamic programming language, but it is as fast as C/C++. The following figure shows the computing time of multiple programming languages normalized to C/C++.
 ```@raw html
-<img src="../assets/images/benchmark.png" alt="image" width="600" height="auto">
+<img src="../../assets/images/benchmark.png" alt="image" width="600" height="auto">
 ```
 
 Unlike **C/C++** and **Fortran**, *Julia is easy to use* and is becoming a trend in scientific computing. Julia uses the just-int-time (JIT) technique to achieve high performance, which does not have the problem of platform dependency. Many famous scientists and engineers have switched to Julia from other programming languages.
@@ -143,7 +143,7 @@ The reason why python is slow and flexible are the same. In python the type of a
 Then a dynamic typed language has to use a tuple `(type, *data)` to represent an object, where `type` is the type of the object and `*data` is the pointer to the data. Pointing to a random memory location is slow, because it violates the principle of data locality. Lacking of data locality causes the frequent cache miss - failure to find the data in the L1, L2, or L3 cache. Loading data from the main memory is slow, because of the long latency of reading the main memory.
 
 ```@raw html
-<img src="../assets/images/data.png" alt="image" width="300" height="auto">
+<img src="../../assets/images/data.png" alt="image" width="300" height="auto">
 ```
 
 
@@ -157,7 +157,7 @@ Using python as glue is not as powerful as it looks, the following problem can n
 - Branching and bound algorithms.
 
 ```@raw html
-<img src="../assets/images/pythonc.png" alt="image" width="400" height="auto"/>
+<img src="../../assets/images/pythonc.png" alt="image" width="400" height="auto"/>
 ```
 
 ## Key ingredients of Julia's performance: Just in time (JIT) compilation

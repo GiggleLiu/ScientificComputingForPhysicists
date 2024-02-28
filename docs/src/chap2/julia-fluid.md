@@ -28,7 +28,7 @@ The state of a cell in the lattice is defined by the density of particles moving
 where $(i, j)$ is the position of the cell in the lattice and $\mathbf{v}$ is the velocity of the particles.
 
 ```@raw html
-<img src="../assets/images/lattice.png" alt="image" width=300 height="auto">
+<img src="../../assets/images/lattice.png" alt="image" width=300 height="auto">
 ```
 
 The particles move with different velocities $\mathbf v$ and collide with each other, driving the fluid to reach an equilibrium state,
@@ -46,7 +46,7 @@ The lattice Boltzmann method uses a discrete set of velocities, which is a simpl
 - 9 discrete velocities: $(0,0)$, $(1,0), (0,1), (-1,0), (0,-1)$, $(1,1), (-1,1), (-1,-1), (1,-1)$.
 
 ```@raw html
-<img src="../assets/images/D2Q9.png" alt="image" width=500 height="auto">
+<img src="../../assets/images/D2Q9.png" alt="image" width=500 height="auto">
 ```
 
 Lattice Boltzmann Method (LBM) contains two steps:
@@ -57,7 +57,7 @@ Lattice Boltzmann Method (LBM) contains two steps:
 ### Streaming
 
 ```@raw html
-<img src="../assets/images/stream.png" alt="image" width=500 height="auto">
+<img src="../../assets/images/stream.png" alt="image" width=500 height="auto">
 ```
 
 ### Collision - Bhatnagar-Gross-Krook (BGK) model.
@@ -73,7 +73,7 @@ $\rho_{\text{eq}}$ is the equilibrium density
 $\omega = \Delta t/\tau$, where $\tau$ is the (relative) relaxation time
 
 ```@raw html
-<img src="../assets/images/Equilibrium density.png" alt="image" width=500 height="auto">
+<img src="../../assets/images/Equilibrium density.png" alt="image" width=500 height="auto">
 ```
 
 The BGK model has a nice property that it conserves:
@@ -377,7 +377,7 @@ julia> include("examples/barrier.jl")
 You should see a new file `barrier.mp4` in the `examples` directory, which is the recording of the simulation.
 ```@raw html
 <video width="320" height="240" controls>
-  <source src="../assets/images/barrier.mp4" type="video/mp4">
+  <source src="../../assets/images/barrier.mp4" type="video/mp4">
 </video>
 ```
 

@@ -1,10 +1,10 @@
 using Test, MyFirstPackage
 
-@testset "velocity" begin
+@testset "momentum" begin
     lb = D2Q9()
     ds = equilibrium_density(lb, 2.0, Point(0.1, 0.0))
     # the conservation of momentum
-    @test velocity(lb, ds) ≈ Point(0.1, 0.0)
+    @test momentum(lb, ds) ≈ Point(0.1, 0.0)
     # the conservation of mass
     @test density(ds) ≈ 2.0
 end
@@ -16,6 +16,6 @@ end
     # the conservation of mass
     @test isapprox(sum(density.(lb.grid)), sum(density.(lb0.grid)); rtol=1e-4)
     # the conservation of momentum
-    mean_u = sum(velocity.(Ref(lb.config), lb.grid))/length(lb.grid)
+    mean_u = sum(momentum.(Ref(lb.config), lb.grid))/length(lb.grid)
     @test mean_u[2] < 0.1 - 1e-3
 end

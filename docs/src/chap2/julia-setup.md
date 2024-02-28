@@ -49,8 +49,7 @@ To verify that Julia is installed, please open a **new** terminal and run the fo
 ```bash
 julia
 ```
-- It should start a Julia REPL(Read-Eval-Print-Loop) session like this
-<!-- ![REPL Session](https://miro.medium.com/v2/resize:fit:4800/format:webp/1*lxjWRvH3EzSa1N3Pg4iNag.png) -->
+- It should start a Julia REPL(Read-Eval-Print-Loop) session.
 - If you wish to install a specific version of Julia, please refer to the [documentation](https://github.com/JuliaLang/juliaup).
 
 ## Step 2: Package Management

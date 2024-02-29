@@ -1,5 +1,47 @@
 # Array and Broadcasting
 
+## Julia array is column-major
+
+In Julia, we can implement the Frobenius norm of a matrix as follows.
+```@repl array
+function frobenius_norm(A::AbstractMatrix)
+    s = zero(eltype(A))
+    for i in 1:size(A, 1)
+        for j in 1:size(A, 2)
+            s += A[i, j]^2
+        end
+    end
+    return sqrt(s)
+end
+```
+
+```@repl array
+A = randn(1000, 1000);
+frobenius_norm(A)
+```
+
+```@repl array
+using BenchmarkTools
+@benchmark frobenius_norm($A)
+```
+
+The performance of the Frobenius norm is not good. The reason is that the matrix is stored in column-major order, and the loop is over the row index first. We can improve the performance by looping over the column index first.
+```@repl array
+function frobenius_norm_colmajor(A::AbstractMatrix)
+    s = zero(eltype(A))
+    for j in 1:size(A, 2)
+        for i in 1:size(A, 1)
+            s += A[i, j]^2
+        end
+    end
+    return sqrt(s)
+end
+```
+
+```@repl array
+@benchmark frobenius_norm_colmajor($A)
+```
+
 ## Array initialization and indexing
 Initializing an array in Julia is simple. You can initialize an array with different types of elements.
 ```@repl array

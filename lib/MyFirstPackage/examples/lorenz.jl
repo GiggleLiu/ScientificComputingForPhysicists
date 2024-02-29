@@ -1,4 +1,4 @@
-using Makie, GLMakie, MyFirstPackage
+using Makie, CairoMakie, MyFirstPackage
 set_theme!(theme_black())
 
 lz = Lorenz(10, 28, 8/3)
@@ -12,11 +12,13 @@ fig, ax, l = lines(points, color = colors,
     axis = (; type = Axis3, protrusions = (0, 0, 0, 0), 
               viewmode = :fit, limits = (-30, 30, -30, 30, 0, 50)))
 
+integrator = RungeKutta{4}()
+# record the animation
 record(fig, joinpath(@__DIR__, "lorenz.mp4"), 1:120) do frame
     global y
     for i in 1:50
         # update arrays inplace
-        y = rk4_step(lz, y, 0.01)
+        y = integrate_step(lz, integrator, y, 0.01)
         push!(points[], Point3f(y...))
         push!(colors[], frame)
     end

@@ -81,7 +81,7 @@ x_1 = b_1/l_{11},~~~ x_i = \left(b_i - \sum_{j=1}^{i-1}l_{ij}x_j\right)/l_{ii},~
 ```
 
 
-### The implementation
+### Back-substitution
 
 We implement the above algorithm in Julia language.
 
@@ -126,7 +126,7 @@ We can write a test for this algorithm.
 end
 ```
 
-## The LU decomposition with Gaussian elimination
+## Gaussian elimination
 LU decomposition is a method for solving linear equations that involves breaking down a matrix into lower and upper triangular matrices. The $LU$ decomposition of a matrix $A$ is represented as $A = LU$, where $L$ is a lower triangular matrix and $U$ is an upper triangular matrix.
 
 ## The elementary elimination matrix

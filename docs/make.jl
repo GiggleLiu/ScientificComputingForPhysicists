@@ -27,6 +27,8 @@ makedocs(;
         "Tensors (×)" => [
             "chap3/array.md",
             "chap3/linalg.md",
+            "chap3/lu.md",
+            "chap3/sensitivity.md",
             "chap3/factorization.md",
             "chap3/fft.md",
             "chap3/tensors.md",

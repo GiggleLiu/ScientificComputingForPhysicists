@@ -7,6 +7,16 @@ Maintaining a software project is not easy, especially when it comes to multiple
 
 The solution to the above problems is **version-control**. Among all version control software, **git** is the most popular one.
 
+## Install git
+In Ubuntu (or WSL), you can install git with the following command:
+```bash
+sudo apt-get install git
+```
+In MacOS, you can install git with the following command:
+```bash
+brew install git
+```
+
 ## Create a git repository
 
 A git repository, also known as a repo, is basically a directory where your project lives and git keeps track of your file's history. To get started, you start with a terminal and type
@@ -63,8 +73,9 @@ You can use `git reset` to reset the current HEAD to the specified snapshot, whi
 
 ## Work on cloud - remotes
 
-A server to store git repository, or **remote** in git terminology, is required for the collaboration purpose. Remote repositories can be hosted on git hosting services like GitHub, GitLab, or Bitbucket.
-After creating a new empty repository (no README files) on a git hosting service ([How to create a new github repo?](https://docs.github.com/en/get-started/quickstart/create-a-repo)), a URL for cloning the repo will show up, which that usually starts with `git` or `https`. Let us denote this URL as `<url>` and continue the previous example:
+A server to store git repository, or **remote** in git terminology, is required for the collaboration purpose. Remote repositories can be hosted on git hosting services such as [GitHub](http://github.com) and [GitLab](http://gitlab.com).
+
+After creating a new empty repository (no README files) on a git hosting service ([Tutorial: How to create a new GitHub repo](https://docs.github.com/en/get-started/quickstart/create-a-repo)), a URL for cloning the repo will show up, which that usually starts with `git` or `https`. Let us denote this URL as `<url>` and continue the previous example:
 
 ```bash
 git remote add origin <url>

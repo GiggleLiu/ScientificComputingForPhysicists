@@ -8,7 +8,7 @@ Using Linux is the most straight-forward way to get a terminal. Just like Window
 - The **Linux kernel** is started by [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds) in 1991.
 - A **Linux distribution** is an [operating system](https://en.wikipedia.org/wiki/Operating_system) made from a software collection that includes the [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and, often, a [package management system](https://en.wikipedia.org/wiki/Package_management_system).
 
-The Linux distribution used in this course is [Ubuntu](https://ubuntu.com/desktop).
+The Linux distribution used in this course is [Ubuntu](https://ubuntu.com/desktop). If you want to stick to Windows, you can use [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install) (WSL) to get a Linux terminal.
 
 ## Shell (or Terminal)
 

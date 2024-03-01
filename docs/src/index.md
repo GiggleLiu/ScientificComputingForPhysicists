@@ -1,4 +1,4 @@
-# ScientificComputingForPhysicists
+# Scientific Computing for Physicists
 
 ```@index
 ```

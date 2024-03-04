@@ -1,4 +1,4 @@
-using MyFirstPackage, Test, MyFirstPackage.CUDA
+using MyFirstPackage, Test, MyFirstPackage.CUDA; CUDA.allowscalar(false)
 
 @testset "step!" begin
     lb0 = example_d2q9(; u0=Point(0.0, 0.1))

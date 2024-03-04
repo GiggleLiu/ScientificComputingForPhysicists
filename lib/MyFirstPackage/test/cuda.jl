@@ -7,5 +7,5 @@ using MyFirstPackage, Test, MyFirstPackage.CUDA; CUDA.allowscalar(false)
     lbc = CUDA.cu(lb0)
     for i=1:100 step!(lbc) end
     # the conservation of mass
-    @test lb.grid ≈ Array(lbc.grid)
+    @test all(lb.grid .≈ Array(lbc.grid))
 end

@@ -124,7 +124,7 @@ A Julia REPL has four modes,
 shell> date
 Sun Nov  6 10:50:21 PM CST 2022
 ```
-To return to the Julian mode, type the <kbd>Backspace</kbd> key.
+To return to the Julian mode, type the `Backspace` key.
 
 3. **Package mode** is the mode that you can manage packages. Press `]` in the Julian mode and type
 ```julia-repl
@@ -132,14 +132,14 @@ To return to the Julian mode, type the <kbd>Backspace</kbd> key.
 Status `~/.julia/environments/v1.8/Project.toml`
   [295af30f] Revise v3.4.0
 ```
-To return to the Julian mode, type the <kbd>Backspace</kbd> key.
+To return to the Julian mode, type the `Backspace` key.
 
 4. **Help mode** is the mode that you can access the docstrings of functions. Press `?` in the Julian mode and type
 ```julia-repl
 help> sum
 ... docstring for sum ...
 ```
-To return to the Julian mode, type the <kbd>Backspace</kbd> key.
+To return to the Julian mode, type the `Backspace` key.
 
 [read more...](https://docs.julialang.org/en/v1/stdlib/REPL/)
 

@@ -21,7 +21,12 @@ The shell is a program that takes commands from the keyboard and gives them to t
 In Ubuntu, one can use `Ctrl` + `Alt` + `T` to open a shell. In a shell, we use
 - `man command_name` to get help information related to a command,
 - `CTRL-C` to break a program and
-- `CTRL-D` to exit a shell or an REPL.
+- `CTRL-D` to exit a shell.
+
+To learn more about shell, please check:
+
+- [MIT Open course: Missing semester](https://missing.csail.mit.edu/2020/shell-tools/)
+- [Get started with the Linux command line and the Shell](https://learn.microsoft.com/en-us/training/paths/shell/)
 
 The following is a short list of bash commands that will be used frequently in this book.
 
@@ -49,11 +54,6 @@ git     # the stupid content tracker
 
 tar     # an archiving utility
 ```
-
-**Git Resources**
-
-- [MIT Open course: Missing semester](https://missing.csail.mit.edu/2020/shell-tools/)
-- [Get started with the Linux command line and the Shell](https://learn.microsoft.com/en-us/training/paths/shell/)
 
 ## Editor in terminal - Vim
 
@@ -83,7 +83,7 @@ The Secure Shell (SSH) protocol is a method for securely sending commands to a c
 - push code to a remote git repository,
 - log into a remote machine and execute commands.
 
-With a host name (the IP of the target machine to login) and a user name, one can use the following command to login,
+Consider you want to access a remote machine, e.g. the cluster of your university. You will be given a host name and a username. You can use the following command to log in to the remote machine.
 
 ```bash
 ssh <username>@<hostname>

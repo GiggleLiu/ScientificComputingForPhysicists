@@ -1,8 +1,9 @@
 using CUDA
 function stream!(lb::AbstractLBConfig{2, N}, newgrid::CuMatrix{D}, grid::CuMatrix{D}, barrier::CuMatrix{Bool}) where {N, T, D<:Cell{N, T}}
     ds = directions(lb)
-    function kernel(newgrid, grid, barrier, ds)
-        i, j = CUDA.@cartesianidx newgrid
+    function kernel(ctx, newgrid, grid, barrier, ds)
+        ci = CUDA.@cartesianidx newgrid
+        i, j = ci.I
         @inbounds newgrid[ci] = Cell(ntuple(N) do k
             ei = ds[k]
             m, n = size(grid)
@@ -13,6 +14,7 @@ function stream!(lb::AbstractLBConfig{2, N}, newgrid::CuMatrix{D}, grid::CuMatri
                 density(grid[i2, j2], k)
             end
         end)
+        return nothing
     end
     CUDA.gpu_call(kernel, newgrid, grid, barrier, ds)
 end

@@ -35,6 +35,7 @@ weights(::D2Q9) = (1/36, 1/36, 1/9, 1/9, 4/9, 1/9, 1/9, 1/36, 1/36)
 struct Cell{N, T <: Real}
     density::NTuple{N, T}
 end
+Base.isapprox(x::Cell, y::Cell; kwargs...) = all(isapprox.(x.density, y.density; kwargs...))
 # the total desnity of the fluid
 density(cell::Cell) = sum(cell.density)
 # the density of the fluid in a specific direction,

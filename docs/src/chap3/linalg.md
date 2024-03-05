@@ -1,108 +1,21 @@
 # Basic Linear Algebra
 
 ## Matrix multiplication
-Matrix multiplication is a fundamental operation in linear algebra. Given two matrices $A\in \mathbb{R}^{m\times n}$ and $B\in \mathbb{R}^{n\times p}$, the product $C = AB$ is defined as
+Matrix multiplication is a fundamental operation in linear algebra. Given two matrices $A\in \mathbb{C}^{m\times n}$ and $B\in \mathbb{C}^{n\times p}$, the product $C = AB$ is defined as
 ```math
 C_{ij} = \sum_{k=1}^n A_{ik}B_{kj}.
 ```
 The time complexity of matrix multiplication is $O(mnp)$.
 
-In Julia, we can implement the matrix multiplication as follows.
-
-```@repl linalg
-function mymatmul_rowmajor(A::AbstractMatrix, B::AbstractMatrix)
-    m, n = size(A)
-    n, p = size(B)
-    @assert size(A, 2) == size(B, 1) "size mismatch"
-    C = zeros(promote_type(eltype(A), eltype(B)), m, p)
-    @inbounds for i = 1:m
-        for k = 1:n
-            for j = 1:p
-                C[i, j] += A[i, k] * B[k, j]
-            end
-        end
-    end
-    return C
-end
-```
-
-```@repl linalg
-A, B = randn(1000, 1000), randn(1000, 1000);
-using BenchmarkTools
-```
-
-```julia-repl
-julia> @benchmark mymatmul_rowmajor($A, $B)
-BenchmarkTools.Trial: 9 samples with 1 evaluation.
- Range (min … max):  616.256 ms … 621.271 ms  ┊ GC (min … max): 0.00% … 0.19%
- Time  (median):     618.576 ms               ┊ GC (median):    0.00%
- Time  (mean ± σ):   618.502 ms ±   1.597 ms  ┊ GC (mean ± σ):  0.02% ± 0.06%
-
-  ▁        ▁    █             ▁       ▁    █                  ▁  
-  █▁▁▁▁▁▁▁▁█▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁█▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
-  616 ms           Histogram: frequency by time          621 ms <
-
- Memory estimate: 7.63 MiB, allocs estimate: 2.
-```
- 
-Alternatively, we can iterate over the columns of the matrices first.
-```@repl linalg
-function mymatmul_colmajor(A::AbstractMatrix, B::AbstractMatrix)
-    m, n = size(A)
-    n, p = size(B)
-    @assert size(A, 2) == size(B, 1) "size mismatch"
-    C = zeros(promote_type(eltype(A), eltype(B)), m, p)
-    @inbounds for j = 1:p
-        for k = 1:n
-            for i = 1:m
-                C[i, j] += A[i, k] * B[k, j]
-            end
-        end
-    end
-    return C
-end
-```
-
-```julia-repl
-julia> @benchmark mymatmul_colmajor($A, $B)
-BenchmarkTools.Trial: 34 samples with 1 evaluation.
- Range (min … max):  146.371 ms … 149.116 ms  ┊ GC (min … max): 0.00% … 0.00%
- Time  (median):     146.895 ms               ┊ GC (median):    0.00%
- Time  (mean ± σ):   147.138 ms ± 680.122 μs  ┊ GC (mean ± σ):  0.08% ± 0.27%
-
-        ▁█▄ ▄█▄▁ ▁                                               
-  ▆▁▁▁▁▁███▆████▆█▆▆▁▁▁▁▁▁▁▁▁▁▁▆▁▁▁▁▁▆▁▁▁▁▁▁▁▁▁▁▁▁▁▁▆▆▆▁▁▁▁▁▁▁▆ ▁
-  146 ms           Histogram: frequency by time          149 ms <
-
- Memory estimate: 7.63 MiB, allocs estimate: 2.
-```
-    
-```julia-repl
-julia> @benchmark $A * $B
-BenchmarkTools.Trial: 383 samples with 1 evaluation.
- Range (min … max):  12.089 ms … 38.311 ms  ┊ GC (min … max): 0.00% … 0.00%
- Time  (median):     12.873 ms              ┊ GC (median):    0.00%
- Time  (mean ± σ):   13.052 ms ±  1.418 ms  ┊ GC (mean ± σ):  1.20% ± 3.41%
-
-       ▄▆▅ ▂▄▇█▇▅▅▄                                            
-  ▆▁▁▁▁████████████▆▆▁▄▁▁▄▁▄▁▆▆▇▄▇▄▇█▇▇▁▁▇▁▆▁▆▄▁▄▁▁▁▁▁▁▁▁▁▁▁▄ ▇
-  12.1 ms      Histogram: log(frequency) by time      15.8 ms <
-
- Memory estimate: 7.63 MiB, allocs estimate: 2.
-```
-
-The performance of a CPU is measured by the number of **floating point operations per second** (FLOPS) it can perform. The floating point operations include addition, subtraction, multiplication and division. The FLOPS can be related to multiple factors, such as the clock frequency, the number of cores, the number of instructions per cycle, and the number of floating point units. A simple way to measure the FLOPS is to benchmarking the speed of matrix multiplication.
-The number of FLOPS in a $n\times n\times n$ matrix multiplication is $2n^3$. The FLOPS can be calculated as: $2 \times 1000^3 / (12.089 \times 10^{-3}) \approx 165~{\rm GFLOPS}$.
-
 ## System of Linear Equations
-Let $A\in \mathbb{R}^{n\times n}$ be a invertible square matrix and $b \in \mathbb{R}^n$ be a vector. Solving a linear equation means finding a vector $x\in\mathbb{R}^n$ such that
+Let $A\in \mathbb{C}^{n\times n}$ be a invertible square matrix and $b \in \mathbb{C}^n$ be a vector. Solving a linear equation means finding a vector $x\in\mathbb{C}^n$ such that
 ```math
 A x = b
 ```
 
 One can solve a linear equation by following these steps:
 
-1. Decompose the matrix $A \in \mathbb{R}^{n\times n}$ into $L \in \mathbb{R}^{n\times n}$ and $U \in \mathbb{R}^{n\times n}$ matrices using a method such as [Gaussian elimination](@ref) or Crout's method.
+1. Decompose the matrix $A \in \mathbb{C}^{n\times n}$ into $L \in \mathbb{C}^{n\times n}$ and $U \in \mathbb{C}^{n\times n}$ matrices using a method such as [Gaussian elimination](@ref) or Crout's method.
 
 2. Rewrite the equation $Ax = b$ as $LUx = b$.
 
@@ -115,4 +28,82 @@ In Julia, we can solve a linear equation using the backslash operator `\` or the
 ```@repl linalg
 A = [1 2; 3 4]
 b = [2, 3.0]
+```
+
+## Least Squares Problem
+The least squares problem is to find a vector $x\in\mathbb{C}^n$ that minimizes the residual
+```math
+\|Ax - b\|_2
+```
+where $A\in \mathbb{C}^{m\times n}$ and $b\in \mathbb{C}^m$. The solution to the least squares problem is given by
+```math
+x = (A^\dagger A)^{-1} A^\dagger b
+```
+when $A^\dagger A$ is invertible.
+
+In Julia, we can solve the least squares problem using the backslash operator `\` or the `qr` function.
+
+```@repl linalg
+A = [1 2; 3 4; 5 6]
+b = [2, 3.0, 4.0]
+```
+
+## Eigenvalues and Eigenvectors
+The eigenvalues and eigenvectors of a matrix $A\in \mathbb{C}^{n\times n}$ are the solutions to the equation
+```math
+A x = \lambda x
+```
+where $\lambda$ is a scalar and $x$ is a non-zero vector. The eigenvalues of a matrix can be found by solving the characteristic equation
+```math
+\det(A - \lambda I) = 0
+```
+where $I$ is the identity matrix. The eigenvectors can be found by solving the equation $(A - \lambda I)x = 0$.
+
+In Julia, we can find the eigenvalues and eigenvectors of a matrix using the `eigen` function.
+
+```@repl linalg
+A = [1 2; 3 4]
+eigen(A)
+```
+
+## Singular Value Decomposition
+The singular value decomposition (SVD) of a matrix $A\in \mathbb{C}^{m\times n}$ is a factorization of the form
+```math
+A = U \Sigma V^\dagger
+```
+where $U\in \mathbb{C}^{m\times m}$ and $V\in \mathbb{C}^{n\times n}$ are orthogonal matrices and $\Sigma\in \mathbb{C}^{m\times n}$ is a diagonal matrix with non-negative real numbers on the diagonal. The singular value decomposition is a generalization of the eigenvalue decomposition for non-square matrices.
+
+In Julia, we can find the singular value decomposition of a matrix using the `svd` function.
+
+```@repl linalg
+A = [1 2; 3 4; 5 6]
+svd(A)
+```
+
+## QR Decomposition
+The QR decomposition of a matrix $A\in \mathbb{C}^{m\times n}$ is a factorization of the form
+```math
+A = QR
+```
+where $Q\in \mathbb{C}^{m\times m}$ is an orthogonal matrix and $R\in \mathbb{C}^{m\times n}$ is an upper triangular matrix. The QR decomposition is used to solve the linear least squares problem and to find the eigenvalues of a matrix.
+
+In Julia, we can find the QR decomposition of a matrix using the `qr` function.
+
+```@repl linalg
+A = [1 2; 3 4; 5 6]
+qr(A)
+```
+
+## Cholesky Decomposition
+The Cholesky decomposition of a positive definite matrix $A\in \mathbb{C}^{n\times n}$ is a factorization of the form
+```math
+A = LL^\dagger
+```
+where $L\in \mathbb{C}^{n\times n}$ is a lower triangular matrix. The Cholesky decomposition is used to solve the linear system of equations $Ax = b$ when $A$ is symmetric and positive definite.
+
+In Julia, we can find the Cholesky decomposition of a matrix using the `cholesky` function.
+
+```@repl linalg
+A = [2 1; 1 3]
+cholesky(A)
 ```

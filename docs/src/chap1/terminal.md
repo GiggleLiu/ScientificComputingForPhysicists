@@ -4,7 +4,7 @@ You need to get a working terminal to follow the instructions in this book, beca
 
 ## Linux operating system
 
-Using Linux is the most straight-forward way to get a terminal. Just like Windows, IOS, and macOS, Linux is an operating system. In fact, Android, one of the most popular platforms on the planet, is powered by the Linux operating system. It is free to use, [open source](https://opensource.com/resources/what-open-source), widely used on clusters and good at automating your works. Linux kernel and Linux distribution are different concepts.
+Using Linux or macOS is the most straight-forward way to get a terminal. Just like Windows, IOS, and macOS, Linux is an operating system. In fact, Android, one of the most popular platforms on the planet, is powered by the Linux operating system. It is free to use, [open source](https://opensource.com/resources/what-open-source), widely used on clusters and good at automating your works. Linux kernel and Linux distribution are different concepts.
 - The **Linux kernel** is started by [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds) in 1991.
 - A **Linux distribution** is an [operating system](https://en.wikipedia.org/wiki/Operating_system) made from a software collection that includes the [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and, often, a [package management system](https://en.wikipedia.org/wiki/Package_management_system).
 
@@ -127,3 +127,49 @@ Try connecting to the remote machine again, you will find that you don't need to
     To connect to a server, the server needs to know that you are the one who with the right to access it. To do so, the server will need to check if you have the private key that corresponds to the public key stored on the server. If you have the private key, you will be granted access to the server.
 
     The secret of the SSH key pair is that **the public key can be used to encrypt a message that can only be decrypted by the private key**, i.e. the public key is more like a lock and the private key is the key to unlock the lock. This is the foundation of the SSH protocol. So server can send you a message encrypted by your public key, and only you can decrypt it with your private key. This is how the server knows that you are the one who has the private key without actually sending the private key to the server.
+
+## Practice
+In the following example, we will use the `ssh` command to connect to the remote machine `gpu` and do some basic operations. If you don't have a remote machine, you can use your local machine to do the following operations.
+
+```bash
+(base) ➜  ~ ssh gpu
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-91-generic x86_64)
+...
+*** System restart required ***
+Last login: Tue Mar  5 06:20:05 2024 from 10.13.139.204
+(base) ➜  ~
+```
+
+Then we switch to the `jcode` directory and create a directory `test` and a file `README.md` in the directory.
+
+```bash
+(base) ➜  ~ ls     # list directory contents
+ClusterManagement                 jcode       packages
+ScientificComputingForPhysicists  miniconda3  software
+(base) ➜  ~ cd jcode   # change directory
+(base) ➜  jcode mkdir test # make directories
+(base) ➜  jcode cd test # change directory
+(base) ➜  test vim README.md # create a file and edit it
+```
+
+You will see the following screen after typing `vim README.md`.
+![](../assets/images/vim.png)
+Type `i` to enter the insert mode and type some text, e.g. "# Read me!". Then type `ESC` to enter the normal mode and type `:wq` to save and quit the file.
+
+After returning to the terminal, you can type `ls -l` to check the file you just created.
+
+```bash
+total 4
+-rw-rw-r-- 1 jinguoliu jinguoliu 11 Mar  5 06:30 README.md
+```
+
+You can also use the `cat` command to check the content of the file.
+
+```bash
+(base) ➜  test cat README.md
+# Read me!
+```
+
+Finally, you can press `CTRL-D` to exit the shell.
+
+Enjoy your journey in the terminal!

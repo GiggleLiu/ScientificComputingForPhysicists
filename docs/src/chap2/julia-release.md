@@ -192,7 +192,7 @@ include("lorenz.jl")
 end
 ```
 
-We implement the [Lorenz system](https://en.wikipedia.org/wiki/Lorenz_system) in the `lorenz.jl` file. The source code of the package is as follows:
+The `include("lorenz.jl")` line includes the source code of the [`Lorenz`](https://en.wikipedia.org/wiki/Lorenz_system) system, which can be defined in the `lorenz.jl` file in the same folder. The source code of is as follows:
 
 *File*: `src/lorenz.jl`
 ~~~julia

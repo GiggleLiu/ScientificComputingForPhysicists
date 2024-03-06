@@ -8,3 +8,7 @@ end
 @testset "fluid" begin
     include("fluid.jl")
 end
+
+@testset "planet" begin
+    include("planet.jl")
+end

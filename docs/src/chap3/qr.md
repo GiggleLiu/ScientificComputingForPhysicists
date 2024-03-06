@@ -1,4 +1,4 @@
-```@example qr
+```julia
 using Plots
 using LinearAlgebra
 using Test

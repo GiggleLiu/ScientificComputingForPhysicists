@@ -8,6 +8,42 @@ C_{ij} = \sum_{k=1}^n A_{ik}B_{kj}.
 The time complexity of matrix multiplication is $O(mnp)$.
 
 ## System of Linear Equations
+!!! note "Example"
+    Let us consider the following system of linear equations
+    ```math
+    \begin{align*}
+    2 x_1 + 3 x_2 - 2 x_3 &= 1, \\
+    3 x_1 + 2 x_2 + 3 x_3 &= 2, \\
+    4 x_1 - 3 x_2 + 2 x_3 &= 3.
+    \end{align*}
+    ```
+    The system of linear equations can be written in matrix form as
+    ```math
+    \begin{bmatrix}
+    2 & 3 & -2 \\
+    3 & 2 & 3 \\
+    4 & -3 & 2
+    \end{bmatrix}
+    \begin{bmatrix}
+    x_1 \\
+    x_2 \\
+    x_3
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    1 \\
+    2 \\
+    3
+    \end{bmatrix}.
+    ```
+    In Julia, we can solve the system of linear equations using the backslash operator `\` or the `lu` function.
+    
+    ```@repl linalg
+    A = [2 3 -2; 3 2 3; 4 -3 2]
+    b = [1, 2, 3]
+    A \ b
+    ```
+
 Let $A\in \mathbb{C}^{n\times n}$ be a invertible square matrix and $b \in \mathbb{C}^n$ be a vector. Solving a linear equation means finding a vector $x\in\mathbb{C}^n$ such that
 ```math
 A x = b
@@ -23,14 +59,64 @@ One can solve a linear equation by following these steps:
 
 4. Solve for $x$ in $Ux = y$ by [Back-substitution](@ref) (link TBA). This involves substituting the values of $x$ into the equation one at a time, starting with the last row and working upwards.
 
-In Julia, we can solve a linear equation using the backslash operator `\` or the `lu` function.
-
-```@repl linalg
-A = [1 2; 3 4]
-b = [2, 3.0]
-```
-
 ## Least Squares Problem
+
+!!! note "Example"
+    Suppose we have a set of data points
+
+    | $t_i$ | 0.0 | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 | 3.0 | 3.5 | 4.0 | 4.5 |
+    |---|---|---|---|---|---|---|---|---|---|----|
+    | $y_i$ | 2.9 | 2.7 | 4.8 | 5.3 | 7.1 | 7.6 | 7.7 | 7.6 | 9.4 | 9.0 |
+
+    We can fit a quadratic function of the form $y = c_0 + c_1 t + c_2 t^2$ to the data by solving the least squares problem. We can solve the least squares problem by finding the values of $c_0$, $c_1$, and $c_2$ that minimize the sum of the squared residuals
+    ```math
+    \sum_{i=1}^n (y_i - (c_0 + c_1 t_i + c_2 t_i^2))^2.
+    ```
+    In matrix form, the least squares problem can be written as
+    ```math
+    \min_x \|Ax - b\|_2
+    ```
+    where
+    ```math
+    A = \begin{bmatrix}
+    1 & t_1 & t_1^2 \\
+    1 & t_2 & t_2^2 \\
+    \vdots & \vdots & \vdots \\
+    1 & t_n & t_n^2
+    \end{bmatrix},
+    x = \begin{bmatrix}
+    c_0 \\
+    c_1 \\
+    c_2
+    \end{bmatrix},
+    b = \begin{bmatrix}
+    y_1 \\
+    y_2 \\
+    \vdots \\
+    y_n
+    \end{bmatrix}.
+    ```
+    By expanding the expression $\|Ax - b\|_2$, we can see that the solution to the least squares problem is given by
+    ```math
+    x = (A^\dagger A)^{-1} A^\dagger b
+    ```
+    when $A^\dagger A$ is invertible, where $A^\dagger$ is the Hermitian conjugate of $A$, which is the same as transpose given $A$ is real. 
+
+    ```@repl linalg
+    using LinearAlgebra
+
+    A = [1 0.0 0.0; 1 0.5 0.25; 1 1.0 1.0; 1 1.5 2.25;
+        1 2.0 4.0; 1 2.5 6.25; 1 3.0 9.0; 1 3.5 12.25;
+        1 4.0 16.0; 1 4.5 20.25]
+    b = [2.9, 2.7, 4.8, 5.3, 7.1, 7.6, 7.7, 7.6, 9.4, 9.0]
+    x = (A' * A) \ (A' * b)
+    ```
+    However, this approach is not recommended for large matrices due to the poor numerical stability. Instead, we can use the `qr` function to solve the least squares problem.
+    ```@repl linalg
+    Q, R = qr(A)
+    x = R \ (Matrix(Q)' * b)
+    ```
+
 The least squares problem is to find a vector $x\in\mathbb{C}^n$ that minimizes the residual
 ```math
 \|Ax - b\|_2

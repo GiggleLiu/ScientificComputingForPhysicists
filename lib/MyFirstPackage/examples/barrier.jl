@@ -1,10 +1,18 @@
 using Makie: RGBA
-using Makie, GLMakie
+using Makie, CairoMakie
 using MyFirstPackage
 
-# Set up the visualization with Makie:
+# simulate a fluid with a barrier
 lb = example_d2q9()
-vorticity = Observable(curl(velocity.(Ref(lb.config), lb.grid))')
+states = [copy(lb.grid)]
+for i=1:2000
+    step!(lb)
+    i % 20 == 0 && push!(states, copy(lb.grid))
+end
+curls = [curl(momentum.(Ref(lb.config), s)) for s in states]
+
+# Set up the visualization with Makie:
+vorticity = Observable(curls[1]')
 fig, ax, plot = image(vorticity, colormap = :jet, colorrange = (-0.1, 0.1))
 
 # Add barrier visualization:
@@ -15,8 +23,5 @@ using BenchmarkTools
 @benchmark step!($(deepcopy(lb)))
 
 record(fig, joinpath(@__DIR__, "barrier.mp4"), 1:100; framerate = 10) do i
-    for i=1:20
-        step!(lb)
-    end
-    vorticity[] = curl(velocity.(Ref(lb.config), lb.grid))'
+    vorticity[] = curls[i+1]'
 end

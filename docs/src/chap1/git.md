@@ -17,6 +17,12 @@ In MacOS, you can install git with the following command:
 brew install git
 ```
 
+Then you should configure your git with your name and email:
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "xxx@example.com"
+```
+
 ## Create a git repository
 
 A git repository, also known as a repo, is basically a directory where your project lives and git keeps track of your file's history. To get started, you start with a terminal and type

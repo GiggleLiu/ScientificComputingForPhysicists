@@ -58,7 +58,7 @@ Base.:*(x::Real, y::Cell) = Cell(x .* y.density)
 
 Compute the equilibrium density of the fluid from the total density and the momentum.
 """
-function equilibrium_density(lb::AbstractLBConfig{D, N}, ρ, u) where {D, N}
+function equilibrium_density(lb::AbstractLBConfig{<:Any, N}, ρ, u) where {N}
     ws, ds = weights(lb), directions(lb)
     return Cell(
         ntuple(i-> ρ * ws[i] * _equilibrium_density(u, ds[i]), N)
@@ -70,7 +70,10 @@ function _equilibrium_density(u, ei)
 end
 
 # streaming step
-function stream!(lb::AbstractLBConfig{2, N}, newgrid::AbstractMatrix{D}, grid::AbstractMatrix{D}, barrier::AbstractMatrix{Bool}) where {N, T, D<:Cell{N, T}}
+function stream!(lb::AbstractLBConfig{2, N},
+        newgrid::AbstractMatrix{D},
+        grid::AbstractMatrix{D},
+        barrier::AbstractMatrix{Bool}) where {N, T, D<:Cell{N, T}}
     ds = directions(lb)
     @inbounds for ci in CartesianIndices(newgrid)
         i, j = ci.I
@@ -88,7 +91,7 @@ function stream!(lb::AbstractLBConfig{2, N}, newgrid::AbstractMatrix{D}, grid::A
 end
 
 # collision step, applied on a single cell
-function collide(lb::AbstractLBConfig{D, N}, rho; viscosity = 0.02) where {D, N}
+function collide(lb::AbstractLBConfig{D, N}, rho::Cell; viscosity = 0.02) where {D, N}
     omega = 1 / (3 * viscosity + 0.5)   # "relaxation" parameter
     # Recompute macroscopic quantities:
     v = momentum(lb, rho)

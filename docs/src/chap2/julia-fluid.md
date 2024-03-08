@@ -337,7 +337,7 @@ end
 
 ```julia
 using Makie: RGBA # for visualization
-using Makie, GLMakie
+using Makie, CairoMakie
 using MyFirstPackage # our package
 
 # Set up the visualization with Makie:
@@ -361,11 +361,11 @@ end
 To ensure the reproducibility of the code, we need to create a local environment and install the required packages.
 
 ```julia-pkg
-pkg> activate("examples")
+pkg> activate examples
 
 pkg> dev .
 
-pkg> add Makie GLMakie BenchmarkTools
+pkg> add Makie CairoMakie BenchmarkTools
 ```
 
 Type `Backspace` to exit the package mode. To execute the code, type

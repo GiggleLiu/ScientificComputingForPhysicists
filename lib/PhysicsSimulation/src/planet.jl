@@ -118,11 +118,11 @@ struct NewtonSystem{D, T} <: AbstractHamiltonianSystem{D}
 end
 coordinate(b::NewtonSystem) = [b.bodies[i].r for i in 1:length(b.bodies)]
 coordinate(b::NewtonSystem, i::Int) = b.bodies[i].r
-function update_coordinate!(b::NewtonSystem, i::Int, val)
-    b.bodies[i] = Body(val, b.bodies[i].v, b.bodies[i].m)
+function offset_coordinate!(b::NewtonSystem, i::Int, val)
+    b.bodies[i] = Body(b.bodies[i].r + val, b.bodies[i].v, b.bodies[i].m)
 end
-function update_velocity!(b::NewtonSystem, i::Int, val)
-    b.bodies[i] = Body(b.bodies[i].r, val, b.bodies[i].m)
+function offset_velocity!(b::NewtonSystem, i::Int, val)
+    b.bodies[i] = Body(b.bodies[i].r, b.bodies[i].v + val, b.bodies[i].m)
 end
 velocity(b::NewtonSystem) = [b.bodies[i].r for i in 1:length(b.bodies)]
 velocity(b::NewtonSystem, i::Int) = b.bodies[i].v
@@ -133,7 +133,7 @@ end
 
 
 using .Bodies: G_year_AU, Body, solar_system, NewtonSystem, AbstractHamiltonianSystem
-import .Bodies: coordinate, velocity, update_coordinate!, update_velocity!
+import .Bodies: coordinate, velocity, offset_coordinate!, offset_velocity!
 
 function energy(bds::NewtonSystem{T}) where T
     eng = zero(T)
@@ -195,15 +195,15 @@ end
 function step!(bdsc::LeapFrogSystem{T}, dt) where T
     nbd, a = bdsc.nbd, bdsc.a
     @inbounds for j = 1:length(nbd)
-        rj = dt / 2 * velocity(nbd, j) + coordinate(nbd, j)
-        update_coordinate!(bdsc.nbd, j, rj)
+        drj = dt / 2 * velocity(nbd, j)
+        offset_coordinate!(bdsc.nbd, j, drj)
     end
     update_acceleration!(a, bdsc.nbd)
     @inbounds for j = 1:length(nbd)
-        vj = dt * a[j] + velocity(nbd, j)
-        update_velocity!(bdsc.nbd, j, vj)
-        rj = dt / 2 * vj + coordinate(nbd, j)
-        update_coordinate!(bdsc.nbd, j, rj)
+        dvj = dt * a[j]
+        offset_velocity!(bdsc.nbd, j, dvj)
+        drj = dt / 2 * velocity(nbd, j)
+        offset_coordinate!(bdsc.nbd, j, drj)
     end
     return bdsc
 end

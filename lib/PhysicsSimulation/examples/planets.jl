@@ -19,4 +19,5 @@ arrows!(ax, coos, coos[] + accs[]; color = :red)
 
 record(fig, joinpath(@__DIR__, "planet.mp4"), 2:length(states); framerate = 10) do i
     coos[] = getcoos(states[i])
+    accs[] = [Point3f(p.data) for p in states[i].a]
 end

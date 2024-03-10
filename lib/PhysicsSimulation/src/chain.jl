@@ -16,29 +16,30 @@ offset(sys::SpringSystem) = sys.dr
 offset(sys::SpringSystem, i::Int) = sys.dr[i]
 velocity(sys::SpringSystem) = sys.v
 velocity(sys::SpringSystem, i::Int) = sys.v[i]
-function update_coordinate!(sys::SpringSystem, i::Int, val)
-    sys.r[i] = val
+function offset_coordinate!(sys::SpringSystem, i::Int, val)
+    sys.dr[i] += val
 end
-function update_velocity!(sys::SpringSystem, i::Int, val)
-    sys.v[i] = val
+function offset_velocity!(sys::SpringSystem, i::Int, val)
+    sys.v[i] += val
 end
-Base.length(sys::SpringSystem) = length(sys.r)
+Base.length(sys::SpringSystem) = length(sys.r0)
 function update_acceleration!(a::AbstractVector{Point{D, T}}, bds::SpringSystem) where {D, T}
     @assert length(a) == length(bds)
     fill!(a, zero(Point{D, T}))
     @inbounds for (k, e) in zip(bds.stiffness, edges(bds.topology))
         i, j = src(e), dst(e)
         f = k * (offset(bds, i) - offset(bds, j))
-        a[j] += f / mass(bds, j)
-        a[i] -= f / mass(bds, i)
+        a[j] += f / bds.mass[j]
+        a[i] -= f / bds.mass[i]
     end
     return a
 end
 
 # create a spring chain with n atoms
-function spring_chain(n::Int, stiffness::Real, mass::Real)
-    r = Point.(0:n-1)
-    dr = fill(Point(0.0), n)
+function spring_chain(offsets::Vector{<:Real}, stiffness::Real, mass::Real)
+    n = length(offsets)
+    r = Point.(0.0:n-1)
+    dr = Point.(Float64.(offsets))
     v = fill(Point(0.0), n)
     topology = path_graph(n)
     return SpringSystem(r, dr, v, topology, fill(stiffness, n), fill(mass, n))

@@ -2,7 +2,7 @@ using Makie: RGBA
 using Makie, CairoMakie
 using PhysicsSimulation
 
-spring = spring_chain(0.2 * randn(20), 3.0, 1.0)
+spring = spring_chain(0.2 * randn(20), 3.0, 1.0; periodic=true)
 cached_system = LeapFrogSystem(spring)
 states = [deepcopy(cached_system)]
 for i=1:100
@@ -13,7 +13,7 @@ end
 # visualize the system
 p2(x::PhysicsSimulation.Point{1}) = Point2f(x.data[1], 0.0)
 getcoos(b::LeapFrogSystem) = p2.(coordinate(b.sys))
-getendpoints(b::LeapFrogSystem) = p2.(coordinate(b.sys) .+ b.a)
+getendpoints(b::LeapFrogSystem) = p2.(b.a)
 coos = Observable(getcoos(states[1]))
 endpoints = Observable(getendpoints(states[1]))
 fig, ax, plot = scatter(coos, markersize = 10, color = :blue, limits = (-1, 20, -1, 1))

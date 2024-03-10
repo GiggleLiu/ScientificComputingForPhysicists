@@ -12,14 +12,10 @@ end
 # visualize the system
 getcoo(b::Body) = Point3f(b.r.data)
 getcoos(b::LeapFrogSystem) = getcoo.(b.sys.bodies)
-getcoo(b::Body, i::Int) = b.r.data[i]
 coos = Observable(getcoos(states[1]))
-getcoos(b::LeapFrogSystem, i) = getcoo.(b.sys.bodies, i)
 getarrows(b) = [Point3f(x.data) for x in b.a]
 endpoints = Observable(getarrows(states[1]))
-fig = Figure()
-ax = Axis3(fig[1, 1]; aspect=:data, perspectiveness=0.5)
-scatter!(ax, coos; markersize = 10, color = :blue, limits = (-50, 50, -50, 50, -50, 50))
+fig, ax, plot = scatter(coos, markersize = 10, color = :blue, limits = (-50, 50, -50, 50, -50, 50))
 arrows!(ax, coos, endpoints; color = :red)
 
 record(fig, joinpath(@__DIR__, "planet.mp4"), 2:length(states); framerate = 24) do i

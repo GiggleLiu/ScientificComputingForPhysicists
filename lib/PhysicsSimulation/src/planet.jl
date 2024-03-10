@@ -1,6 +1,6 @@
 module Bodies
 import LinearAlgebra
-using ..MyFirstPackage: Point3D, Point
+using ..PhysicsSimulation: Point3D, Point
 const mass_solar = 1.988544e30 # in kg
 const mass_mercury = 3.302e23
 const mass_venus = 48.685e23
@@ -27,9 +27,9 @@ const G_standard = 6.67259e-11 # in m^3/(kg-s^2)
 const G_year_AU = G_standard * (1 / AU)^3 / (1 / mass_solar * (1 / year)^2)
 const dayToYear = 365.25
 
-struct Body{T}
-    r::Point3D{T}
-    v::Point3D{T}
+struct Body{D, T}
+    r::Point{D, T}
+    v::Point{D, T}
     m::T
 end
 
@@ -112,18 +112,30 @@ const sun = Body(
 # Arrays for modeling the solar system
 const set = [sun, mercury, venus, earth, mars, jupyter, saturn, uranus, neptune, pluto]
 
-struct NBodySystem{T}
-    bodies::Vector{Body{T}}
+abstract type AbstractHamiltonianSystem{D} end
+struct NewtonSystem{D, T} <: AbstractHamiltonianSystem{D}
+    bodies::Vector{Body{D, T}}
 end
-Base.length(bds::NBodySystem) = length(bds.bodies)
-const solar_system = NBodySystem(set)
+coordinate(b::NewtonSystem) = [b.bodies[i].r for i in 1:length(b.bodies)]
+coordinate(b::NewtonSystem, i::Int) = b.bodies[i].r
+function update_coordinate!(b::NewtonSystem, i::Int, val)
+    b.bodies[i] = Body(val, b.bodies[i].v, b.bodies[i].m)
+end
+function update_velocity!(b::NewtonSystem, i::Int, val)
+    b.bodies[i] = Body(b.bodies[i].r, val, b.bodies[i].m)
+end
+velocity(b::NewtonSystem) = [b.bodies[i].r for i in 1:length(b.bodies)]
+velocity(b::NewtonSystem, i::Int) = b.bodies[i].v
+Base.length(bds::NewtonSystem) = length(bds.bodies)
+const solar_system = NewtonSystem(set)
 
 end
 
 
-using .Bodies: G_year_AU, Body, solar_system, NBodySystem
+using .Bodies: G_year_AU, Body, solar_system, NewtonSystem, AbstractHamiltonianSystem
+import .Bodies: coordinate, velocity, update_coordinate!, update_velocity!
 
-function energy(bds::NBodySystem{T}) where T
+function energy(bds::NewtonSystem{T}) where T
     eng = zero(T)
     # kinetic energy
     for p in bds.bodies
@@ -157,10 +169,10 @@ end
     (G_year_AU * mb / d^3) * (rb - ra)
 end
 
-function update_acceleration!(a::AbstractVector{Point3D{T}}, bds::NBodySystem) where {T}
+function update_acceleration!(a::AbstractVector{Point{D, T}}, bds::NewtonSystem) where {D, T}
     @assert length(a) == length(bds)
     @inbounds for j = 1:length(bds)
-        a[j] = zero(Point3D{T})
+        a[j] = zero(Point{D, T})
         for k = 1:length(bds)
             j != k && (a[j] += acceleration(bds.bodies[j].r, bds.bodies[k].r, bds.bodies[k].m))
         end
@@ -168,30 +180,30 @@ function update_acceleration!(a::AbstractVector{Point3D{T}}, bds::NBodySystem) w
     return a
 end
 
-struct NBodySystemWithCache{T}
-    nbd::NBodySystem{T}
-    a::Vector{Point3D{T}}
-    function NBodySystemWithCache(bds::NBodySystem{T}, a::Vector{Point3D{T}}) where T
+struct LeapFrogSystem{T, D, SYS<:AbstractHamiltonianSystem{D}}
+    nbd::SYS
+    a::Vector{Point{D, T}}
+    function LeapFrogSystem(bds::AbstractHamiltonianSystem, a::Vector{Point{D, T}}) where {T, D}
         @assert length(bds) == length(a)
-        new{T}(bds, a)
+        new{T, D, typeof(bds)}(bds, a)
     end
 end
-function NBodySystemWithCache(bds::NBodySystem{T}) where T
-    a = zeros(Point3D{T}, length(bds))
-    NBodySystemWithCache(bds, a)
+function LeapFrogSystem(bds::AbstractHamiltonianSystem)
+    LeapFrogSystem(bds, zero(coordinate(bds)))
 end
 
-function leapfrog_step!(bdsc::NBodySystemWithCache{T}, dt) where T
-    bodies, a = bdsc.nbd.bodies, bdsc.a
-    @inbounds for j = 1:length(bodies)
-        rj = dt / 2 * bodies[j].v + bodies[j].r
-        bodies[j] = Body(rj, bodies[j].v, bodies[j].m)
+function step!(bdsc::LeapFrogSystem{T}, dt) where T
+    nbd, a = bdsc.nbd, bdsc.a
+    @inbounds for j = 1:length(nbd)
+        rj = dt / 2 * velocity(nbd, j) + coordinate(nbd, j)
+        update_coordinate!(bdsc.nbd, j, rj)
     end
     update_acceleration!(a, bdsc.nbd)
-    @inbounds for j = 1:length(bodies)
-        vj = dt * a[j] + bodies[j].v
-        rj = dt / 2 * vj + bodies[j].r
-        bodies[j] = Body(rj, vj, bodies[j].m)
+    @inbounds for j = 1:length(nbd)
+        vj = dt * a[j] + velocity(nbd, j)
+        update_velocity!(bdsc.nbd, j, vj)
+        rj = dt / 2 * vj + coordinate(nbd, j)
+        update_coordinate!(bdsc.nbd, j, rj)
     end
     return bdsc
 end

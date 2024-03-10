@@ -8,6 +8,11 @@ C_{ij} = \sum_{k=1}^n A_{ik}B_{kj}.
 The time complexity of matrix multiplication is $O(mnp)$.
 
 ## System of Linear Equations
+Let $A\in \mathbb{C}^{n\times n}$ be a invertible square matrix and $b \in \mathbb{C}^n$ be a vector. Solving a linear equation means finding a vector $x\in\mathbb{C}^n$ such that
+```math
+A x = b
+```
+
 !!! note "Example"
     Let us consider the following system of linear equations
     ```math
@@ -36,24 +41,36 @@ The time complexity of matrix multiplication is $O(mnp)$.
     3
     \end{bmatrix}.
     ```
-    In Julia, we can solve the system of linear equations using the backslash operator `\` or the `lu` function.
-    
+
+    In Julia, we can solve the system of linear equations using the backslash operator `\` function.
+
     ```@repl linalg
     A = [2 3 -2; 3 2 3; 4 -3 2]
     b = [1, 2, 3]
-    A \ b
+    x = A \ b
+    A * x
+    ```
+    The `\` method is implemented with the LU decomposition. It is equivalent to the following code.
+    ```@repl linalg
+    using LinearAlgebra
+    lures = lu(A)  # pivot rows by default
+    lures.L * lures.U ≈ lures.P * A
+
+    UpperTriangular(lures.U) \ (LowerTriangular(lures.L) \ (lures.P * b))
     ```
 
-Let $A\in \mathbb{C}^{n\times n}$ be a invertible square matrix and $b \in \mathbb{C}^n$ be a vector. Solving a linear equation means finding a vector $x\in\mathbb{C}^n$ such that
+The LU decomposition of a matrix $A\in \mathbb{C}^{n\times n}$ is a factorization of the form
 ```math
-A x = b
+PA = LU
 ```
+where $P$ is a permutation matrix for pivoting the rows of $A$, $L$ is a lower triangular matrix, and $U$ is an upper triangular matrix. Pivoting rows are used to avoid division by zero to ensure numerical stability.
+In Julia, linear equations with `UpperTriangular` or `LowerTriangular` matrices will be solved with forward and backward substitution.
 
-One can solve a linear equation by following these steps:
+To summarize, the algorithm to solve a linear equation contains following steps:
 
-1. Decompose the matrix $A \in \mathbb{C}^{n\times n}$ into $L \in \mathbb{C}^{n\times n}$ and $U \in \mathbb{C}^{n\times n}$ matrices using a method such as [Gaussian elimination](@ref) or Crout's method.
+1. Decompose the matrix $PA \in \mathbb{C}^{n\times n}$ into $L \in \mathbb{C}^{n\times n}$ and $U \in \mathbb{C}^{n\times n}$ matrices using a method such as [Gaussian elimination](@ref) or Crout's method.
 
-2. Rewrite the equation $Ax = b$ as $LUx = b$.
+2. Rewrite the equation $Ax = b$ as $LUx = Pb$.
 
 3. Solve for y in $Ly = b$ by [Forward-substitution](@ref). This involves substituting the values of $y$ into the equation one at a time, starting with the first row and working downwards.
 
@@ -61,12 +78,22 @@ One can solve a linear equation by following these steps:
 
 ## Least Squares Problem
 
-!!! note "Example"
+The least squares problem is to find a vector $x\in\mathbb{C}^n$ that minimizes the residual
+```math
+\|Ax - b\|_2
+```
+where $A\in \mathbb{C}^{m\times n}$ and $b\in \mathbb{C}^m$.
+
+!!! note "Example: data fitting"
     Suppose we have a set of data points
 
     | $t_i$ | 0.0 | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 | 3.0 | 3.5 | 4.0 | 4.5 |
     |---|---|---|---|---|---|---|---|---|---|----|
     | $y_i$ | 2.9 | 2.7 | 4.8 | 5.3 | 7.1 | 7.6 | 7.7 | 7.6 | 9.4 | 9.0 |
+
+    ```@raw html
+    <img src="../../assets/images/fitting-data.png" alt="fitting data" width="400"/>
+    ```
 
     We can fit a quadratic function of the form $y = c_0 + c_1 t + c_2 t^2$ to the data by solving the least squares problem. We can solve the least squares problem by finding the values of $c_0$, $c_1$, and $c_2$ that minimize the sum of the squared residuals
     ```math
@@ -104,28 +131,23 @@ One can solve a linear equation by following these steps:
 
     ```@repl linalg
     using LinearAlgebra
+    time = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5];
+    y = [2.9, 2.7, 4.8, 5.3, 7.1, 7.6, 7.7, 7.6, 9.4, 9.0];
 
-    A = [1 0.0 0.0; 1 0.5 0.25; 1 1.0 1.0; 1 1.5 2.25;
-        1 2.0 4.0; 1 2.5 6.25; 1 3.0 9.0; 1 3.5 12.25;
-        1 4.0 16.0; 1 4.5 20.25]
-    b = [2.9, 2.7, 4.8, 5.3, 7.1, 7.6, 7.7, 7.6, 9.4, 9.0]
-    x = (A' * A) \ (A' * b)
+    A = hcat(ones(length(time)), time, time.^2)
+    x = (A' * A) \ (A' * y)
     ```
-    However, this approach is not recommended for large matrices due to the poor numerical stability. Instead, we can use the `qr` function to solve the least squares problem.
+
+    The fitted quadratic function is as follows.
+    ```@raw html
+    <img src="../../assets/images/fitting-data2.png" alt="fitting data" width="400"/>
+    ```
+    However, this approach is not recommended for large matrices due to the poor numerical stability. The condition number of $A^\dagger A$ is the square of the condition number of $A$, which can be very large.
+    Instead, we can use the `qr` function to solve the least squares problem.
     ```@repl linalg
     Q, R = qr(A)
-    x = R \ (Matrix(Q)' * b)
+    x = R \ (Matrix(Q)' * y)
     ```
-
-The least squares problem is to find a vector $x\in\mathbb{C}^n$ that minimizes the residual
-```math
-\|Ax - b\|_2
-```
-where $A\in \mathbb{C}^{m\times n}$ and $b\in \mathbb{C}^m$. The solution to the least squares problem is given by
-```math
-x = (A^\dagger A)^{-1} A^\dagger b
-```
-when $A^\dagger A$ is invertible.
 
 In Julia, we can solve the least squares problem using the backslash operator `\` or the `qr` function.
 

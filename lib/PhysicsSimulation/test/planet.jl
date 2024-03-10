@@ -1,4 +1,4 @@
-using Test, MyFirstPackage
+using Test, PhysicsSimulation
 
 @testset "planets" begin
     @test length(solar_system) == 10
@@ -7,7 +7,7 @@ using Test, MyFirstPackage
 end
 
 @testset "leapfrog" begin
-    cached = MyFirstPackage.NBodySystemWithCache(solar_system)
+    cached = MyFirstPackage.DynamicSystem(solar_system)
     newcache = leapfrog_step!(cached, 0.1)
-    @test newcache isa NBodySystemWithCache
+    @test newcache isa DynamicSystem
 end

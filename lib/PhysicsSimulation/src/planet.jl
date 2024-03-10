@@ -109,9 +109,6 @@ const sun = Body(
     1.0
 )
 
-# Arrays for modeling the solar system
-const set = [sun, mercury, venus, earth, mars, jupyter, saturn, uranus, neptune, pluto]
-
 abstract type AbstractHamiltonianSystem{D} end
 struct NewtonSystem{D, T} <: AbstractHamiltonianSystem{D}
     bodies::Vector{Body{D, T}}
@@ -126,14 +123,17 @@ function offset_velocity!(b::NewtonSystem, i::Int, val)
 end
 velocity(b::NewtonSystem) = [b.bodies[i].r for i in 1:length(b.bodies)]
 velocity(b::NewtonSystem, i::Int) = b.bodies[i].v
+mass(b::NewtonSystem) = [b.bodies[i].m for i in 1:length(b.bodies)]
+mass(b::NewtonSystem, i::Int) = b.bodies[i].m
 Base.length(bds::NewtonSystem) = length(bds.bodies)
-const solar_system = NewtonSystem(set)
+solar_system() = NewtonSystem([sun, mercury, venus, earth, mars, jupyter, saturn, uranus, neptune])
+
 
 end
 
 
 using .Bodies: G_year_AU, Body, solar_system, NewtonSystem, AbstractHamiltonianSystem
-import .Bodies: coordinate, velocity, offset_coordinate!, offset_velocity!
+import .Bodies: coordinate, velocity, offset_coordinate!, offset_velocity!, mass
 
 function energy(bds::NewtonSystem{T}) where T
     eng = zero(T)
@@ -174,14 +174,14 @@ function update_acceleration!(a::AbstractVector{Point{D, T}}, bds::NewtonSystem)
     @inbounds for j = 1:length(bds)
         a[j] = zero(Point{D, T})
         for k = 1:length(bds)
-            j != k && (a[j] += acceleration(bds.bodies[j].r, bds.bodies[k].r, bds.bodies[k].m))
+            j != k && (a[j] += acceleration(coordinate(bds, j), coordinate(bds, k), mass(bds, k)))
         end
     end
     return a
 end
 
 struct LeapFrogSystem{T, D, SYS<:AbstractHamiltonianSystem{D}}
-    nbd::SYS
+    sys::SYS
     a::Vector{Point{D, T}}
     function LeapFrogSystem(bds::AbstractHamiltonianSystem, a::Vector{Point{D, T}}) where {T, D}
         @assert length(bds) == length(a)
@@ -193,17 +193,17 @@ function LeapFrogSystem(bds::AbstractHamiltonianSystem)
 end
 
 function step!(bdsc::LeapFrogSystem{T}, dt) where T
-    nbd, a = bdsc.nbd, bdsc.a
-    @inbounds for j = 1:length(nbd)
-        drj = dt / 2 * velocity(nbd, j)
-        offset_coordinate!(bdsc.nbd, j, drj)
+    sys, a = bdsc.sys, bdsc.a
+    @inbounds for j = 1:length(sys)
+        drj = dt / 2 * velocity(sys, j)
+        offset_coordinate!(sys, j, drj)
     end
-    update_acceleration!(a, bdsc.nbd)
-    @inbounds for j = 1:length(nbd)
+    update_acceleration!(a, sys)
+    @inbounds for j = 1:length(sys)
         dvj = dt * a[j]
-        offset_velocity!(bdsc.nbd, j, dvj)
-        drj = dt / 2 * velocity(nbd, j)
-        offset_coordinate!(bdsc.nbd, j, drj)
+        offset_velocity!(sys, j, dvj)
+        drj = dt / 2 * velocity(sys, j)
+        offset_coordinate!(sys, j, drj)
     end
     return bdsc
 end

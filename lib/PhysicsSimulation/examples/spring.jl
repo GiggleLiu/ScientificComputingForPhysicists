@@ -12,8 +12,8 @@ end
 
 # visualize the system
 p2(x::PhysicsSimulation.Point{1}) = Point2f(x.data[1], 0.0)
-getcoos(b::LeapFrogSystem) = p2.(coordinate(b.nbd))
-getendpoints(b::LeapFrogSystem) = p2.(coordinate(b.nbd) .+ b.a)
+getcoos(b::LeapFrogSystem) = p2.(coordinate(b.sys))
+getendpoints(b::LeapFrogSystem) = p2.(coordinate(b.sys) .+ b.a)
 coos = Observable(getcoos(states[1]))
 endpoints = Observable(getendpoints(states[1]))
 fig, ax, plot = scatter(coos, markersize = 10, color = :blue, limits = (-1, 20, -1, 1))

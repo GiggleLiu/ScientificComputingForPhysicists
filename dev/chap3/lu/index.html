@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>LU Decomposition · Scientific Computing For Physicists</title><meta name="title" content="LU Decomposition · Scientific Computing For Physicists"/><meta property="og:title" content="LU Decomposition · Scientific Computing For Physicists"/><meta property="twitter:title" content="LU Decomposition · Scientific Computing For Physicists"/><meta name="description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:description" content="Documentation for Scientific Computing For Physicists."/><meta property="twitter:description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:url" content="https://book.jinguo-group.science/chap3/lu/"/><meta property="twitter:url" content="https://book.jinguo-group.science/chap3/lu/"/><link rel="canonical" href="https://book.jinguo-group.science/chap3/lu/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Scientific Computing For Physicists</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Become an Open-source Developer</span><ul><li><a class="tocitem" href="../../chap1/terminal/">Get a Terminal!</a></li><li><a class="tocitem" href="../../chap1/git/">Maintainability - Version Control</a></li><li><a class="tocitem" href="../../chap1/ci/">Correctness - Unit Tests</a></li></ul></li><li><span class="tocitem">Julia Programming Language</span><ul><li><a class="tocitem" href="../../chap2/julia-setup/">Setup Julia</a></li><li><a class="tocitem" href="../../chap2/julia-why/">Why Julia?</a></li><li><a class="tocitem" href="../../chap2/julia-type/">Types and Multiple-dispatch</a></li><li><a class="tocitem" href="../../chap2/julia-release/">My First Package</a></li><li><a class="tocitem" href="../../chap2/julia-fluid/">Project: Fluid dynamics</a></li></ul></li><li><span class="tocitem">Tensors (×)</span><ul><li><a class="tocitem" href="../array/">Array and Broadcasting</a></li><li><a class="tocitem" href="../linalg/">Basic Linear Algebra</a></li><li class="is-active"><a class="tocitem" href>LU Decomposition</a><ul class="internal"><li><a class="tocitem" href="#Gaussian-elimination"><span>Gaussian elimination</span></a></li><li><a class="tocitem" href="#The-elementary-elimination-matrix"><span>The elementary elimination matrix</span></a></li><li><a class="tocitem" href="#Properties-of-elementary-elimination-matrices"><span>Properties of elementary elimination matrices</span></a></li><li><a class="tocitem" href="#Coding:-Properties-of-elimination-matrices&quot;"><span>Coding: Properties of elimination matrices&quot;</span></a></li><li><a class="tocitem" href="#LU-Factorization-by-Gaussian-Elimination&quot;"><span>LU Factorization by Gaussian Elimination&quot;</span></a></li><li><a class="tocitem" href="#Issue:-how-to-handle-small-diagonal-entries?"><span>Issue: how to handle small diagonal entries?</span></a></li><li><a class="tocitem" href="#Pivoting-technique"><span>Pivoting technique</span></a></li><li><a class="tocitem" href="#Gaussian-Elimination-process-with-Partial-Pivoting"><span>Gaussian Elimination process with Partial Pivoting</span></a></li><li><a class="tocitem" href="#LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting"><span>LU Factoriazation by Gaussian Elimination with Partial Pivoting</span></a></li><li><a class="tocitem" href="#Complete-pivoting"><span>Complete pivoting</span></a></li></ul></li><li><a class="tocitem" href="../sensitivity/">Sensitivity Analysis</a></li><li><a class="tocitem" href="../factorization/">Matrix factorization</a></li><li><a class="tocitem" href="../fft/">Fast Fourier transform</a></li><li><a class="tocitem" href="../tensors/">Tensor Operations</a></li><li><a class="tocitem" href="../cuda/">Arrays on GPU</a></li></ul></li><li><span class="tocitem">Optimization (×)</span><ul><li><a class="tocitem" href="../../chap4/combinatorial/">Combinatorial Optimization</a></li><li><a class="tocitem" href="../../chap4/optimization/">Optimization</a></li><li><a class="tocitem" href="../../chap4/ad/">Automatic Differentiation</a></li></ul></li><li><span class="tocitem">Randomness (×)</span><ul><li><a class="tocitem" href="../../chap5/montecarlo/">Markov Chain Monte Carlo</a></li></ul></li><li><span class="tocitem">Sparsity (×)</span><ul><li><a class="tocitem" href="../../chap6/sparse/">Sparse Matrices</a></li><li><a class="tocitem" href="../../chap6/compressedsensing/">Compressed sensing</a></li></ul></li><li><span class="tocitem">High Performance Computing (×)</span><ul><li><a class="tocitem" href="../../chap7/hpc/">MPI and OpenMP</a></li><li><a class="tocitem" href="../../chap7/cuda/">CUDA programming</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Tensors (×)</a></li><li class="is-active"><a href>LU Decomposition</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>LU Decomposition</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists/blob/main/docs/src/chap3/lu.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="LU-Decomposition"><a class="docs-heading-anchor" href="#LU-Decomposition">LU Decomposition</a><a id="LU-Decomposition-1"></a><a class="docs-heading-anchor-permalink" href="#LU-Decomposition" title="Permalink"></a></h1><h3 id="Forward-substitution"><a class="docs-heading-anchor" href="#Forward-substitution">Forward-substitution</a><a id="Forward-substitution-1"></a><a class="docs-heading-anchor-permalink" href="#Forward-substitution" title="Permalink"></a></h3><p>Solving tridiagonal linear equation https://en.wikipedia.org/wiki/Triangular_matrix</p><p class="math-container">\[Lx = b\]</p><p>where <span>$L \in \mathbb{R}^{n\times n}$</span> is a lower triangular matrix defined as</p><p class="math-container">\[L = \left(\begin{matrix}
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Solving linear equations by LU factorization: Bottom-up · Scientific Computing For Physicists</title><meta name="title" content="Solving linear equations by LU factorization: Bottom-up · Scientific Computing For Physicists"/><meta property="og:title" content="Solving linear equations by LU factorization: Bottom-up · Scientific Computing For Physicists"/><meta property="twitter:title" content="Solving linear equations by LU factorization: Bottom-up · Scientific Computing For Physicists"/><meta name="description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:description" content="Documentation for Scientific Computing For Physicists."/><meta property="twitter:description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:url" content="https://book.jinguo-group.science/chap3/lu/"/><meta property="twitter:url" content="https://book.jinguo-group.science/chap3/lu/"/><link rel="canonical" href="https://book.jinguo-group.science/chap3/lu/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Scientific Computing For Physicists</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Become an Open-source Developer</span><ul><li><a class="tocitem" href="../../chap1/terminal/">Get a Terminal!</a></li><li><a class="tocitem" href="../../chap1/git/">Maintainability - Version Control</a></li><li><a class="tocitem" href="../../chap1/ci/">Correctness - Unit Tests</a></li></ul></li><li><span class="tocitem">Julia Programming Language</span><ul><li><a class="tocitem" href="../../chap2/julia-setup/">Setup Julia</a></li><li><a class="tocitem" href="../../chap2/julia-why/">Why Julia?</a></li><li><a class="tocitem" href="../../chap2/julia-type/">Types and Multiple-dispatch</a></li><li><a class="tocitem" href="../../chap2/julia-array/">Array and Broadcasting</a></li><li><a class="tocitem" href="../../chap2/julia-release/">My First Package</a></li><li><a class="tocitem" href="../../chap2/julia-fluid/">Project: Fluid dynamics</a></li></ul></li><li><span class="tocitem">Linear Algebra</span><ul><li><a class="tocitem" href="../linalg/">Matrix Computation</a></li><li class="is-active"><a class="tocitem" href>Solving linear equations by LU factorization: Bottom-up</a><ul class="internal"><li><a class="tocitem" href="#Forward-substitution"><span>Forward-substitution</span></a></li><li><a class="tocitem" href="#Back-substitution"><span>Back-substitution</span></a></li><li><a class="tocitem" href="#LU-Factorization-with-Gaussian-Elimination"><span>LU Factorization with Gaussian Elimination</span></a></li><li><a class="tocitem" href="#Code:-Elementary-Elimination-Matrix"><span>Code: Elementary Elimination Matrix</span></a></li><li><a class="tocitem" href="#Code:-LU-Factorization-by-Gaussian-Elimination"><span>Code: LU Factorization by Gaussian Elimination</span></a></li><li><a class="tocitem" href="#Pivoting-technique"><span>Pivoting technique</span></a></li><li><a class="tocitem" href="#Code:-LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting"><span>Code: LU Factoriazation by Gaussian Elimination with Partial Pivoting</span></a></li></ul></li><li><a class="tocitem" href="../qr/">Review: Solving linear equations</a></li><li><a class="tocitem" href="../fft/">Fast Fourier transform</a></li><li><a class="tocitem" href="../sensitivity/">Sensitivity Analysis</a></li><li><a class="tocitem" href="../tensors/">Tensor Operations</a></li><li><a class="tocitem" href="../cuda/">Arrays on GPU</a></li></ul></li><li><span class="tocitem">Optimization (×)</span><ul><li><a class="tocitem" href="../../chap4/combinatorial/">Combinatorial Optimization</a></li><li><a class="tocitem" href="../../chap4/optimization/">Optimization</a></li><li><a class="tocitem" href="../../chap4/ad/">Automatic Differentiation</a></li></ul></li><li><span class="tocitem">Randomness (×)</span><ul><li><a class="tocitem" href="../../chap5/montecarlo/">Markov Chain Monte Carlo</a></li></ul></li><li><span class="tocitem">Sparsity (×)</span><ul><li><a class="tocitem" href="../../chap6/sparse/">Sparse Matrices</a></li><li><a class="tocitem" href="../../chap6/compressedsensing/">Compressed sensing</a></li></ul></li><li><span class="tocitem">High Performance Computing (×)</span><ul><li><a class="tocitem" href="../../chap7/hpc/">MPI and OpenMP</a></li><li><a class="tocitem" href="../../chap7/cuda/">CUDA programming</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Linear Algebra</a></li><li class="is-active"><a href>Solving linear equations by LU factorization: Bottom-up</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Solving linear equations by LU factorization: Bottom-up</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists/blob/main/docs/src/chap3/lu.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Solving-linear-equations-by-LU-factorization:-Bottom-up"><a class="docs-heading-anchor" href="#Solving-linear-equations-by-LU-factorization:-Bottom-up">Solving linear equations by LU factorization: Bottom-up</a><a id="Solving-linear-equations-by-LU-factorization:-Bottom-up-1"></a><a class="docs-heading-anchor-permalink" href="#Solving-linear-equations-by-LU-factorization:-Bottom-up" title="Permalink"></a></h1><h2 id="Forward-substitution"><a class="docs-heading-anchor" href="#Forward-substitution">Forward-substitution</a><a id="Forward-substitution-1"></a><a class="docs-heading-anchor-permalink" href="#Forward-substitution" title="Permalink"></a></h2><p>Forward substitution is an algorithm used to solve a system of linear equations with a lower triangular matrix</p><p class="math-container">\[Lx = b\]</p><p>where <span>$L \in \mathbb{R}^{n\times n}$</span> is a lower triangular matrix defined as</p><p class="math-container">\[L = \left(\begin{matrix}
 l_{11} &amp; 0 &amp; \ldots &amp; 0\\
 l_{21} &amp; l_{22} &amp; \ldots &amp; 0\\
 \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
 l_{n1} &amp; l_{n2} &amp; \ldots &amp; l_{nn}
-\end{matrix}\right)\]</p><h3 id="Algorithm:-Forward-Substitution-for-Lower-Triangular-System"><a class="docs-heading-anchor" href="#Algorithm:-Forward-Substitution-for-Lower-Triangular-System">Algorithm: Forward-Substitution for Lower Triangular System</a><a id="Algorithm:-Forward-Substitution-for-Lower-Triangular-System-1"></a><a class="docs-heading-anchor-permalink" href="#Algorithm:-Forward-Substitution-for-Lower-Triangular-System" title="Permalink"></a></h3><p>Forward substitution is an algorithm used to solve a system of linear equations with a lower triangular matrix. It involves solving for the unknowns in a forward direction, starting from the first equation and moving towards the last. Here&#39;s an example of forward substitution algorithm in the matrix form:</p><p>Consider the following system of lower triangular linear equations:</p><p class="math-container">\[L = \left(\begin{matrix}
+\end{matrix}\right)\]</p><p>The forward substitution can be summarized to the following algorithm</p><p class="math-container">\[x_1 = b_1/l_{11},~~~ x_i = \left(b_i - \sum_{j=1}^{i-1}l_{ij}x_j\right)/l_{ii},~~ i=2, ..., n\]</p><div class="admonition is-info"><header class="admonition-header">Example</header><div class="admonition-body"><p>Consider the following system of lower triangular linear equations:</p><p class="math-container">\[L = \left(\begin{matrix}
 3 &amp; 0 &amp; 0\\
 2 &amp; 5 &amp; 0\\
 1 &amp; 4 &amp; 2
@@ -18,44 +18,50 @@ x_3
 9\\
 12\\
 13
-\end{matrix}\right)\]</p><p>To solve for <span>$x_1$</span>, <span>$x_2$</span>, and <span>$x_3$</span> using forward substitution, we start with the first equation:</p><p class="math-container">\[3x_1 + 0x_2 + 0x_3 = 9\]</p><p>Solving for <span>$x_1$</span>, we get:</p><p class="math-container">\[x_1 = 3\]</p><p>Substituting <span>$x = 3$</span> into the second equation (row), we get:</p><p class="math-container">\[2(3) + 5x_2 + 0x_3 = 12\]</p><p>Solving for <span>$x_2$</span>, we get:</p><p class="math-container">\[x_2 = (12 - 6) / 5 = 1.2\]</p><p>Substituting <span>$x = 3$</span> and <span>$x_2 = 1.2$</span> into the third equation (row), we get:</p><p class="math-container">\[1(3) + 4(1.2) + 2x_3 = 13\]</p><p>Solving for <span>$x_3$</span>, we get:</p><p class="math-container">\[x_3 = (13 - 3 - 4(1.2)) / 2 = 1.5\]</p><p>Therefore, the solution to the system of equations is:</p><p class="math-container">\[x = \left(\begin{matrix}\
+\end{matrix}\right)\]</p><p>To solve for <span>$x_1$</span>, <span>$x_2$</span>, and <span>$x_3$</span> using forward substitution, we start with the first equation:</p><p class="math-container">\[3x_1 + 0x_2 + 0x_3 = 9\]</p><p>Solving for <span>$x_1$</span>, we get <span>$x_1 = 3$</span>. Substituting <span>$x = 3$</span> into the second equation (row), we get:</p><p class="math-container">\[2(3) + 5x_2 + 0x_3 = 12\]</p><p>Solving for <span>$x_2$</span>, we get <span>$x_2 = (12 - 6) / 5 = 1.2$</span>. Substituting <span>$x = 3$</span> and <span>$x_2 = 1.2$</span> into the third equation (row), we get:</p><p class="math-container">\[1(3) + 4(1.2) + 2x_3 = 13\]</p><p>Solving for <span>$x_3$</span>, we get <span>$x_3 = (13 - 3 - 4(1.2)) / 2 = 1.5$</span>. Therefore, the solution to the system of equations is:</p><p class="math-container">\[x = \left(\begin{matrix}\
 3\\
 1.2\\
 1.5
-\end{matrix}\right)\]</p><p>It can be summarized to the following algorithm</p><p class="math-container">\[x_1 = b_1/l_{11},~~~ x_i = \left(b_i - \sum_{j=1}^{i-1}l_{ij}x_j\right)/l_{ii},~~ i=2, ..., n\]</p><h3 id="Back-substitution"><a class="docs-heading-anchor" href="#Back-substitution">Back-substitution</a><a id="Back-substitution-1"></a><a class="docs-heading-anchor-permalink" href="#Back-substitution" title="Permalink"></a></h3><p>We implement the above algorithm in Julia language.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; function back_substitution!(l::AbstractMatrix, b::AbstractVector)
-       	n = length(b)
-       	@assert size(l) == (n, n) &quot;size mismatch&quot;
-       	x = zero(b)
-       	# loop over columns
-       	for j = 1:n
-       		# stop if matrix is singular
-       		if iszero(l[j, j])
-       			error(&quot;The lower triangular matrix is singular!&quot;)
-       		end
-       		# compute solution component
-       		x[j] = b[j] / l[j, j]
-       		for i = j+1:n
-       			# update right hand side
-       			b[i] = b[i] - l[i, j] * x[j]
-       		end
-       	end
-       	return x
-       end</code><code class="nohighlight hljs ansi" style="display:block;">back_substitution! (generic function with 1 method)</code></pre><p>We can write a test for this algorithm.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; @testset &quot;back substitution&quot; begin
-       	# create a random lower triangular matrix
-       	l = tril(randn(4, 4))
-       	# target vector
-       	b = randn(4)
-       	# solve the linear equation with our algorithm
-       	x = back_substitution!(l, copy(b))
-       	@test l * x ≈ b
-       
-       	# The Julia&#39;s standard library `LinearAlgebra` contains a native implementation.
-       	x_native = LowerTriangular(l) \ b
-       	@test l * x_native ≈ b
-       end</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: LoadError: UndefVarError: `@testset` not defined
-in expression starting at REPL[1]:1</code></pre><h2 id="Gaussian-elimination"><a class="docs-heading-anchor" href="#Gaussian-elimination">Gaussian elimination</a><a id="Gaussian-elimination-1"></a><a class="docs-heading-anchor-permalink" href="#Gaussian-elimination" title="Permalink"></a></h2><p>LU decomposition is a method for solving linear equations that involves breaking down a matrix into lower and upper triangular matrices. The <span>$LU$</span> decomposition of a matrix <span>$A$</span> is represented as <span>$A = LU$</span>, where <span>$L$</span> is a lower triangular matrix and <span>$U$</span> is an upper triangular matrix.</p><h2 id="The-elementary-elimination-matrix"><a class="docs-heading-anchor" href="#The-elementary-elimination-matrix">The elementary elimination matrix</a><a id="The-elementary-elimination-matrix-1"></a><a class="docs-heading-anchor-permalink" href="#The-elementary-elimination-matrix" title="Permalink"></a></h2><p>An elementary elimination matrix is a matrix that is used in the process of Gaussian elimination to transform a system of linear equations into an equivalent system that is easier to solve. It is a square matrix that is obtained by performing a single elementary row operation on the identity matrix.</p><p class="math-container">\[(M_k)_{ij} = \begin{cases}
-	\delta_{ij} &amp; i= j,\\
-	- a_{ik}/a_{kk} &amp; i &gt; j \land j = k, \\
+\end{matrix}\right)\]</p></div></div><h2 id="Back-substitution"><a class="docs-heading-anchor" href="#Back-substitution">Back-substitution</a><a id="Back-substitution-1"></a><a class="docs-heading-anchor-permalink" href="#Back-substitution" title="Permalink"></a></h2><p>Back substitution is an algorithm used to solve a system of linear equations with an upper triangular matrix</p><p class="math-container">\[Ux = b\]</p><p>where <span>$U \in \mathbb{R}^{n\times n}$</span> is an upper triangular matrix defined as</p><p class="math-container">\[U = \left(\begin{matrix}
+u_{11} &amp; u_{12} &amp; \ldots &amp; u_{1n}\\
+0 &amp; u_{22} &amp; \ldots &amp; u_{2n}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; \ldots &amp; u_{nn}
+\end{matrix}\right)\]</p><p>The back substitution can be summarized to the following algorithm</p><p class="math-container">\[x_n = b_n/u_{nn},~~~ x_i = \left(b_i - \sum_{j=i+1}^{n}u_{ij}x_j\right)/u_{ii},~~ i=n-1, ..., 1\]</p><p>We implement the above algorithm in Julia language.</p><pre><code class="language-julia hljs">function back_substitution!(l::AbstractMatrix, b::AbstractVector)
+    n = length(b)
+    @assert size(l) == (n, n) &quot;size mismatch&quot;
+    x = zero(b)
+    # loop over columns
+    for j = 1:n
+        # stop if matrix is singular
+        if iszero(l[j, j])
+            error(&quot;The lower triangular matrix is singular!&quot;)
+        end
+        # compute solution component
+        x[j] = b[j] / l[j, j]
+        for i = j+1:n
+            # update right hand side
+            b[i] = b[i] - l[i, j] * x[j]
+        end
+    end
+    return x
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">back_substitution! (generic function with 1 method)</code></pre><p>We can write a test for this algorithm.</p><pre><code class="language-julia hljs">using Test, LinearAlgebra
+
+@testset &quot;back substitution&quot; begin
+    # create a random lower triangular matrix
+    l = LinearAlgebra.tril(randn(4, 4))
+    # target vector
+    b = randn(4)
+    # solve the linear equation with our algorithm
+    x = back_substitution!(l, copy(b))
+    @test l * x ≈ b
+
+    # The Julia&#39;s standard library `LinearAlgebra` contains a native implementation.
+    x_native = LowerTriangular(l) \ b
+    @test l * x_native ≈ b
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;back substitution&quot;, Any[], 2, false, false, true, 1.710179841694249e9, 1.710179842140966e9, false, &quot;lu.md&quot;)</code></pre><h2 id="LU-Factorization-with-Gaussian-Elimination"><a class="docs-heading-anchor" href="#LU-Factorization-with-Gaussian-Elimination">LU Factorization with Gaussian Elimination</a><a id="LU-Factorization-with-Gaussian-Elimination-1"></a><a class="docs-heading-anchor-permalink" href="#LU-Factorization-with-Gaussian-Elimination" title="Permalink"></a></h2><p>LU decomposition is a method for solving linear equations that involves breaking down a matrix into lower and upper triangular matrices. The <span>$LU$</span> decomposition of a matrix <span>$A$</span> is represented as <span>$A = LU$</span>, where <span>$L$</span> is a lower triangular matrix and <span>$U$</span> is an upper triangular matrix.</p><h3 id="The-elementary-elimination-matrix"><a class="docs-heading-anchor" href="#The-elementary-elimination-matrix">The elementary elimination matrix</a><a id="The-elementary-elimination-matrix-1"></a><a class="docs-heading-anchor-permalink" href="#The-elementary-elimination-matrix" title="Permalink"></a></h3><p>An elementary elimination matrix is a matrix that is used in the process of Gaussian elimination to transform a system of linear equations into an equivalent system that is easier to solve. It is a square matrix that is obtained by performing a single elementary row operation on the identity matrix.</p><p class="math-container">\[(M_k)_{ij} = \begin{cases}
+    \delta_{ij} &amp; i= j,\\
+    - a_{ik}/a_{kk} &amp; i &gt; j \land j = k, \\
     0 &amp; {\rm otherwise}.
 \end{cases}\]</p><p>Let <span>$A = (a_{ij})$</span> be a square matrix of size <span>$n \times n$</span>. The <span>$k$</span>th elementary elimination matrix for it is defined as</p><p class="math-container">\[M_k = \left(\begin{matrix}
 
@@ -73,126 +79,192 @@ a_{11} &amp; a_{12} &amp; a_{13} &amp; \ldots &amp; a_{1n}\\
 0 &amp; a_{32}&#39; &amp; a_{33}&#39; &amp; \ldots &amp; a_{3n}&#39;\\
 \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
 0 &amp; a_{n2}&#39; &amp; a_{n3}&#39; &amp; \ldots &amp; a_{nn}&#39;\\
-\end{matrix}\right)\]</p><p>For <span>$k=1,2,\ldots,n$</span>, apply <span>$M_k$</span> on <span>$A$</span>. We will have an upper triangular matrix.</p><p class="math-container">\[U = M_{n-1}\ldots M_1 A\]</p><p>Since <span>$M_k$</span> is reversible (as we will show below), we have</p><p class="math-container">\[\begin{align}
+\end{matrix}\right)\]</p><p>For <span>$k=1,2,\ldots,n$</span>, apply <span>$M_k$</span> on <span>$A$</span>. We will have an upper triangular matrix.</p><p class="math-container">\[U = M_{n-1}\ldots M_1 A\]</p><p>Since <span>$M_k$</span> is reversible, we have</p><p class="math-container">\[\begin{align*}
 &amp;A = LU\\
 &amp;L = M_1^{-1} M_2^{-1} \ldots M_{n-1}^{-1},
-\end{align}\]</p><p>&quot;</p><h2 id="Properties-of-elementary-elimination-matrices"><a class="docs-heading-anchor" href="#Properties-of-elementary-elimination-matrices">Properties of elementary elimination matrices</a><a id="Properties-of-elementary-elimination-matrices-1"></a><a class="docs-heading-anchor-permalink" href="#Properties-of-elementary-elimination-matrices" title="Permalink"></a></h2><ol><li>Its inverse can be computed in <span>$O(n)$</span> time</li></ol><p class="math-container">\[M_k^{-1} = 2I - M_k\]</p><ol><li>The multiplication of two elementary matrices can be computed in <span>$O(n)$</span> time</li></ol><p class="math-container">\[M_k M_{k&#39; &gt; k} = M_k + M_{k&#39;} - I\]</p><p>&quot;</p><h2 id="Coding:-Properties-of-elimination-matrices&quot;"><a class="docs-heading-anchor" href="#Coding:-Properties-of-elimination-matrices&quot;">Coding: Properties of elimination matrices&quot;</a><a id="Coding:-Properties-of-elimination-matrices&quot;-1"></a><a class="docs-heading-anchor-permalink" href="#Coding:-Properties-of-elimination-matrices&quot;" title="Permalink"></a></h2><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; A3 = [1 2 2; 4 4 2; 4 6 4]</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Int64}:
- 1  2  2
- 4  4  2
- 4  6  4</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; function elementary_elimination_matrix(A::AbstractMatrix{T}, k::Int) where T
-       	n = size(A, 1)
-       	@assert size(A, 2) == n
-       	# create Elementary Elimination Matrices
-       	M = Matrix{Float64}(I, n, n)
-       	for i=k+1:n
-       		M[i, k] =  -A[i, k] ./ A[k, k]
-       	end
-       	return M
-       end</code><code class="nohighlight hljs ansi" style="display:block;">elementary_elimination_matrix (generic function with 1 method)</code></pre><p>The elimination</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; elementary_elimination_matrix(A3, 1)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `I` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; elementary_elimination_matrix(A3, 1) * A3</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `I` not defined</code></pre><p>The inverse</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; inv(elementary_elimination_matrix(A3, 1))</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `I` not defined</code></pre><p>The multiplication</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; elementary_elimination_matrix(A3, 2)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `I` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; inv(elementary_elimination_matrix(A3, 1)) * inv(elementary_elimination_matrix(A3, 2))</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `I` not defined</code></pre><h2 id="LU-Factorization-by-Gaussian-Elimination&quot;"><a class="docs-heading-anchor" href="#LU-Factorization-by-Gaussian-Elimination&quot;">LU Factorization by Gaussian Elimination&quot;</a><a id="LU-Factorization-by-Gaussian-Elimination&quot;-1"></a><a class="docs-heading-anchor-permalink" href="#LU-Factorization-by-Gaussian-Elimination&quot;" title="Permalink"></a></h2><p>A naive implementation of elimentary elimination matrix is as follows</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; function lufact_naive!(A::AbstractMatrix{T}) where T
-       	n = size(A, 1)
-       	@assert size(A, 2) == n
-       	M = Matrix{T}(I, n, n)
-       	for k=1:n-1
-       		m = elementary_elimination_matrix(A, k)
-       		M = M * inv(m)
-       		A .= m * A
-       	end
-       	return M, A
-       end</code><code class="nohighlight hljs ansi" style="display:block;">lufact_naive! (generic function with 1 method)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lufact_naive!(copy(A3))</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `I` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; @testset &quot;naive LU factorization&quot; begin
-       	A = [1 2 2; 4 4 2; 4 6 4]
-       	L, U = lufact_naive!(copy(A))
-       	@test L * U ≈ A
-       end</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: LoadError: UndefVarError: `@testset` not defined
-in expression starting at REPL[3]:1</code></pre><p>The above implementation has time complexity <span>$O(n^4)$</span> since we did not use the sparsity of elimentary elimination matrix. A better implementation that gives <span>$O(n^3)$</span> time complexity is as follows.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; function lufact!(a::AbstractMatrix)
-       	n = size(a, 1)
-       	@assert size(a, 2) == n &quot;size mismatch&quot;
-       	m = zero(a)
-       	m[1:n+1:end] .+= 1
-       	# loop over columns
-       	for k=1:n-1
-       		# stop if pivot is zero
-       		if iszero(a[k, k])
-       			error(&quot;Gaussian elimination fails!&quot;)
-       		end
-       		# compute multipliers for current column
-       		for i=k+1:n
-       			m[i, k] = a[i, k] / a[k, k]
-       		end
-       		# apply transformation to remaining sub-matrix
-       		for j=k+1:n
-       			for i=k+1:n
-       				a[i,j] -= m[i,k] * a[k, j]
-       			end
-       		end
-       	end
-       	return m, triu!(a)
-       end</code><code class="nohighlight hljs ansi" style="display:block;">lufact! (generic function with 1 method)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lufact(a::AbstractMatrix) = lufact!(copy(a))</code><code class="nohighlight hljs ansi" style="display:block;">lufact (generic function with 1 method)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; @testset &quot;LU factorization&quot; begin
-       	a = randn(4, 4)
-       	L, U = lufact(a)
-       	@test istril(L)
-       	@test istriu(U)
-       	@test L * U ≈ a
-       end</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: LoadError: UndefVarError: `@testset` not defined
-in expression starting at REPL[3]:1</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A4 = randn(4, 4)</code><code class="nohighlight hljs ansi" style="display:block;">4×4 Matrix{Float64}:
-  1.2525    -0.495746   0.887916   0.121894
- -0.78278   -0.352827  -0.825705  -1.82679
-  0.999884   1.85006    0.974438   1.22194
-  0.394213   0.307493  -0.109463  -1.00744</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lufact(A4)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `triu!` not defined</code></pre><p>Julia language has a much better implementation in the standard library <code>LinearAlgebra</code>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia_lures = lu(A4, NoPivot())  # the version we implemented above has no pivot</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `NoPivot` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia_lures.U</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `julia_lures` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; typeof(julia_lures)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `julia_lures` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; fieldnames(julia_lures |&gt; typeof)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `julia_lures` not defined</code></pre><h2 id="Issue:-how-to-handle-small-diagonal-entries?"><a class="docs-heading-anchor" href="#Issue:-how-to-handle-small-diagonal-entries?">Issue: how to handle small diagonal entries?</a><a id="Issue:-how-to-handle-small-diagonal-entries?-1"></a><a class="docs-heading-anchor-permalink" href="#Issue:-how-to-handle-small-diagonal-entries?" title="Permalink"></a></h2><p>The above Gaussian elimination process is not stable if any diagonal entry in <span>$A$</span> has a value that close to zero.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; @bind ϵ Slider(-20:0.01:0.0; default=-2, show_value=true)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: LoadError: UndefVarError: `@bind` not defined
-in expression starting at REPL[1]:1</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; small_diagonal_matrix = [10^(ϵ) 1; 1 1]</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `ϵ` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lures = lufact(small_diagonal_matrix)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `small_diagonal_matrix` not defined</code></pre><p>This issue is not always related to the rank deficiency (or ill-condition). A remedy to this issue is to permute the rows of <span>$A$</span> before factorizing it. For example:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; lufact(small_diagonal_matrix[end:-1:1, :])</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `small_diagonal_matrix` not defined</code></pre><p>This technique is called pivoting.</p><h2 id="Pivoting-technique"><a class="docs-heading-anchor" href="#Pivoting-technique">Pivoting technique</a><a id="Pivoting-technique-1"></a><a class="docs-heading-anchor-permalink" href="#Pivoting-technique" title="Permalink"></a></h2><p>LU factoriazation (or Gaussian elimination) with pivoting is defined as</p><p class="math-container">\[P A = L U\]</p><p>where <span>$P$</span> is a permutation matrix.</p><p>Pivoting in Gaussian elimination is the process of selecting a pivot element in a matrix and then using it to eliminate other elements in the same column or row. The pivot element is chosen as the largest absolute value in the column, and its row is swapped with the row containing the current element being eliminated if necessary. This is done to avoid division by zero or numerical instability, and to ensure that the elimination process proceeds smoothly. Pivoting is an important step in Gaussian elimination, as it ensures that the resulting matrix is in reduced row echelon form and that the solution to the system of equations is accurate.&quot;</p><h2 id="Gaussian-Elimination-process-with-Partial-Pivoting"><a class="docs-heading-anchor" href="#Gaussian-Elimination-process-with-Partial-Pivoting">Gaussian Elimination process with Partial Pivoting</a><a id="Gaussian-Elimination-process-with-Partial-Pivoting-1"></a><a class="docs-heading-anchor-permalink" href="#Gaussian-Elimination-process-with-Partial-Pivoting" title="Permalink"></a></h2><p>Let <span>$A=(a_{ij})$</span> be a square matrix of size <span>$n\times n$</span>. The Gaussian elimination process with partial pivoting can be represented as</p><p class="math-container">\[M_{n-1}P_{n-1}\ldots M_2P_2M_1P_1 A = U\]</p><p>Here we emphsis that <span>$P_{k}$</span> and <span>$M_{j&lt;k}$</span> commute.</p><h2 id="LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting"><a class="docs-heading-anchor" href="#LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting">LU Factoriazation by Gaussian Elimination with Partial Pivoting</a><a id="LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting-1"></a><a class="docs-heading-anchor-permalink" href="#LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting" title="Permalink"></a></h2><p>A Julia implementation of the Gaussian elimination with partial pivoting is</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; function lufact_pivot!(a::AbstractMatrix)
-       	n = size(a, 1)
-       	@assert size(a, 2) == n &quot;size mismatch&quot;
-       	m = zero(a)
-       	P = collect(1:n)
-       	# loop over columns
-       	@inbounds for k=1:n-1
-       		# search for pivot in current column
-       		val, p = findmax(x-&gt;abs(a[x, k]), k:n)
-       		p += k-1
-       		# find index p such that |a_{pk}| ≥ |a_{ik}| for k ≤ i ≤ n
-       		if p != k
-       			# swap rows k and p of matrix A
-       			for col = 1:n
-       				a[k, col], a[p, col] = a[p, col], a[k, col]
-       			end
-       			# swap rows k and p of matrix M
-       			for col = 1:k-1
-       				m[k, col], m[p, col] = m[p, col], m[k, col]
-       			end
-       			P[k], P[p] = P[p], P[k]
-       		end
-       		if iszero(a[k, k])
-       			# skip current column if it&#39;s already zero
-       			continue
-       		end
-       		# compute multipliers for current column
-       		m[k, k] = 1
-       		for i=k+1:n
-       			m[i, k] = a[i, k] / a[k, k]
-       		end
-       		# apply transformation to remaining sub-matrix
-       		for j=k+1:n
-       			akj = a[k, j]
-       			for i=k+1:n
-       				a[i,j] -= m[i,k] * akj
-       			end
-       		end
-       	end
-       	m[n, n] = 1
-       	return m, triu!(a), P
-       end</code><code class="nohighlight hljs ansi" style="display:block;">lufact_pivot! (generic function with 1 method)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; @testset &quot;lufact with pivot&quot; begin
-       	n = 5
-       	A = randn(n, n)
-       	L, U, P = lufact_pivot!(copy(A))
-       	pmat = zeros(Int, n, n)
-       	setindex!.(Ref(pmat), 1, 1:n, P)
-       	@test L ≈ lu(A).L
-       	@test U ≈ lu(A).U
-       	@test pmat * A ≈ L * U
-       end</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: LoadError: UndefVarError: `@testset` not defined
-in expression starting at REPL[2]:1</code></pre><p>If you are interested in knowing the performance of our implementation, please check the following check box.</p><pre><code class="language-julia-repl hljs">n = 200
-A = randn(n, n)
-@benchmark lufact_pivot!($A)
+\end{align*}\]</p><p>Elementary elimination matrices have the following properties that making the above process efficient:</p><ol><li>Its inverse can be computed in <span>$O(n)$</span> time<p class="math-container">\[M_k^{-1} = 2I - M_k\]</p></li><li>The multiplication of two elementary matrices can be computed in <span>$O(n)$</span> time<p class="math-container">\[M_k M_{k&#39; &gt; k} = M_k + M_{k&#39;} - I\]</p></li></ol><h2 id="Code:-Elementary-Elimination-Matrix"><a class="docs-heading-anchor" href="#Code:-Elementary-Elimination-Matrix">Code: Elementary Elimination Matrix</a><a id="Code:-Elementary-Elimination-Matrix-1"></a><a class="docs-heading-anchor-permalink" href="#Code:-Elementary-Elimination-Matrix" title="Permalink"></a></h2><pre><code class="language-julia hljs">A3 = [1 2 2; 4 4 2; 4 6 4]
 
-n = 200
-A = randn(n, n)
-@benchmark lu($A)</code></pre><h2 id="Complete-pivoting"><a class="docs-heading-anchor" href="#Complete-pivoting">Complete pivoting</a><a id="Complete-pivoting-1"></a><a class="docs-heading-anchor-permalink" href="#Complete-pivoting" title="Permalink"></a></h2><p>The complete pivoting also allows permuting columns. It produces better numerical stability but is also harder to implement. In most practical using cases, partial pivoting is good enough.</p><p class="math-container">\[P A Q = L U\]</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../linalg/">« Basic Linear Algebra</a><a class="docs-footer-nextpage" href="../sensitivity/">Sensitivity Analysis »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Monday 11 March 2024 12:31">Monday 11 March 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+function elementary_elimination_matrix(A::AbstractMatrix{T}, k::Int) where T
+    n = size(A, 1)
+    @assert size(A, 2) == n
+    # create Elementary Elimination Matrices
+    M = Matrix{Float64}(I, n, n)
+    for i=k+1:n
+        M[i, k] =  -A[i, k] ./ A[k, k]
+    end
+    return M
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">elementary_elimination_matrix (generic function with 1 method)</code></pre><p>The elementary elimination matrix for the above matrix <span>$A3$</span> eliminating the first column is</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; elementary_elimination_matrix(A3, 1)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+  1.0  0.0  0.0
+ -4.0  1.0  0.0
+ -4.0  0.0  1.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; elementary_elimination_matrix(A3, 1) * A3</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+ 1.0   2.0   2.0
+ 0.0  -4.0  -6.0
+ 0.0  -2.0  -4.0</code></pre><p>Verify the property 1</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; inv(elementary_elimination_matrix(A3, 1))</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+ 1.0  0.0  0.0
+ 4.0  1.0  0.0
+ 4.0  0.0  1.0</code></pre><p>Verify the property 2</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; elementary_elimination_matrix(A3, 2)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+ 1.0   0.0  0.0
+ 0.0   1.0  0.0
+ 0.0  -1.5  1.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; inv(elementary_elimination_matrix(A3, 1)) * inv(elementary_elimination_matrix(A3, 2))</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+ 1.0  0.0  0.0
+ 4.0  1.0  0.0
+ 4.0  1.5  1.0</code></pre><h2 id="Code:-LU-Factorization-by-Gaussian-Elimination"><a class="docs-heading-anchor" href="#Code:-LU-Factorization-by-Gaussian-Elimination">Code: LU Factorization by Gaussian Elimination</a><a id="Code:-LU-Factorization-by-Gaussian-Elimination-1"></a><a class="docs-heading-anchor-permalink" href="#Code:-LU-Factorization-by-Gaussian-Elimination" title="Permalink"></a></h2><p>A naive implementation of elimentary elimination matrix is as follows</p><pre><code class="language-julia hljs">function lufact_naive!(A::AbstractMatrix{T}) where T
+    n = size(A, 1)
+    @assert size(A, 2) == n
+    M = Matrix{T}(I, n, n)
+    for k=1:n-1
+        m = elementary_elimination_matrix(A, k)
+        M = M * inv(m)
+        A .= m * A
+    end
+    return M, A
+end
+
+lufact_naive!(copy(A3))
+
+@testset &quot;naive LU factorization&quot; begin
+    A = [1 2 2; 4 4 2; 4 6 4]
+    L, U = lufact_naive!(copy(A))
+    @test L * U ≈ A
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;naive LU factorization&quot;, Any[], 1, false, false, true, 1.710179842900712e9, 1.710179843623569e9, false, &quot;lu.md&quot;)</code></pre><p>The above implementation has time complexity <span>$O(n^4)$</span> since we did not use the sparsity of elimentary elimination matrix. A better implementation that gives <span>$O(n^3)$</span> time complexity is as follows.</p><pre><code class="language-julia hljs">function lufact!(a::AbstractMatrix)
+    n = size(a, 1)
+    @assert size(a, 2) == n &quot;size mismatch&quot;
+    m = zero(a)
+    m[1:n+1:end] .+= 1
+    # loop over columns
+    for k=1:n-1
+        # stop if pivot is zero
+        if iszero(a[k, k])
+            error(&quot;Gaussian elimination fails!&quot;)
+        end
+        # compute multipliers for current column
+        for i=k+1:n
+            m[i, k] = a[i, k] / a[k, k]
+        end
+        # apply transformation to remaining sub-matrix
+        for j=k+1:n
+            for i=k+1:n
+                a[i,j] -= m[i,k] * a[k, j]
+            end
+        end
+    end
+    return m, triu!(a)
+end
+
+lufact(a::AbstractMatrix) = lufact!(copy(a))
+
+@testset &quot;LU factorization&quot; begin
+    a = randn(4, 4)
+    L, U = lufact(a)
+    @test istril(L)
+    @test istriu(U)
+    @test L * U ≈ a
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;LU factorization&quot;, Any[], 3, false, false, true, 1.710179843637074e9, 1.710179843826885e9, false, &quot;lu.md&quot;)</code></pre><p>We can test the performance of our implementation.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; A4 = randn(4, 4)</code><code class="nohighlight hljs ansi" style="display:block;">4×4 Matrix{Float64}:
+ -0.462016   -0.417105   0.588285  -0.379393
+  0.0120728   0.613056  -0.368461  -0.0125454
+ -0.241632    0.165336   0.129898  -0.561782
+ -0.120347   -1.13336   -0.21455   -0.609398</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lufact(A4)</code><code class="nohighlight hljs ansi" style="display:block;">([1.0 0.0 0.0 0.0; -0.02613064434137233 1.0 0.0 0.0; 0.5229947234095917 0.6368436908752326 1.0 0.0; 0.2604824381998542 -1.7017368907123884 -20.569961947626727 1.0], [-0.46201553032219034 -0.41710456895137044 0.5882854564244485 -0.37939333729773433; 0.0 0.6021566161082774 -0.35308882702850247 -0.022459155584923375; 0.0 0.0 0.047090635997546426 -0.3490582328774289; 0.0 0.0 0.0 -7.728907123270234])</code></pre><p>Julia language has a much better implementation in the standard library <code>LinearAlgebra</code>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia_lures = lu(A4, NoPivot())  # the version we implemented above has no pivot</code><code class="nohighlight hljs ansi" style="display:block;">LinearAlgebra.LU{Float64, Matrix{Float64}, Vector{Int64}}
+L factor:
+4×4 Matrix{Float64}:
+  1.0         0.0         0.0   0.0
+ -0.0261306   1.0         0.0   0.0
+  0.522995    0.636844    1.0   0.0
+  0.260482   -1.70174   -20.57  1.0
+U factor:
+4×4 Matrix{Float64}:
+ -0.462016  -0.417105   0.588285   -0.379393
+  0.0        0.602157  -0.353089   -0.0224592
+  0.0        0.0        0.0470906  -0.349058
+  0.0        0.0        0.0        -7.72891</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia_lures.U</code><code class="nohighlight hljs ansi" style="display:block;">4×4 Matrix{Float64}:
+ -0.462016  -0.417105   0.588285   -0.379393
+  0.0        0.602157  -0.353089   -0.0224592
+  0.0        0.0        0.0470906  -0.349058
+  0.0        0.0        0.0        -7.72891</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; typeof(julia_lures)</code><code class="nohighlight hljs ansi" style="display:block;">LinearAlgebra.LU{Float64, Matrix{Float64}, Vector{Int64}}</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; fieldnames(julia_lures |&gt; typeof)</code><code class="nohighlight hljs ansi" style="display:block;">(:factors, :ipiv, :info)</code></pre><h2 id="Pivoting-technique"><a class="docs-heading-anchor" href="#Pivoting-technique">Pivoting technique</a><a id="Pivoting-technique-1"></a><a class="docs-heading-anchor-permalink" href="#Pivoting-technique" title="Permalink"></a></h2><div class="admonition is-info"><header class="admonition-header">How to handle small diagonal entries?</header><div class="admonition-body"><p>The above Gaussian elimination process is not stable if any diagonal entry in <span>$A$</span> has a value that close to zero.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; small_diagonal_matrix = [1e-8 1; 1 1]</code><code class="nohighlight hljs ansi" style="display:block;">2×2 Matrix{Float64}:
+ 1.0e-8  1.0
+ 1.0     1.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lures = lufact(small_diagonal_matrix)</code><code class="nohighlight hljs ansi" style="display:block;">([1.0 0.0; 1.0e8 1.0], [1.0e-8 1.0; 0.0 -9.9999999e7])</code></pre><p>This issue is can be resolved by permuting the rows of <span>$A$</span> before factorizing it. For example:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; lufact(small_diagonal_matrix[end:-1:1, :])</code><code class="nohighlight hljs ansi" style="display:block;">([1.0 0.0; 1.0e-8 1.0], [1.0 1.0; 0.0 0.99999999])</code></pre><p>This technique is called pivoting.</p></div></div><h3 id="Partial-pivoting"><a class="docs-heading-anchor" href="#Partial-pivoting">Partial pivoting</a><a id="Partial-pivoting-1"></a><a class="docs-heading-anchor-permalink" href="#Partial-pivoting" title="Permalink"></a></h3><p>LU factoriazation (or Gaussian elimination) with row pivoting is defined as</p><p class="math-container">\[P A = L U\]</p><p>where <span>$P$</span> is a permutation matrix. Pivoting in Gaussian elimination is the process of selecting a pivot element in a matrix and then using it to eliminate other elements in the same column or row. The pivot element is chosen as the largest absolute value in the column, and its row is swapped with the row containing the current element being eliminated if necessary. This is done to avoid division by zero or numerical instability, and to ensure that the elimination process proceeds smoothly. Pivoting is an important step in Gaussian elimination, as it ensures that the resulting matrix is in reduced row echelon form and that the solution to the system of equations is accurate.</p><p>Let <span>$A=(a_{ij})$</span> be a square matrix of size <span>$n\times n$</span>. The Gaussian elimination process with partial pivoting can be represented as</p><p class="math-container">\[M_{n-1}P_{n-1}\ldots M_2P_2M_1P_1 A = U\]</p><p>Here we emphsis that <span>$P_{k}$</span> and <span>$M_{j&lt;k}$</span> commute.</p><h3 id="Complete-pivoting"><a class="docs-heading-anchor" href="#Complete-pivoting">Complete pivoting</a><a id="Complete-pivoting-1"></a><a class="docs-heading-anchor-permalink" href="#Complete-pivoting" title="Permalink"></a></h3><p>The complete pivoting also allows permuting columns. The LU factorization with complete pivoting is defined as</p><p class="math-container">\[P A Q = L U.\]</p><p>Complete pivoting produces better numerical stability but is also harder to implement. In most practical using cases, partial pivoting is good enough.</p><h2 id="Code:-LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting"><a class="docs-heading-anchor" href="#Code:-LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting">Code: LU Factoriazation by Gaussian Elimination with Partial Pivoting</a><a id="Code:-LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting-1"></a><a class="docs-heading-anchor-permalink" href="#Code:-LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting" title="Permalink"></a></h2><p>A Julia implementation of the Gaussian elimination with partial pivoting is</p><pre><code class="language-julia hljs">function lufact_pivot!(a::AbstractMatrix)
+    n = size(a, 1)
+    @assert size(a, 2) == n &quot;size mismatch&quot;
+    m = zero(a)
+    P = collect(1:n)
+    # loop over columns
+    @inbounds for k=1:n-1
+        # search for pivot in current column
+        val, p = findmax(x-&gt;abs(a[x, k]), k:n)
+        p += k-1
+        # find index p such that |a_{pk}| ≥ |a_{ik}| for k ≤ i ≤ n
+        if p != k
+            # swap rows k and p of matrix A
+            for col = 1:n
+                a[k, col], a[p, col] = a[p, col], a[k, col]
+            end
+            # swap rows k and p of matrix M
+            for col = 1:k-1
+                m[k, col], m[p, col] = m[p, col], m[k, col]
+            end
+            P[k], P[p] = P[p], P[k]
+        end
+        if iszero(a[k, k])
+            # skip current column if it&#39;s already zero
+            continue
+        end
+        # compute multipliers for current column
+        m[k, k] = 1
+        for i=k+1:n
+            m[i, k] = a[i, k] / a[k, k]
+        end
+        # apply transformation to remaining sub-matrix
+        for j=k+1:n
+            akj = a[k, j]
+            for i=k+1:n
+                a[i,j] -= m[i,k] * akj
+            end
+        end
+    end
+    m[n, n] = 1
+    return m, triu!(a), P
+end
+
+@testset &quot;lufact with pivot&quot; begin
+    n = 5
+    A = randn(n, n)
+    L, U, P = lufact_pivot!(copy(A))
+    pmat = zeros(Int, n, n)
+    setindex!.(Ref(pmat), 1, 1:n, P)
+    @test L ≈ lu(A).L
+    @test U ≈ lu(A).U
+    @test pmat * A ≈ L * U
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;lufact with pivot&quot;, Any[], 3, false, false, true, 1.710179844103098e9, 1.71017984508764e9, false, &quot;lu.md&quot;)</code></pre><p>The performance of our implementation is as follows.</p><pre><code class="language-julia-repl hljs">julia&gt; using BenchmarkTools
+
+julia&gt; n = 200
+200
+
+julia&gt; A = randn(n, n);
+
+julia&gt; @benchmark lufact_pivot!($A)
+BenchmarkTools.Trial: 7451 samples with 1 evaluation.
+ Range (min … max):  621.834 μs …  11.111 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     643.541 μs               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   668.927 μs ± 255.808 μs  ┊ GC (mean ± σ):  0.84% ± 2.57%
+
+     ▂█▂                                                        
+  ▄▄▂███▆▄▄▅▅▅▅▄▄▃▃▃▃▃▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▂▂▁▂▂▁▂▂ ▃
+  622 μs           Histogram: frequency by time          835 μs &lt;
+
+ Memory estimate: 314.31 KiB, allocs estimate: 3.
+
+julia&gt; n = 200
+200
+
+julia&gt; A = randn(n, n);
+
+julia&gt; @benchmark lu($A)
+BenchmarkTools.Trial: 10000 samples with 1 evaluation.
+ Range (min … max):  247.709 μs …  11.649 ms  ┊ GC (min … max): 0.00% … 96.82%
+ Time  (median):     269.583 μs               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   318.077 μs ± 247.482 μs  ┊ GC (mean ± σ):  1.69% ±  2.69%
+
+  ▆██▄▂▃▅▅▄▃▂▂▁ ▁                     ▁▁▁                       ▂
+  ████████████████▇▇▇▆▆▇▆▆▆▆▆▄▆▅▄▄▆▄▇█████▇▆▆▆▆▆▅▆▅▄▄▆▅▄▅▄▅▄▅▅▄ █
+  248 μs        Histogram: log(frequency) by time        835 μs &lt;
+
+ Memory estimate: 314.31 KiB, allocs estimate: 3.</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../linalg/">« Matrix Computation</a><a class="docs-footer-nextpage" href="../qr/">Review: Solving linear equations »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Monday 11 March 2024 17:58">Monday 11 March 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

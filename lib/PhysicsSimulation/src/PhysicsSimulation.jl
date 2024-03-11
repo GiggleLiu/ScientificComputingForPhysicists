@@ -3,8 +3,8 @@ module PhysicsSimulation
 using LinearAlgebra, Graphs
 
 export nsite, connections, EigenSystem, eigensystem, EigenModes, eigenmodes
-export Body, NewtonSystem, LeapFrogSystem, step!, solar_system
-export spring_chain, SpringSystem, coordinate, velocity
+export Body, NewtonSystem, LeapFrogSystem, step!, solar_system, leapfrog_simulation
+export spring_chain, SpringSystem, coordinate, velocity, waveat
 
 include("point.jl")
 include("planet.jl")

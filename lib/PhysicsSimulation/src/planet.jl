@@ -207,3 +207,13 @@ function step!(bdsc::LeapFrogSystem{T}, dt) where T
     end
     return bdsc
 end
+
+function leapfrog_simulation(sys::AbstractHamiltonianSystem; dt, nsteps)
+    cached_system = LeapFrogSystem(sys)
+    states = [deepcopy(cached_system)]
+    for i=1:nsteps
+        cached_system = step!(cached_system, dt)
+        push!(states, deepcopy(cached_system))
+    end
+    return states
+end

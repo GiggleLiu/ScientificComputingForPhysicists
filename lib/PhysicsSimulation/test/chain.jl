@@ -25,12 +25,10 @@ end
     @test isapprox(modes.frequency, sort(omega_expected), atol=1e-5)
 
     # wave function
-    ut(omega::Real, t::Real, A0::AbstractVector; phi0=0.0) = real(exp(-im * omega * t + phi0) * A0)
-    wave(idx::Int, t; phi0=0.0) = ut(modes.frequency[idx], t, modes.modes[:,idx]; phi0)
     t = 5.0
     # method 1: solve with leapfrog method
     idx = 2
-    c = spring_chain(wave(idx, 0.0), C, M; periodic=true)
+    c = spring_chain(waveat(modes, idx, 0.0), C, M; periodic=true)
     lf = LeapFrogSystem(c)
     for i=1:500
         step!(lf, 0.01)
@@ -38,7 +36,17 @@ end
     ut_lf = first.(coordinate(c))
 
     # method 2: solve with eigenmodes
-    ut_expected = (0:L-1) .+ wave(idx, t)
+    ut_expected = (0:L-1) .+ waveat(modes, idx, t)
+    @test isapprox(ut_lf, ut_expected; rtol=1e-4)
 
+    ### more complex example: random wave
+    wave = randn(L) * 0.2
+    c = spring_chain(wave, C, M; periodic=true)
+    lf = LeapFrogSystem(c)
+    for i=1:500
+        step!(lf, 0.01)
+    end
+    ut_lf = first.(coordinate(c))
+    ut_expected = (0:L-1) .+ waveat(modes, wave, [t])[]
     @test isapprox(ut_lf, ut_expected; rtol=1e-4)
 end

@@ -54,7 +54,7 @@ struct EigenSystem{T}
     K::Matrix{T}
     ms::Vector{T}
 end
-coordinate(e::EigenSystem, i::Int) = e.K[i, i]
+# coordinate(e::EigenSystem, i::Int) = e.K[i, i]
 
 # stiffness and mass can be either a scalar or a vector
 function eigensystem(spr::SpringSystem{T}) where T
@@ -86,4 +86,13 @@ function eigenmodes(e::EigenSystem{T}) where T
     vals, vecs = eigen(e.K)
     frequency = sqrt.(vals ./ e.ms)
     return EigenModes(frequency, vecs)
+end
+ut(omega::Real, t::Real, A0::AbstractVector; phi0=0.0) = real(exp(-im * omega * t + phi0) * A0)
+waveat(es::EigenModes, idx::Int, t; phi0=0.0) = ut(es.frequency[idx], t, es.modes[:,idx]; phi0)
+function waveat(es::EigenModes, u0::AbstractVector, ts::AbstractVector)
+    coeffs = es.modes' * u0
+    map(ts) do t
+        # a linear combination of the eigenmodes at time t
+        sum(coeffs[idx] * waveat(es, idx, t) for idx in 1:length(es.frequency))
+    end
 end

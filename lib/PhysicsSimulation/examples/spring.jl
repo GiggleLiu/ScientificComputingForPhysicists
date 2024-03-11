@@ -5,7 +5,7 @@ using PhysicsSimulation
 C, M = 3.0, 1.0
 L = 20
 u0 = 0.2 * randn(L)
-spring = spring_chain(u0, C, M; periodic=true)
+spring = spring_chain(u0, C, M; periodic=false)
 states = leapfrog_simulation(spring; dt=0.1, nsteps=500)
 states_exact = waveat(eigenmodes(eigensystem(spring)), u0, 0.1 * (0:500))
 

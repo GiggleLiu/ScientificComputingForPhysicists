@@ -174,6 +174,104 @@ A = [1 2; 3 4]
 eigen(A)
 ```
 
+!!! note "Example: eigenmodes of a vibrating string (or atomic chain)"
+    This example is about solving the dynamics of a vibrating string.
+    ![](../assets/images/spring.png)
+
+    [Image source and main reference](https://lampz.tugraz.at/~hadley/ss1/phonons/1d/1dphonons.php)
+    
+    The dynamics of a one dimensional vibrating string can be described by the Newton's second law
+    ```math
+    M \ddot{u} = C(u_{i+1} - u_i) - C(u_i - u_{i-1})
+    ```
+    where $M$ is the mass matrix, $C$ is the stiffness, and $u_i$ is the displacement of the $i$th atom. The end atoms are fixed, so we have $u_0 = u_{n+1} = 0$.
+    We assume all atoms have the same eigenfrequency $\omega$ and the displacement of the $i$th atom is given by
+    ```math
+    u_i(t) = A_i \cos(\omega t + \phi_i)
+    ```
+    where $\phi_i$ is the phase of the $i$th atom.
+    Then we transform the equation into the eigenvalue problem
+    ```math
+    \begin{bmatrix}
+    -C & C & 0 & \cdots & 0 \\
+    C & -2C & C & \cdots & 0 \\
+    0 & C & -2C & \cdots & 0 \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & 0 & \cdots & -C
+    \end{bmatrix}
+    \begin{bmatrix}
+    A_1 \\
+    A_2 \\
+    A_3 \\
+    \vdots \\
+    A_n
+    \end{bmatrix}
+    = -\omega^2M
+    \begin{bmatrix}
+    A_1 \\
+    A_2 \\
+    A_3 \\
+    \vdots \\
+    A_n
+    \end{bmatrix}
+    ```
+    The eigenvalues $\omega^2$ are the eigenfrequencies of the vibrating string and the eigenvectors are the eigenmodes of the vibrating string.
+
+    Let us consider a 5-atom vibrating string with $M = C = 1.0$. We can find the eigenvalues and eigenvectors of the mass matrix using the `eigen` function.
+    ```@repl linalg
+    M = C = 1.0
+    C_matrix = [-C C 0 0 0; C -2C C 0 0; 0 C -2C C 0; 0 0 C -2C C; 0 0 0 C -C]
+    evals, evecs = LinearAlgebra.eigen(C_matrix);
+    second_omega = sqrt(-evals[2]/M)
+    second_mode = evecs[:, 2]
+    u(t) = second_mode .* cos.(-second_omega .* t) # (ϕi=0)
+    u(1.0)  # atom locations offsets at t=1.0
+    ```
+
+    By comparing the eigenmodes with the simulation, we can see that the second mode matches the simulation.
+    ```@raw html
+    <img src="../../assets/images/springs-demo.gif" alt="eigenmodes" width="400"/>
+    ```
+    For any given initial condition, the displacement of the atoms can be expressed as a linear combination of the eigenmodes. To find a more generic implementation, please check the [source code](https://github.com/GiggleLiu/ScientificComputingForPhysicists/tree/main/lib/PhysicsSimulation).
+
+## Matrix functions
+
+Suppose we have a matrix $A \in \mathbb{C}^{n\times n}$ and an analytic function $f$ defined with a power series
+
+```math
+f(A) = \sum_{i=0}^\infty a_i A^i.
+```
+
+To compute a matrix function, e.g. $f(A) = e^A$, we can use the following steps:
+1. Diagonalize the matrix $A$ as $A = PDP^{-1}$, where $D$ is a diagonal matrix and $P$ is a matrix whose columns are the eigenvectors of $A$.
+2. Compute the matrix function $f(A)$ as $f(A) = Pf(D)P^{-1}$.
+3. Compute the matrix function $f(D)$ by applying the function $f$ to the diagonal elements of $D$.
+4. Compute the matrix function $f(A)$ by multiplying the matrices $P$, $f(D)$, and $P^{-1}$, i.e. $f(A) = P f(D) P^{-1}$.
+
+!!! note "Example"
+    Let us consider the matrix
+    ```math
+    A = \begin{bmatrix}
+    1 & 2 \\
+    3 & 4
+    \end{bmatrix}
+    ```
+    and the matrix function
+    ```math
+    f(A) = e^A.
+    ```
+    We can compute the matrix function $f(A)$ using the `expm` function.
+
+    ```@repl linalg
+    A = [1 2; 3 4]
+    exp(A)
+    ```
+    It is consistent with the result from the eigenvalue decomposition.
+    ```@repl linalg
+    D, P = LinearAlgebra.eigen(A)
+    P * LinearAlgebra.Diagonal(exp.(D)) * inv(P)
+    ```
+
 ## Singular Value Decomposition
 The singular value decomposition (SVD) of a matrix $A\in \mathbb{C}^{m\times n}$ is a factorization of the form
 ```math

@@ -1,4 +1,4 @@
-# Basic Linear Algebra
+# Matrix Computation
 
 ## Matrix multiplication
 Matrix multiplication is a fundamental operation in linear algebra. Given two matrices $A\in \mathbb{C}^{m\times n}$ and $B\in \mathbb{C}^{n\times p}$, the product $C = AB$ is defined as
@@ -68,7 +68,7 @@ In Julia, linear equations with `UpperTriangular` or `LowerTriangular` matrices 
 
 To summarize, the algorithm to solve a linear equation contains following steps:
 
-1. Decompose the matrix $PA \in \mathbb{C}^{n\times n}$ into $L \in \mathbb{C}^{n\times n}$ and $U \in \mathbb{C}^{n\times n}$ matrices using a method such as [Gaussian elimination](@ref) or Crout's method.
+1. Decompose the matrix $PA \in \mathbb{C}^{n\times n}$ into $L \in \mathbb{C}^{n\times n}$ and $U \in \mathbb{C}^{n\times n}$ matrices using a method such as [Gaussian elimination](@ref "LU Factorization with Gaussian Elimination") or Crout's method.
 
 2. Rewrite the equation $Ax = b$ as $LUx = Pb$.
 

@@ -7,7 +7,7 @@ C_{ij} = \sum_{k=1}^n A_{ik}B_{kj}.
 ```
 The time complexity of matrix multiplication is $O(mnp)$.
 
-## System of Linear Equations
+## System of Linear Equations and LU Decomposition
 Let $A\in \mathbb{C}^{n\times n}$ be a invertible square matrix and $b \in \mathbb{C}^n$ be a vector. Solving a linear equation means finding a vector $x\in\mathbb{C}^n$ such that
 ```math
 A x = b
@@ -76,13 +76,26 @@ To summarize, the algorithm to solve a linear equation contains following steps:
 
 4. Solve for $x$ in $Ux = y$ by [Back-substitution](@ref) (link TBA). This involves substituting the values of $x$ into the equation one at a time, starting with the last row and working upwards.
 
-## Least Squares Problem
+## Least Squares Problem and QR Decomposition
 
 The least squares problem is to find a vector $x\in\mathbb{C}^n$ that minimizes the residual
 ```math
 \|Ax - b\|_2
 ```
 where $A\in \mathbb{C}^{m\times n}$ and $b\in \mathbb{C}^m$.
+
+The QR decomposition of a matrix $A\in \mathbb{C}^{m\times n}$ is a factorization of the form
+```math
+A = QR
+```
+where $Q\in \mathbb{C}^{m\times m}$ is an orthogonal matrix and $R\in \mathbb{C}^{m\times n}$ is an upper triangular matrix. The QR decomposition is used to solve the linear least squares problem and to find the eigenvalues of a matrix.
+
+In Julia, we can find the QR decomposition of a matrix using the `qr` function.
+
+```@repl linalg
+A = [1 2; 3 4; 5 6]
+qr(A)
+```
 
 !!! note "Example: data fitting"
     Suppose we have a set of data points
@@ -148,13 +161,6 @@ where $A\in \mathbb{C}^{m\times n}$ and $b\in \mathbb{C}^m$.
     Q, R = qr(A)
     x = R \ (Matrix(Q)' * y)
     ```
-
-In Julia, we can solve the least squares problem using the backslash operator `\` or the `qr` function.
-
-```@repl linalg
-A = [1 2; 3 4; 5 6]
-b = [2, 3.0, 4.0]
-```
 
 ## Eigenvalues and Eigenvectors
 The eigenvalues and eigenvectors of a matrix $A\in \mathbb{C}^{n\times n}$ are the solutions to the equation
@@ -256,11 +262,7 @@ To compute a matrix function, e.g. $f(A) = e^A$, we can use the following steps:
     3 & 4
     \end{bmatrix}
     ```
-    and the matrix function
-    ```math
-    f(A) = e^A.
-    ```
-    We can compute the matrix function $f(A)$ using the `expm` function.
+    We can compute the matrix function $e^A$ using the `exp` function.
 
     ```@repl linalg
     A = [1 2; 3 4]
@@ -284,20 +286,6 @@ In Julia, we can find the singular value decomposition of a matrix using the `sv
 ```@repl linalg
 A = [1 2; 3 4; 5 6]
 svd(A)
-```
-
-## QR Decomposition
-The QR decomposition of a matrix $A\in \mathbb{C}^{m\times n}$ is a factorization of the form
-```math
-A = QR
-```
-where $Q\in \mathbb{C}^{m\times m}$ is an orthogonal matrix and $R\in \mathbb{C}^{m\times n}$ is an upper triangular matrix. The QR decomposition is used to solve the linear least squares problem and to find the eigenvalues of a matrix.
-
-In Julia, we can find the QR decomposition of a matrix using the `qr` function.
-
-```@repl linalg
-A = [1 2; 3 4; 5 6]
-qr(A)
 ```
 
 ## Cholesky Decomposition

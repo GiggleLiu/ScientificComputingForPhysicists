@@ -286,3 +286,116 @@ where $m_i = a_i/a_k$.
 
 
  $S$ is a diagonal matrix.
+
+```@repl qr
+using LinearAlgebra
+maximum(svd(A2).S)/minimum(svd(A2).S)
+```
+
+```@example qr
+function foo_bad()  # numerically unstable
+    p = 12345678
+    q = 1
+    p - sqrt(p^2 + q)
+end
+
+function foo_bad()  # numerically stable
+    p = 12345678
+    q = 1
+    q/(p + sqrt(p^2 + q))
+end
+```
+
+## The algorithm matters
+
+$x^2 - 2px - q$
+
+Algorithm 1:
+```math
+p - \sqrt{p^2 + q}
+```
+Algorithm 2:
+```math
+\frac{q}{p+\sqrt{p^2+q}}
+```
+
+## Data Fitting
+
+Given $m$ data points $(t_i, y_i)$, we wish to find the $n$-vector $x$ of parameters that gives the "best fit" to the data by the model function $f(t, x)$, with
+```math
+f: \mathbb{R}^{n+1} \rightarrow \mathbb{R}
+```
+```math
+\min_x\sum_{i=1}^m (y_i - f(t_i, x))^2
+```
+
+## Example
+
+```math
+f(x) = x_0 + x_1 t + x_2 t^2
+```
+
+```math
+Ax = \left(\begin{matrix}
+1 & t_1 & t_1^2\\
+1 & t_2 & t_2^2\\
+1 & t_3 & t_3^2\\
+1 & t_4 & t_4^2\\
+1 & t_5 & t_5^2\\
+\vdots & \vdots & \vdots
+\end{matrix}\right)
+\left(\begin{matrix} x_1 \\ x_2 \\ x_3\end{matrix}\right) \approx
+\left(\begin{matrix}y_1\\ y_2\\ y_3 \\ y_4 \\ y_5\\\vdots\end{matrix}\right) = b
+```
+
+The goal is to minimize $\|Ax - b\|_2^2$, we obtain the normal equations
+
+```math
+A^T Ax = A^T b
+```
+
+To solve the normal equations, we can use the pseudoinverse
+
+```math
+\begin{align*}
+&A^{+} = (A^T A)^{-1}A^T\\
+&x = A^+ b
+\end{align*}
+```
+where $A^+$ is the pseudoinverse of $A$.
+
+The julia version
+
+## The geometric interpretation
+
+The residual is $b-Ax$
+
+```math
+A^T(b - Ax) = 0
+```
+
+## Solving Normal Equations with Cholesky decomposition
+
+Step 1: Rectangular → Square
+```math
+A^TAx = A^T b
+```
+
+Step 2: Square → Triangular
+```math
+A^T A = LL^T
+```
+
+Step 3: Solve the triangular linear equation
+"""
+
+## Issue: The Condition-Squaring Effect
+
+The conditioning of a square linear system $Ax = b$ depends only on the matrix, while the conditioning of a least squares problem $Ax \approx b$ depends on both $A$ and $b$.
+
+```math
+A = \left(\begin{matrix}1 & 1\\ \epsilon & 0 \\ 0 & \epsilon \end{matrix}\right)
+```
+
+The definition of thin matrix condition number
+

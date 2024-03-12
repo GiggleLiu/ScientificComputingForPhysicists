@@ -3,21 +3,24 @@
 ## Array indexing and broadcasting
 Julia array can be **initialized** with multiple ways.
 ```@repl array
-A = [1, 2, 3] # a vector
-B = [1 2 3; 4 5 6; 7 8 9]  # a matrix
-zero_vector = zeros(3) # zero vector
-rand_vector = randn(Float32, 3, 3) # random normal distribution
-step_vector = collect(1:3)  # collect from a range
-uninitialized_vector = Vector{Int}(undef, 3) # uninitialized vector of size 3
+A = [1, 2, 3]; # a vector
+B = [1 2 3; 4 5 6; 7 8 9];  # a matrix
+zero_vector = zeros(3); # zero vector
+rand_vector = randn(Float32, 3, 3); # random normal distribution
+step_vector = collect(1:3);  # collect from a range
+uninitialized_vector = Vector{Int}(undef, 3); # uninitialized vector of size 3
 ```
 
 Julia array **indexing** starts from 1, which is different from C, Python, and R. 😞
 ```@repl array
-A = [1, 2, 3]
+A = [1, 2, 3];
 A[1]     # the first element
 A[end]   # the last element
 A[1:2]   # the first two elements
 A[2:-1:1] # the first two elements in the reversed order
+```
+
+```@repl array
 B = [1 2 3; 4 5 6; 7 8 9];
 B[1:2]   # the first two elements, returns B[1,1] and B[2,1] since B is column-major
 B[1:2, 1:2] # returns a submatrix
@@ -124,76 +127,10 @@ using Plots
 scatter(vec(getindex.(mesh2, 1)), vec(getindex.(mesh2, 2)), label="mesh2", ratio=1, markersize=5)
 ```
 
-In Julia, we can implement the matrix multiplication as follows.
+## Benchmark: matrix multiplication
 
-```@repl linalg
-function mymatmul_rowmajor(A::AbstractMatrix, B::AbstractMatrix)
-    m, n = size(A)
-    n, p = size(B)
-    @assert size(A, 2) == size(B, 1) "size mismatch"
-    C = zeros(promote_type(eltype(A), eltype(B)), m, p)
-    @inbounds for i = 1:m
-        for k = 1:n
-            for j = 1:p
-                C[i, j] += A[i, k] * B[k, j]
-            end
-        end
-    end
-    return C
-end
-```
+Matrix multiplication is a fundamental operation in scientific computing. Julia's built-in `*` operator is backed by highly optimized BLAS libraries. Let's benchmark the performance of matrix multiplication.
 
-```@repl linalg
-A, B = randn(1000, 1000), randn(1000, 1000);
-using BenchmarkTools
-```
-
-```julia-repl
-julia> @benchmark mymatmul_rowmajor($A, $B)
-BenchmarkTools.Trial: 9 samples with 1 evaluation.
- Range (min … max):  616.256 ms … 621.271 ms  ┊ GC (min … max): 0.00% … 0.19%
- Time  (median):     618.576 ms               ┊ GC (median):    0.00%
- Time  (mean ± σ):   618.502 ms ±   1.597 ms  ┊ GC (mean ± σ):  0.02% ± 0.06%
-
-  ▁        ▁    █             ▁       ▁    █                  ▁  
-  █▁▁▁▁▁▁▁▁█▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁█▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
-  616 ms           Histogram: frequency by time          621 ms <
-
- Memory estimate: 7.63 MiB, allocs estimate: 2.
-```
- 
-Alternatively, we can iterate over the columns of the matrices first.
-```@repl linalg
-function mymatmul_colmajor(A::AbstractMatrix, B::AbstractMatrix)
-    m, n = size(A)
-    n, p = size(B)
-    @assert size(A, 2) == size(B, 1) "size mismatch"
-    C = zeros(promote_type(eltype(A), eltype(B)), m, p)
-    @inbounds for j = 1:p
-        for k = 1:n
-            for i = 1:m
-                C[i, j] += A[i, k] * B[k, j]
-            end
-        end
-    end
-    return C
-end
-```
-
-```julia-repl
-julia> @benchmark mymatmul_colmajor($A, $B)
-BenchmarkTools.Trial: 34 samples with 1 evaluation.
- Range (min … max):  146.371 ms … 149.116 ms  ┊ GC (min … max): 0.00% … 0.00%
- Time  (median):     146.895 ms               ┊ GC (median):    0.00%
- Time  (mean ± σ):   147.138 ms ± 680.122 μs  ┊ GC (mean ± σ):  0.08% ± 0.27%
-
-        ▁█▄ ▄█▄▁ ▁                                               
-  ▆▁▁▁▁▁███▆████▆█▆▆▁▁▁▁▁▁▁▁▁▁▁▆▁▁▁▁▁▆▁▁▁▁▁▁▁▁▁▁▁▁▁▁▆▆▆▁▁▁▁▁▁▁▆ ▁
-  146 ms           Histogram: frequency by time          149 ms <
-
- Memory estimate: 7.63 MiB, allocs estimate: 2.
-```
-    
 ```julia-repl
 julia> @benchmark $A * $B
 BenchmarkTools.Trial: 383 samples with 1 evaluation.

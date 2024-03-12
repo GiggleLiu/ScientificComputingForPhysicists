@@ -82,9 +82,8 @@ The least squares problem is to find a vector $x\in\mathbb{C}^n$ that minimizes 
 ```math
 \|Ax - b\|_2
 ```
-where $A\in \mathbb{C}^{m\times n}$ and $b\in \mathbb{C}^m$.
-
-The QR decomposition of a matrix $A\in \mathbb{C}^{m\times n}$ is a factorization of the form
+where $A\in \mathbb{C}^{m\times n}$ and $b\in \mathbb{C}^m$. A solution to the least squares problem involves finding the QR decomposition of the matrix $A$.
+The QR decomposition of $A$ is a factorization of the form
 ```math
 A = QR
 ```
@@ -155,11 +154,15 @@ qr(A)
     ```@raw html
     <img src="../../assets/images/fitting-data2.png" alt="fitting data" width="400"/>
     ```
-    However, this approach is not recommended for large matrices due to the poor numerical stability. The condition number of $A^\dagger A$ is the square of the condition number of $A$, which can be very large.
+    However, this approach is not recommended for large matrices due to the poor [numerical stability](@ref "Sensitivity Analysis"). The condition number of $A^\dagger A$ is the square of the condition number of $A$, which can be very large.
     Instead, we can use the `qr` function to solve the least squares problem.
     ```@repl linalg
     Q, R = qr(A)
     x = R \ (Matrix(Q)' * y)
+    ```
+    An alternative way is to use the pseudoinverse of $A$, which invokes the more costly SVD decomposition.
+    ```@repl linalg
+    LinearAlgebra.pinv(A) * (y)  # an alternative way
     ```
 
 ## Eigenvalues and Eigenvectors

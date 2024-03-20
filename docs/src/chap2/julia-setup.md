@@ -65,16 +65,13 @@ julia
 ## Step 3. Configure the startup file
 First create a new file `~/.julia/config/startup.jl` by executing the following commands 
 
-`mkdir -r ~/.julia/config`
-`touch ~/.julia/config/startup.jl`
-
-You could open the file with your favourite editor and add the following content
-```julia
-try
+```bash
+mkdir -p ~/.julia/config
+echo 'try
     using Revise
 catch e
     @warn "fail to load Revise."
-end
+end' > ~/.julia/config/startup.jl
 ```
 
 The contents in the startup file is executed immediately after you open a new Julia session.

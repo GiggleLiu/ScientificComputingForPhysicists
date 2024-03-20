@@ -121,12 +121,12 @@ end
 function offset_velocity!(b::NewtonSystem, i::Int, val)
     b.bodies[i] = Body(b.bodies[i].r, b.bodies[i].v + val, b.bodies[i].m)
 end
-velocity(b::NewtonSystem) = [b.bodies[i].r for i in 1:length(b.bodies)]
+velocity(b::NewtonSystem) = [b.bodies[i].v for i in 1:length(b.bodies)]
 velocity(b::NewtonSystem, i::Int) = b.bodies[i].v
 mass(b::NewtonSystem) = [b.bodies[i].m for i in 1:length(b.bodies)]
 mass(b::NewtonSystem, i::Int) = b.bodies[i].m
 Base.length(bds::NewtonSystem) = length(bds.bodies)
-solar_system() = NewtonSystem([sun, mercury, venus, earth, mars, jupyter, saturn, uranus, neptune])
+solar_system() = NewtonSystem([sun, mercury, venus, earth, mars, jupyter, saturn, uranus, neptune, pluto])
 
 
 end
@@ -209,7 +209,7 @@ function step!(bdsc::LeapFrogSystem{T}, dt) where T
 end
 
 function leapfrog_simulation(sys::AbstractHamiltonianSystem; dt, nsteps)
-    cached_system = LeapFrogSystem(sys)
+    cached_system = LeapFrogSystem(deepcopy(sys))
     states = [deepcopy(cached_system)]
     for i=1:nsteps
         cached_system = step!(cached_system, dt)

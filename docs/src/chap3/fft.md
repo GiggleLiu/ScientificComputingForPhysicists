@@ -23,16 +23,16 @@ The two-dimensional Fourier transformation and its inverse transformation are de
 ```
 
 Fourier transformation is widely used in many fields, including
-1. Image and audio compression,
-1. Solving solid state system with translational invariance,
-2. Understanding quantum Fourier transformation,
-3. Understanding the Fourier optics.
+- Image and audio processing: [YouTube: Image Compression and the FFT, Steve Brunton](https://www.youtube.com/watch?v=gGEBUdM0PVc)
+- Solid state physics: Kittel, Charles, and Paul McEuen. Introduction to solid state physics. John Wiley & Sons, 2018.
+- Quantum computing: Nielsen, Michael A., and Isaac L. Chuang. Quantum computation and quantum information. Cambridge university press, 2010.
+- Fourier optics: Goodman, Joseph W. Introduction to Fourier optics. Roberts and Company publishers, 2005.
 
 ## Discrete Fourier Transformation (DFT)
 
 Let $x$ be a vector of length $n$, the DFT of $x$ is defined as
 ```math
-y_{i}=\sum _{n=0}^{n-1}x_{j}\cdot e^{-{\frac {i2\pi }{n}}ij}
+y_{i}=\sum_{n=0}^{n-1}x_{j}\cdot e^{-{\frac {i2\pi }{n}}ij}
 ```
 
 Since this transformation is linear, we can represent it as a matrix multiplication. Let $F_n$ be the matrix of size $n \times n$ defined as
@@ -48,8 +48,7 @@ F_n = \left(
 \end{matrix}
 \right)
 ```
-where $\omega = e^{-2\pi i/n}$. 
-This matrix is called the DFT matrix, and the DFT of $x$ is represented as $F_n x$. The inverse transformation is defined as $F_n^\dagger x/n$, i.e. $F_n F_n^\dagger = I$.
+where $\omega = e^{-2\pi i/n}$.  This matrix is called the DFT matrix, and the DFT of $x$ is represented as $F_n x$. The inverse transformation is defined as $F_n^\dagger x/n$, i.e. $F_n F_n^\dagger = I$.
 
 ```@example fft
 using Test, LinearAlgebra
@@ -280,62 +279,3 @@ compression_ratio = nnz(sparse_img) / (2000 * 3000)
 recovered_img = ifft(fftshift(Matrix(sparse_img)))
 Gray.(abs.(recovered_img))
 ```
-
-# Homework
-Watch this YouTube video: [https://youtu.be/jnxqHcObNK4](https://youtu.be/jnxqHcObNK4)
-
-Use what you have learned to solve the analysis the following sequential data.
-
-```@example fft
-using Plots
-N = 5000
-brain_signal = sin.(LinRange(0, 1000, N) ./ 10) .+ rand(N)
-plot(brain_signal)
-```
-
-Here, we use the Ricker wavelet to analyse the above wave function.
-```math
-A  \left(1 - \left(\frac{x}{a}\right)^2\right) e^{-\frac{x^2}{2a^2}},
-```
-where $A = \frac{8}{\sqrt{3a}\pi}$.
-
-```@example fft
-function ricker(x, a)
-    A = 8/π/sqrt(3a)
-    return A * (1 - (x/a)^2) * exp(-x^2/a^2/2)
-end
-
-x = -10:0.01:10
-y = ricker.(x, 0.6)
-plot(x, y)
-```
-
-### Tasks
-Please help me fix the following code to let the output be what we want. You need to implement the wavelet transformation `z = wavelet_transformation(x, y)`, such that
-```math
-z_i = \sum_j x_{j-i} y_j
-```
-You are supposed to implement the fast wavelet transformation that having time complexity $O(n \log(n))$ where $n$ is the size of $x$ and $y$.
-
-```julia
-function wavelet_transformation(signal::AbstractVector{T}, fw) where T
-    # TODO: please remove the following line and add your own implementation!
-    resulting_vector = randn(length(signal) + length(fw)-1)
-    return resulting_vector
-
-# this is the test program
-# the width parameter `a` in the Ricker wavelet is 1..500
-widths = 1:N÷10
-res = []
-for (j, a) in enumerate(widths)
-    fw = ricker.(-1000:1000, a)   # the descretized wavelet of width `a`
-    res_a = wavelet_transformation(brain_signal, fw)
-    push!(res, res_a)
-end
-heatmap(hcat(res...); ylabel="time", xlabel="widths")
-```
-
-In the submission (pull request), the following contents should be included
-1. The correct implementation of the `wavelet_transformation` function.
-2. The output image created by the above code block,
-3. An interpretation of the output image.

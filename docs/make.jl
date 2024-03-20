@@ -34,22 +34,22 @@ makedocs(;
             "chap3/tensors.md",
             "chap3/cuda.md",
         ],
-        "Optimization (×)" => [
-            "chap4/combinatorial.md",
-            "chap4/optimization.md",
-            "chap4/ad.md",
-        ],
-        "Randomness (×)" => [
-            "chap5/montecarlo.md",
-        ],
-        "Sparsity (×)" => [
-            "chap6/sparse.md",
-            "chap6/compressedsensing.md",
-        ],
-        "High Performance Computing (×)" => [
-            "chap7/hpc.md",
-            "chap7/cuda.md",
-        ],
+        # "Optimization (×)" => [
+        #     "chap4/combinatorial.md",
+        #     "chap4/optimization.md",
+        #     "chap4/ad.md",
+        # ],
+        # "Randomness (×)" => [
+        #     "chap5/montecarlo.md",
+        # ],
+        # "Sparsity (×)" => [
+        #     "chap6/sparse.md",
+        #     "chap6/compressedsensing.md",
+        # ],
+        # "High Performance Computing (×)" => [
+        #     "chap7/hpc.md",
+        #     "chap7/cuda.md",
+        # ],
     ],
 )
 

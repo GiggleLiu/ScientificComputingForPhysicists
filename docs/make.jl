@@ -50,6 +50,9 @@ makedocs(;
         #     "chap7/hpc.md",
         #     "chap7/cuda.md",
         # ],
+        "Appendix" => [
+            "append/plotting.md"
+        ]
     ],
 )
 

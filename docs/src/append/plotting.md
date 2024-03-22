@@ -257,4 +257,169 @@ f
 ![](../assets/images/plotlayout.png)
 
 ## ImageProcessing Examples
+**FFT Compression Example**
+```julia
+using ImageProcessing, ImageProcessing.Images, ImageProcessing.LinearAlgebra
+
+fname = "amat.png"
+@info "Running FFT compression example, loaded image: $fname"
+img = demo_image(fname)
+
+##### FFT #####
+img_k = fft_compress(img, size(img)...)
+# the momentum space is sparse!
+red_channel = Gray.(real.(img_k.channels[1]) ./ sqrt(length(img)))
+fname = "red-momentum_space.png"
+Images.save(fname, red_channel)
+@info "Converting image to momentum space, red channel saved to: $fname"
+Images.save(fname, toimage(RGBA{N0f8}, img_k))
+fname = "recovered.png"
+@info "Recovered image from momentum space is saved to: $fname"
+
+nx, ny = isqrt(2 * size(img, 1)), isqrt(2 * size(img, 2))
+img_k_fft = lower_rank(img_k, nx, ny)
+cratio = compression_ratio(img_k_fft)
+fname = "fft_compressed.png"
+Images.save(fname, toimage(RGBA{N0f8}, img_k_fft))
+@info "Compressing to size: $nx x $ny, compression ratio: $cratio, saved to: $fname"
+```
+![](../assets/images/red-momentum_space.png)
+![](../assets/images/fft_compressed.png)
+
+
+**SVD Compression Example**
+```julia
+using ImageProcessing, ImageProcessing.Images, ImageProcessing.LinearAlgebra
+using Makie, CairoMakie
+
+fname = "amat.png"
+@info "Loading image: $fname"
+img = demo_image(fname)
+
+@info "The loaded image has type: $(typeof(img))"
+
+# the RGBA type is a 4‑tuple of red, green, blue and alpha values, each ranging from 0 to 1.
+transparent = RGBA(0/255, 0/255, 0/255, 0/255)
+black = RGBA(0/255, 0/255, 0/255, 255/255)
+white = RGBA(255/255, 255/255, 255/255, 255/255)
+red = RGBA(255/255, 0/255, 0/255, 255/255)
+green = RGBA(0/255, 255/255, 0/255, 255/255)
+blue = RGBA(0/255, 0/255, 255/255, 255/255)
+@info """Colors are defined as:
+- transparent: $transparent
+- black: $black
+- white: $white
+- red: $red
+- green: $green
+- blue: $blue
+"""
+
+# get one of the color channel
+red_channel = getfield.(img[:, :], :r)
+# to visualize as a grayscale image
+Gray.(red_channel)
+fname = "red_channel.png"
+Images.save(fname, Gray.(red_channel))
+@info "The red channel is saved to: $fname"
+
+# in Images, the color channels are stored as a 3D array with the first dimension being the color channel.
+Gray.(channelview(img)[1, :, :])
+Gray.(channelview(img)[2, :, :])
+Gray.(channelview(img)[3, :, :])
+
+red_svd = svd(red_channel)
+fig, = Makie.lines(red_svd.S)
+fname = "red_svd_spectrum.png"
+Makie.save(fname, fig)
+@info "Singular values of the red channel are stored in file: $fname"
+
+# We can decompose a given image into the three color channels red, green and blue.
+# Each channel can be represented as a (m × n)‑matrix with values ranging from 0 to 255.
+target_rank = 10
+compressed = svd_compress(img, target_rank)
+compression_ratio(compressed)
+newimage = toimage(RGBA{N0f8}, compressed)
+fname = "compressed.png"
+Images.save(fname, newimage)
+@info """Compressing with SVD:
+- target rank is: $target_rank
+- the compression ratio is: $(compression_ratio(compressed))
+- the compressed image is saved to: $fname
+"""
+
+# convert to image
+toimage(RGBA{N0f8}, compressed)
+compressed_rank1 = lower_rank(compressed, 1)
+compression_ratio(compressed_rank1)
+newimage1 = toimage(RGBA{N0f8}, compressed_rank1)
+fname = "compressed_rank1.png"
+Images.save(fname, newimage1)
+@info """Lowering the rank to 1:
+- the compression ratio is: $(compression_ratio(compressed_rank1))
+- the compressed image is saved to: $fname
+"""
+```
+![](../assets/images/red_channel.png)
+![](../assets/images/compressed.png)
+![](../assets/images/compressed_rank1.png)
+
+
+** KernelPCA Example**
+```julia
+import Makie, CairoMakie
+using KernelPCA
+
+################## Linear Kernel ###################
+xaxis, yaxis = -2:0.05:2, -2:0.05:2
+x2 = [KernelPCA.Point(a, b) for a in xaxis, b in yaxis]
+constants = [0.8, 0.1, 0.5]
+anchors2 = KernelPCA.Point.([(0.8, 0.2), (0.01, -0.9), (-0.5, -0.5)])
+lkf = kernelf(KernelPCA.LinearKernel(), constants, anchors2)
+Makie.contour(xaxis, yaxis, lkf.(x2); label="2D function")
+
+
+# linear kernel can always be reduced to single component
+constants_simplified = [1.0]
+anchors_simplified = [[0.8, 0.1, 0.5]' * KernelPCA.Point.([(0.8, 0.2), (0.01, -0.9), (-0.5, -0.5)])]
+lkf = kernelf(KernelPCA.LinearKernel(), constants_simplified, anchors_simplified)
+Makie.contour(xaxis, yaxis, lkf.(x2); label="2D function")
+
+################## Polynomial Kernel ###################
+xaxis, yaxis = -2:0.05:2, -2:0.05:2
+x2 = [KernelPCA.Point(a, b) for a in xaxis, b in yaxis]
+constants2 = [0.8, 0.1, 0.5]
+anchors2 = KernelPCA.Point.([(0.8, 0.2), (0.01, -0.9), (-0.5, -0.5)])
+kfp = kernelf(PolyKernel{2}(), constants, anchors2)
+Makie.contour(xaxis, yaxis, kfp.(x2); label="2D function")
+
+kfp = kernelf(PolyKernel{2}(), constants_simplified, anchors_simplified)
+Makie.contour(xaxis, yaxis, kfp.(x2); label="2D function")
+
+################## RBF Kernel ###################
+# 1D
+x = -2:0.01:2
+constants = [0.8, 0.1, 0.5]
+anchors = [0.8, 0.01, -0.5]
+ker = RBFKernel(0.1)
+kf = kernelf(ker, constants, anchors)
+Makie.plot(x, kf.(x); label="1D function")
+
+# 2D
+xaxis, yaxis = -2:0.05:2, -2:0.05:2
+x2 = [KernelPCA.Point(a, b) for a in xaxis, b in yaxis]
+constants2 = [0.8, 0.1, 0.5]
+anchors2 = KernelPCA.Point.([(0.8, 0.2), (0.01, 0.9), (-0.5, -0.5)])
+kf2 = kernelf(ker, constants, anchors2)
+Makie.contour(xaxis, yaxis, kf2.(x2); label="2D function")
+```
+![](../assets/images/linearkernel.png)
+![](../assets/images/linearkernel2.png)
+
+![](../assets/images/polykernel.png)
+![](../assets/images/polykernel2.png)
+![](../assets/images/1dfunction.png)
+![](../assets/images/2dfunction.png)
+
+
+```julia
 

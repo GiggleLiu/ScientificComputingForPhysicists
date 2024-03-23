@@ -88,6 +88,97 @@ fig
 
 ![](../assets/images/heatmap1.png)
 
+```julia
+using CairoMakie
+
+
+function mandelbrot(x, y)
+    z = c = x + y*im
+    for i in 1:30.0; abs(z) > 2 && return i; z = z^2 + c; end; 0
+end
+
+heatmap(-2:0.001:1, -1.1:0.001:1.1, mandelbrot,
+    colormap = Reverse(:deep))
+```
+![](../assets/images/heatmap2.png)
+
+
+## Contour Plot
+### Examples
+```julia
+using CairoMakie
+
+
+f = Figure()
+Axis(f[1, 1])
+
+xs = LinRange(0, 10, 100)
+ys = LinRange(0, 15, 100)
+zs = [cos(x) * sin(y) for x in xs, y in ys]
+
+contour!(zs,levels=-1:0.1:1)
+
+f
+```
+![](../assets/images/contour1.png)
+
+```julia
+using CairoMakie
+
+
+himmelblau(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
+x = y = range(-6, 6; length=100)
+z = himmelblau.(x, y')
+
+levels = 10.0.^range(0.3, 3.5; length=10)
+colorscale = ReversibleScale(x -> x^(1 / 10), x -> x^10)
+f, ax, ct = contour(x, y, z; labels=true, levels, colormap=:hsv, colorscale)
+f
+```
+![](../assets/images/contour2.png)
+
+```julia
+using CairoMakie
+using DelimitedFiles
+
+
+volcano = readdlm(Makie.assetpath("volcano.csv"), ',', Float64)
+
+f = Figure()
+ax = Axis(f[1, 1])
+
+co = contourf!(volcano,
+    levels = range(100, 180, length = 10),
+    extendlow = :cyan, extendhigh = :magenta)
+
+tightlimits!(ax)
+
+Colorbar(f[1, 2], co)
+
+f
+```
+![](../assets/images/contour4.png)
+
+
+### 3D Contour Plot
+```julia
+using CairoMakie
+
+
+f = Figure()
+Axis3(f[1, 1], aspect=(0.5,0.5,1), perspectiveness=0.75)
+
+xs = ys = LinRange(-0.5, 0.5, 100)
+zs = [sqrt(x^2+y^2) for x in xs, y in ys]
+
+contour3d!(-zs, levels=-(.025:0.05:.475), linewidth=2, color=:blue2)
+contour3d!(+zs, levels=  .025:0.05:.475,  linewidth=2, color=:red2)
+
+f
+```
+
+![](../assets/images/contour3.png)
+
 
 ## Colorbar of heatmap/contour Examples   
 This Julia code snippet demonstrates how to create heatmaps and contour plots with colorbars using the CairoMakie library. It first defines a range of x and y values and calculates a corresponding z value for each (x, y) pair. It then creates four subplots: two heatmaps and two contour plots, each with different color maps and level settings. A colorbar is added to each subplot for reference. The `heatmap`, `contourf`, and `Colorbar` functions are used to create the plots and colorbars.
@@ -217,81 +308,7 @@ f
 ```
 ![](../assets/images/bracket2.png)
 
-## Contour Plot
-### Examples
-```julia
-using CairoMakie
 
-
-f = Figure()
-Axis(f[1, 1])
-
-xs = LinRange(0, 10, 100)
-ys = LinRange(0, 15, 100)
-zs = [cos(x) * sin(y) for x in xs, y in ys]
-
-contour!(zs,levels=-1:0.1:1)
-
-f
-```
-![](../assets/images/contour1.png)
-
-```julia
-using CairoMakie
-
-
-himmelblau(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
-x = y = range(-6, 6; length=100)
-z = himmelblau.(x, y')
-
-levels = 10.0.^range(0.3, 3.5; length=10)
-colorscale = ReversibleScale(x -> x^(1 / 10), x -> x^10)
-f, ax, ct = contour(x, y, z; labels=true, levels, colormap=:hsv, colorscale)
-f
-```
-![](../assets/images/contour2.png)
-
-```julia
-using CairoMakie
-using DelimitedFiles
-
-
-volcano = readdlm(Makie.assetpath("volcano.csv"), ',', Float64)
-
-f = Figure()
-ax = Axis(f[1, 1])
-
-co = contourf!(volcano,
-    levels = range(100, 180, length = 10),
-    extendlow = :cyan, extendhigh = :magenta)
-
-tightlimits!(ax)
-
-Colorbar(f[1, 2], co)
-
-f
-```
-![](../assets/images/contour4.png)
-
-
-### 3D Contour Plot
-```julia
-using CairoMakie
-
-
-f = Figure()
-Axis3(f[1, 1], aspect=(0.5,0.5,1), perspectiveness=0.75)
-
-xs = ys = LinRange(-0.5, 0.5, 100)
-zs = [sqrt(x^2+y^2) for x in xs, y in ys]
-
-contour3d!(-zs, levels=-(.025:0.05:.475), linewidth=2, color=:blue2)
-contour3d!(+zs, levels=  .025:0.05:.475,  linewidth=2, color=:red2)
-
-f
-```
-
-![](../assets/images/contour3.png)
 
 ## Error Bars
 ### Examples
@@ -319,6 +336,59 @@ f
 ```
 ![](../assets/images/errorbars1.png)
 
+## Streamplot
+### Examples
+```julia
+using CairoMakie
+
+
+struct FitzhughNagumo{T}
+    ϵ::T
+    s::T
+    γ::T
+    β::T
+end
+
+P = FitzhughNagumo(0.1, 0.0, 1.5, 0.8)
+
+f(x, P::FitzhughNagumo) = Point2f(
+    (x[1]-x[2]-x[1]^3+P.s)/P.ϵ,
+    P.γ*x[1]-x[2] + P.β
+)
+
+f(x) = f(x, P)
+
+fig, ax, pl = streamplot(f, -1.5..1.5, -1.5..1.5, colormap = :magma)
+# you can also pass a function to `color`, to either return a number or color value
+streamplot(fig[1,2], f, -1.5 .. 1.5, -1.5 .. 1.5, color=(p)-> RGBAf(p..., 0.0, 1))
+fig
+```
+
+![](../assets/images/streamplot1.png)
+
+
+## Text
+### Examples
+```julia
+using CairoMakie
+
+
+f = Figure()
+ax = Axis(f[1, 1])
+
+lines!(0..10, x -> sin(3x) / (cos(x) + 2),
+    label = L"\frac{\sin(3x)}{\cos(x) + 2}")
+lines!(0..10, x -> sin(x^2) / (cos(sqrt(x)) + 2),
+    label = L"\frac{\sin(x^2)}{\cos(\sqrt{x}) + 2}")
+
+Legend(f[1, 2], ax)
+
+f
+```
+![](../assets/images/text1.png)
+
+
+```julia
 
 
 

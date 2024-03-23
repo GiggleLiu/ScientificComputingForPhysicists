@@ -1,7 +1,7 @@
 # Tensor Operations
 
 ## Einsum notation
-The einsum notation is a compact way to specify tensor contractions with a string. In the einsum notation, the indices of input tensors are separated by a comma `,` and the output tensor by an arrow `->`. For example, the matrix multiplication $C_{ik} := \sum_j A_{ij}B_{jk}$ can be written as `"ij,jk->ik"`. The einsum notation is a powerful tool to specify tensor contractions, and it is widely used in physics, machine learning, and mathematics.
+The einsum notation is a compact way to specify tensor contractions with a string. In the this notation, an index (subscripts) is represented by a char, and the tensors are represented by the indices. The input tensors and the output tensor are separated by an arrow `->` and input tensors are separated by comma `,`. For example, the matrix multiplication $C_{ik} := \sum_j A_{ij}B_{jk}$ can be written as `"ij,jk->ik"`. The einsum notation is a powerful tool to specify tensor contractions, and it is widely used in physics, machine learning, and mathematics.
 
 !!! note "Example - Einsum notation"
     Unary examples:
@@ -11,6 +11,7 @@ The einsum notation is a compact way to specify tensor contractions with a strin
     - `"ij->"`: sum of the elements of a matrix.
     - `"i->ii"`: create a diagonal matrix.
     - `"i->ij"`: repeat a vector to form a matrix.
+    - `"ijk->ikj"`: permute the dimensions of a tensor.
 
     Binary examples:
     - `"ij,jk->ik"`: matrix multiplication.
@@ -23,10 +24,15 @@ The einsum notation is a compact way to specify tensor contractions with a strin
     - `"ai,aj,ak->ijk"`: star contraction.
     - `"ia,ajb,bkc,cld,dm->ijklm"`: tensor train contraction.
 
-```@example tensor
-using LuxorGraphPlot, Luxor
-using LinearAlgebra
-using OMEinsum
+```@repl tensor
+using OMEinsum, SymEngine
+catty = fill(Basic(:🐱), 2, 2)
+fish = fill(Basic(:🐟), 2, 3, 2)
+snake = fill(Basic(:🐍), 3, 3)
+medicine = ein"ij,jki,kk->k"(catty, fish, snake)
+ein"ik,kj -> ij"(catty, catty) # multiply two matrices `a` and `b`
+ein"ij -> "(catty)[] # sum a matrix, output 0-dimensional array
+ein"->ii"(asarray(snake[1,1]), size_info=Dict('i'=>5)) # get 5 x 5 identity matrix
 ```
 
 # Tensors and tensor decomposition

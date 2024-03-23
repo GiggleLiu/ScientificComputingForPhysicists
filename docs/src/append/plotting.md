@@ -23,6 +23,8 @@ In the next steps, we will take a look at how we can create these objects.
 
 
 ## Adding Line Plots to an Axis and setting the title and labels
+These Julia code snippets demonstrate how to create line and scatter plots with the CairoMakie library, including setting titles, labels, and legends.
+
 ```julia
 using CairoMakie
 x = range(0, 10, length=100)
@@ -55,6 +57,7 @@ fig
 ![](../assets/images/plotscatter.png)
 
 ## Create Subplots
+This Julia code demonstrates how to create multiple subplots using the CairoMakie library. Three axes are created, each with a title and labels, and a sine function is plotted on each axis with different colors. The lines! function is used to add the line plots to the axes. The resulting figure contains three subplots arranged in a grid.
 ```julia
 using CairoMakie
 x = LinRange(0, 10, 100)
@@ -72,7 +75,8 @@ fig
 
 ![](../assets/images/subplot1.png)
 
-## Create Heatmap 
+## Heatmap 
+This Julia code shows how to create a heatmap using the CairoMakie library. An axis is created with a title and labels, then a heatmap is added to the axis using the heatmap! function with randomly generated data. A colorbar is also added to the right of the heatmap for reference.
 ```julia
 using CairoMakie
 fig = Figure()
@@ -85,7 +89,8 @@ fig
 ![](../assets/images/heatmap1.png)
 
 
-## Colorbar Examples   
+## Colorbar of heatmap/contour Examples   
+This Julia code snippet demonstrates how to create heatmaps and contour plots with colorbars using the CairoMakie library. It first defines a range of x and y values and calculates a corresponding z value for each (x, y) pair. It then creates four subplots: two heatmaps and two contour plots, each with different color maps and level settings. A colorbar is added to each subplot for reference. The `heatmap`, `contourf`, and `Colorbar` functions are used to create the plots and colorbars.
 ```julia
 using CairoMakie
 
@@ -115,311 +120,214 @@ fig
 ![](../assets/images/subplot2.png)
 
 
+## Arrows examples
+We will introduce how to create 2D and 3D arrows using the CairoMakie library. The arrows are visualized on a grid with different colors and sizes to represent the strength of the vector field.
 
-
-## Useful Layout example
-In this part, you will learn how to create a complex figure using Makie's layout tools by following this example.
+### 2D Arrows
 ```julia
 using CairoMakie
-using Makie.FileIO
-# create the figure first with a gray backgroundcolor, and a predefined font
-f = Figure(backgroundcolor = RGBf(0.98, 0.98, 0.98),
-    size = (1000, 700)) 
-# make the four nested GridLayouts that are going to hold the objects of A, B, C and D. 
-ga = f[1, 1] = GridLayout() 
-gb = f[2, 1] = GridLayout()
-gcd = f[1:2, 2] = GridLayout()
-gc = gcd[1, 1] = GridLayout()
-gd = gcd[2, 1] = GridLayout()
-# There are three axes and a legend. We can place the axes first, link them appropriately, and plot the first data into them.
-axtop = Axis(ga[1, 1])
-axmain = Axis(ga[2, 1], xlabel = "before", ylabel = "after")
-axright = Axis(ga[2, 2])
 
-linkyaxes!(axmain, axright)
-linkxaxes!(axmain, axtop)
+f = Figure(size = (800, 800))
+Axis(f[1, 1], backgroundcolor = "black")
 
-labels = ["treatment", "placebo", "control"]
-data = randn(3, 100, 2) .+ [1, 3, 5]
+xs = LinRange(0, 2pi, 20)
+ys = LinRange(0, 3pi, 20)
+us = [sin(x) * cos(y) for x in xs, y in ys]
+vs = [-cos(x) * sin(y) for x in xs, y in ys]
+strength = vec(sqrt.(us .^ 2 .+ vs .^ 2))
 
-for (label, col) in zip(labels, eachslice(data, dims = 1))
-    scatter!(axmain, col, label = label)
-    density!(axtop, col[:, 1])
-    density!(axright, col[:, 2], direction = :y)
-end
-# There's a small gap between the density plots and their axes, which we can remove by fixing one side of the limits.
-ylims!(axtop, low = 0)
-xlims!(axright, low = 0)
-# choose different x ticks with whole numbers
-axmain.xticks = 0:3:9
-axtop.xticks = 0:3:9
-# Set the `label` attribute in the scatter call so it's easier to construct the legend. We can just pass `axmain` as the second argument to `Legend`.
-leg = Legend(ga[1, 2], axmain)
+arrows!(xs, ys, us, vs, arrowsize = 10, lengthscale = 0.3,
+    arrowcolor = strength, linecolor = strength)
 
-hidedecorations!(axtop, grid = false)
-hidedecorations!(axright, grid = false)
-leg.tellheight = true
-# we reduce column and row gaps to make the layout more compact
-colgap!(ga, 10)
-rowgap!(ga, 10)
-# make a title by placing a label across the top two elements.
-Label(ga[1, 1:2, Top()], "Stimulus ratings", valign = :bottom,
-    font = :bold,
-    padding = (0, 0, 5, 0))
-# We have two axes stacked on top of each other, and a colorbar alongside them. This time, we create the axes by just plotting into the right GridLayout slots. 
-xs = LinRange(0.5, 6, 50)
-ys = LinRange(0.5, 6, 50)
-data1 = [sin(x^1.5) * cos(y^0.5) for x in xs, y in ys] .+ 0.1 .* randn.()
-data2 = [sin(x^0.8) * cos(y^1.5) for x in xs, y in ys] .+ 0.1 .* randn.()
+f
+```
+![](../assets/images/arrows1.png)
 
-ax1, hm = contourf(gb[1, 1], xs, ys, data1,
-    levels = 6)
-ax1.title = "Histological analysis"
-contour!(ax1, xs, ys, data1, levels = 5, color = :black)
-hidexdecorations!(ax1)
 
-ax2, hm2 = contourf(gb[2, 1], xs, ys, data2,
-    levels = 6)
-contour!(ax2, xs, ys, data2, levels = 5, color = :black)
-# how many levels there are, we can make a colorbar using one of the contour plots and then label the bins in there from one to six.
-cb = Colorbar(gb[1:2, 2], hm, label = "cell group")
-low, high = extrema(data1)
-edges = range(low, high, length = 7)
-centers = (edges[1:6] .+ edges[2:7]) .* 0.5
-cb.ticks = (centers, string.(1:6))
-# pull the colorbar labels into its layout cell using the Mixed alignmode. The keyword right = 0 means that the right side of the colorbar should pull its protrusion content inward with an additional padding of 0.
-cb.alignmode = Mixed(right = 0)
+### 3D Plotting
 
-colgap!(gb, 10)
-rowgap!(gb, 10)
-# This is just an Axis3 with a colorbar on the side.
-brain = load(assetpath("brain.stl"))
 
-ax3d = Axis3(gc[1, 1], title = "Brain activation")
-m = mesh!(
-    ax3d,
-    brain,
-    color = [tri[1][2] for tri in brain for i in 1:3],
-    colormap = Reverse(:magma),
+```julia
+using GLMakie
+
+using LinearAlgebra
+
+ps = [Point3f(x, y, z) for x in -5:2:5 for y in -5:2:5 for z in -5:2:5]
+ns = map(p -> 0.1 * Vec3f(p[2], p[3], p[1]), ps)
+lengths = norm.(ns)
+arrows(
+    ps, ns, fxaa=true, # turn on anti-aliasing
+    color=lengths,
+    linewidth = 0.1, arrowsize = Vec3f(0.3, 0.3, 0.4),
+    align = :center, axis=(type=Axis3,)
 )
-Colorbar(gc[1, 2], m, label = "BOLD level")
-# D has a grid of 3x2 axes.
-axs = [Axis(gd[row, col]) for row in 1:3, col in 1:2]
-hidedecorations!.(axs, grid = false, label = false)
+```
+![](../assets/images/arrows2.png)
 
-for row in 1:3, col in 1:2
-    xrange = col == 1 ? (0:0.1:6pi) : (0:0.1:10pi)
+## Bracket
+### Examples
+```julia
+using CairoMakie
 
-    eeg = [sum(sin(pi * rand() + k * x) / k for k in 1:10)
-        for x in xrange] .+ 0.1 .* randn.()
+f, ax, l = lines(0..9, sin; axis = (; xgridvisible = false, ygridvisible = false))
+ylims!(ax, -1.5, 1.5)
 
-    lines!(axs[row, col], eeg, color = (:black, 0.5))
-end
+bracket!(pi/2, 1, 5pi/2, 1, offset = 5, text = "Period length", style = :square)
 
-axs[3, 1].xlabel = "Day 1"
-axs[3, 2].xlabel = "Day 2"
-# make a little title for the six axes by placing a Label in the top protrusion of row 1 and across both columns.
-Label(gd[1, :, Top()], "EEG traces", valign = :bottom,
-    font = :bold,
-    padding = (0, 0, 5, 0))
-# bring the subplots closer together by reducing gap sizes.
-rowgap!(gd, 10)
-colgap!(gd, 10)
-# add three boxes on the side with labels in them. In this case, we just place them in another column to the right.
-for (i, label) in enumerate(["sleep", "awake", "test"])
-    Box(gd[i, 3], color = :gray90)
-    Label(gd[i, 3], label, rotation = pi/2, tellheight = false)
-end
-# The boxes are in the correct positions, but we still need to remove the column gap.
-colgap!(gd, 2, 0)
-# Set the column widths to Auto(x) where x is a number proportional to the number of data points of the axis. This way, both will have the same relative scaling.
-n_day_1 = length(0:0.1:6pi)
-n_day_2 = length(0:0.1:10pi)
+bracket!(pi/2, 1, pi/2, -1, text = "Amplitude", orientation = :down,
+    linestyle = :dash, rotation = 0, align = (:right, :center), textoffset = 4, linewidth = 2, color = :red, textcolor = :red)
 
-colsize!(gd, 1, Auto(n_day_1))
-colsize!(gd, 2, Auto(n_day_2))
-# add the subplot labels, create Labels in the top left protrusion of these layouts. 
-for (label, layout) in zip(["A", "B", "C", "D"], [ga, gb, gc, gd])
-    Label(layout[1, 1, TopLeft()], label,
-        fontsize = 26,
-        font = :bold,
-        padding = (0, 5, 5, 0),
-        halign = :right)
-end
-# reduce the column width by setting it to Auto with a number smaller than 1, for example. This gives the column a smaller weight when distributing widths between all columns with Auto sizes.
-colsize!(f.layout, 1, Auto(0.5))
-# increase the size of the row with the panel C layout a bit so it has more space.
-rowsize!(gcd, 1, Auto(1.5))
+bracket!(2.3, sin(2.3), 4.0, sin(4.0),
+    text = "Falling", offset = 10, orientation = :up, color = :purple, textcolor = :purple)
+
+bracket!(Point(5.5, sin(5.5)), Point(7.0, sin(7.0)),
+    text = "Rising", offset = 10, orientation = :down, color = :orange, textcolor = :orange, 
+    fontsize = 30, textoffset = 30, width = 50)
 f
 ```
 
+![](../assets/images/bracket1.png)
 
-![](../assets/images/plotlayout.png)
-
-## ImageProcessing Examples
-**FFT Compression Example**
 ```julia
-using ImageProcessing, ImageProcessing.Images, ImageProcessing.LinearAlgebra
+using CairoMakie
 
-fname = "amat.png"
-@info "Running FFT compression example, loaded image: $fname"
-img = demo_image(fname)
+f = Figure()
+ax = Axis(f[1, 1])
 
-##### FFT #####
-img_k = fft_compress(img, size(img)...)
-# the momentum space is sparse!
-red_channel = Gray.(real.(img_k.channels[1]) ./ sqrt(length(img)))
-fname = "red-momentum_space.png"
-Images.save(fname, red_channel)
-@info "Converting image to momentum space, red channel saved to: $fname"
-Images.save(fname, toimage(RGBA{N0f8}, img_k))
-fname = "recovered.png"
-@info "Recovered image from momentum space is saved to: $fname"
+bracket!(ax,
+    1:5,
+    2:6,
+    3:7,
+    2:6,
+    text = ["A", "B", "C", "D", "E"],
+    orientation = :down,
+)
 
-nx, ny = isqrt(2 * size(img, 1)), isqrt(2 * size(img, 2))
-img_k_fft = lower_rank(img_k, nx, ny)
-cratio = compression_ratio(img_k_fft)
-fname = "fft_compressed.png"
-Images.save(fname, toimage(RGBA{N0f8}, img_k_fft))
-@info "Compressing to size: $nx x $ny, compression ratio: $cratio, saved to: $fname"
+bracket!(ax,
+    [(Point2f(i, i-0.7), Point2f(i+2, i-0.7)) for i in 1:5],
+    text = ["F", "G", "H", "I", "J"],
+    color = [:red, :blue, :green, :orange, :brown],
+    linestyle = [:dash, :dot, :dash, :dot, :dash],
+    orientation = [:up, :down, :up, :down, :up],
+    textcolor = [:red, :blue, :green, :orange, :brown],
+    fontsize = range(12, 24, length = 5),
+)
+
+f
 ```
-![](../assets/images/red-momentum_space.png)
-![](../assets/images/fft_compressed.png)
+![](../assets/images/bracket2.png)
 
-
-**SVD Compression Example**
+## Contour Plot
+### Examples
 ```julia
-using ImageProcessing, ImageProcessing.Images, ImageProcessing.LinearAlgebra
-using Makie, CairoMakie
+using CairoMakie
 
-fname = "amat.png"
-@info "Loading image: $fname"
-img = demo_image(fname)
 
-@info "The loaded image has type: $(typeof(img))"
+f = Figure()
+Axis(f[1, 1])
 
-# the RGBA type is a 4‑tuple of red, green, blue and alpha values, each ranging from 0 to 1.
-transparent = RGBA(0/255, 0/255, 0/255, 0/255)
-black = RGBA(0/255, 0/255, 0/255, 255/255)
-white = RGBA(255/255, 255/255, 255/255, 255/255)
-red = RGBA(255/255, 0/255, 0/255, 255/255)
-green = RGBA(0/255, 255/255, 0/255, 255/255)
-blue = RGBA(0/255, 0/255, 255/255, 255/255)
-@info """Colors are defined as:
-- transparent: $transparent
-- black: $black
-- white: $white
-- red: $red
-- green: $green
-- blue: $blue
-"""
+xs = LinRange(0, 10, 100)
+ys = LinRange(0, 15, 100)
+zs = [cos(x) * sin(y) for x in xs, y in ys]
 
-# get one of the color channel
-red_channel = getfield.(img[:, :], :r)
-# to visualize as a grayscale image
-Gray.(red_channel)
-fname = "red_channel.png"
-Images.save(fname, Gray.(red_channel))
-@info "The red channel is saved to: $fname"
+contour!(zs,levels=-1:0.1:1)
 
-# in Images, the color channels are stored as a 3D array with the first dimension being the color channel.
-Gray.(channelview(img)[1, :, :])
-Gray.(channelview(img)[2, :, :])
-Gray.(channelview(img)[3, :, :])
-
-red_svd = svd(red_channel)
-fig, = Makie.lines(red_svd.S)
-fname = "red_svd_spectrum.png"
-Makie.save(fname, fig)
-@info "Singular values of the red channel are stored in file: $fname"
-
-# We can decompose a given image into the three color channels red, green and blue.
-# Each channel can be represented as a (m × n)‑matrix with values ranging from 0 to 255.
-target_rank = 10
-compressed = svd_compress(img, target_rank)
-compression_ratio(compressed)
-newimage = toimage(RGBA{N0f8}, compressed)
-fname = "compressed.png"
-Images.save(fname, newimage)
-@info """Compressing with SVD:
-- target rank is: $target_rank
-- the compression ratio is: $(compression_ratio(compressed))
-- the compressed image is saved to: $fname
-"""
-
-# convert to image
-toimage(RGBA{N0f8}, compressed)
-compressed_rank1 = lower_rank(compressed, 1)
-compression_ratio(compressed_rank1)
-newimage1 = toimage(RGBA{N0f8}, compressed_rank1)
-fname = "compressed_rank1.png"
-Images.save(fname, newimage1)
-@info """Lowering the rank to 1:
-- the compression ratio is: $(compression_ratio(compressed_rank1))
-- the compressed image is saved to: $fname
-"""
+f
 ```
-![](../assets/images/red_channel.png)
-![](../assets/images/compressed.png)
-![](../assets/images/compressed_rank1.png)
+![](../assets/images/contour1.png)
 
-
-** KernelPCA Example**
 ```julia
-import Makie, CairoMakie
-using KernelPCA
-
-################## Linear Kernel ###################
-xaxis, yaxis = -2:0.05:2, -2:0.05:2
-x2 = [KernelPCA.Point(a, b) for a in xaxis, b in yaxis]
-constants = [0.8, 0.1, 0.5]
-anchors2 = KernelPCA.Point.([(0.8, 0.2), (0.01, -0.9), (-0.5, -0.5)])
-lkf = kernelf(KernelPCA.LinearKernel(), constants, anchors2)
-Makie.contour(xaxis, yaxis, lkf.(x2); label="2D function")
+using CairoMakie
 
 
-# linear kernel can always be reduced to single component
-constants_simplified = [1.0]
-anchors_simplified = [[0.8, 0.1, 0.5]' * KernelPCA.Point.([(0.8, 0.2), (0.01, -0.9), (-0.5, -0.5)])]
-lkf = kernelf(KernelPCA.LinearKernel(), constants_simplified, anchors_simplified)
-Makie.contour(xaxis, yaxis, lkf.(x2); label="2D function")
+himmelblau(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
+x = y = range(-6, 6; length=100)
+z = himmelblau.(x, y')
 
-################## Polynomial Kernel ###################
-xaxis, yaxis = -2:0.05:2, -2:0.05:2
-x2 = [KernelPCA.Point(a, b) for a in xaxis, b in yaxis]
-constants2 = [0.8, 0.1, 0.5]
-anchors2 = KernelPCA.Point.([(0.8, 0.2), (0.01, -0.9), (-0.5, -0.5)])
-kfp = kernelf(PolyKernel{2}(), constants, anchors2)
-Makie.contour(xaxis, yaxis, kfp.(x2); label="2D function")
-
-kfp = kernelf(PolyKernel{2}(), constants_simplified, anchors_simplified)
-Makie.contour(xaxis, yaxis, kfp.(x2); label="2D function")
-
-################## RBF Kernel ###################
-# 1D
-x = -2:0.01:2
-constants = [0.8, 0.1, 0.5]
-anchors = [0.8, 0.01, -0.5]
-ker = RBFKernel(0.1)
-kf = kernelf(ker, constants, anchors)
-Makie.plot(x, kf.(x); label="1D function")
-
-# 2D
-xaxis, yaxis = -2:0.05:2, -2:0.05:2
-x2 = [KernelPCA.Point(a, b) for a in xaxis, b in yaxis]
-constants2 = [0.8, 0.1, 0.5]
-anchors2 = KernelPCA.Point.([(0.8, 0.2), (0.01, 0.9), (-0.5, -0.5)])
-kf2 = kernelf(ker, constants, anchors2)
-Makie.contour(xaxis, yaxis, kf2.(x2); label="2D function")
+levels = 10.0.^range(0.3, 3.5; length=10)
+colorscale = ReversibleScale(x -> x^(1 / 10), x -> x^10)
+f, ax, ct = contour(x, y, z; labels=true, levels, colormap=:hsv, colorscale)
+f
 ```
-![](../assets/images/linearkernel.png)
-![](../assets/images/linearkernel2.png)
-
-![](../assets/images/polykernel.png)
-![](../assets/images/polykernel2.png)
-![](../assets/images/1dfunction.png)
-![](../assets/images/2dfunction.png)
-
+![](../assets/images/contour2.png)
 
 ```julia
+using CairoMakie
+using DelimitedFiles
+
+
+volcano = readdlm(Makie.assetpath("volcano.csv"), ',', Float64)
+
+f = Figure()
+ax = Axis(f[1, 1])
+
+co = contourf!(volcano,
+    levels = range(100, 180, length = 10),
+    extendlow = :cyan, extendhigh = :magenta)
+
+tightlimits!(ax)
+
+Colorbar(f[1, 2], co)
+
+f
+```
+![](../assets/images/contour4.png)
+
+
+### 3D Contour Plot
+```julia
+using CairoMakie
+
+
+f = Figure()
+Axis3(f[1, 1], aspect=(0.5,0.5,1), perspectiveness=0.75)
+
+xs = ys = LinRange(-0.5, 0.5, 100)
+zs = [sqrt(x^2+y^2) for x in xs, y in ys]
+
+contour3d!(-zs, levels=-(.025:0.05:.475), linewidth=2, color=:blue2)
+contour3d!(+zs, levels=  .025:0.05:.475,  linewidth=2, color=:red2)
+
+f
+```
+
+![](../assets/images/contour3.png)
+
+## Error Bars
+### Examples
+```julia
+using CairoMakie
+
+
+f = Figure()
+Axis(f[1, 1])
+
+xs = 0:0.5:10
+ys = 0.5 .* sin.(xs)
+
+lowerrors = fill(0.1, length(xs))
+higherrors = LinRange(0.1, 0.4, length(xs))
+
+errorbars!(xs, ys, lowerrors, higherrors,
+    color = range(0, 1, length = length(xs)),
+    whiskerwidth = 10)
+
+# plot position scatters so low and high errors can be discriminated
+scatter!(xs, ys, markersize = 3, color = :black)
+
+f
+```
+![](../assets/images/errorbars1.png)
+
+
+
+
+
+
+
+
+
+
+
+
 

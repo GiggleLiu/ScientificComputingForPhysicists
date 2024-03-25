@@ -373,8 +373,6 @@ streamplot(fig[1,2], f, -1.5 .. 1.5, -1.5 .. 1.5, color=(p)-> RGBAf(p..., 0.0, 1
 fig
 ```
 
-![](../assets/images/streamplot1.png)
-
 ## Animation
 In Makie.jl, animation is a feature that allows you to create a sequence of frames, each of which is a different plot, and then combine them into a single animated file. This is useful for visualizing changes in data over time or the progression of an algorithm.
 ```@example makie
@@ -416,7 +414,7 @@ fig = lines(xs, ys_1, color = :blue, linewidth = 4,
 # Add a scatter plot for the cosine wave to the same figure
 scatter!(xs, ys_2, color = :red, markersize = 15)
 # Set the framerate and the timestamps for the animation
-framerate = 30
+framerate = 10
 timestamps = range(0, 2, step=1/framerate)
 # Start recording the animation
 record(fig, "time_animation.gif", timestamps;

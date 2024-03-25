@@ -1,16 +1,16 @@
-# Plotting tutorial
+# Plotting recipes with CairoMakie
 
 In this appendix, we have prepared a set of plotting scripts and simple tutorials to show how to generate different type of pictures, such as line plots, scatter plots, subplots, heatmaps, contour plots, colorbars, arrows, brackets, error bars, stream plots, and text. We will use the CairoMakie library, which is a high-performance, interactive plotting library for Julia. They could be installed by running the following command in the Julia REPL:
 
 ```julia
-julia> ]add Makie CairoMakie
+julia> ]add CairoMakie
 ```
 
 ## Importing 
-First, we should import Makie and CairoMakie libraries to start plotting.
+First, we should import CairoMakie libraries to start plotting.
 
 ```julia
-julia> using Makie, CairoMakie
+julia> using CairoMakie
 ```
 
 Before we start, let's introduce some basic concepts in Makie.jl:
@@ -25,7 +25,7 @@ In the next steps, we will take a look at how we can create these objects.
 ## Line Plot
 The following code create line plot with the CairoMakie library, including setting titles, labels, and legends.
 
-```julia
+```@example makie
 using CairoMakie
 x = range(0, 10, length=100)
 fig = Figure()
@@ -37,16 +37,14 @@ lines!(ax, x, sin.(x), color = :red, label = "sin")
 lines!(ax, x, cos.(x), color = :blue, label = "cos") 
 # Add a lengend at the bottom right with label size 15
 axislegend(ax; position = :rb, labelsize = 15)
-fig
 save("plot_lines6.png", fig)
+fig
 ```
-![](../assets/images/plotline2.png)
-
 
 ### Error Bars
 Error bars are graphical representations used in statistics and data visualization to indicate the standard deviation of data.
 
-```julia
+```@example makie
 using CairoMakie
 
 
@@ -69,12 +67,11 @@ scatter!(xs, ys, markersize = 3, color = :black)
 
 fig
 ```
-![](../assets/images/errorbars1.png)
 
 ### Texts
 In CairoMakie, text can be positioned at specific coordinates on the plot, aligned to different sides, and styled with different fonts, sizes, colors, and rotations.
 
-```julia
+```@example makie
 using CairoMakie
 
 fig = Figure()
@@ -90,13 +87,11 @@ Legend(fig[1, 2], ax)
 
 fig
 ```
-![](../assets/images/text1.png)
-
 
 ### Bracket
 In the context of plotting in Julia with the CairoMakie library, a bracket can be added to a plot to highlight or annotate a specific range of values.
 
-```julia
+```@example makie
 using CairoMakie
 # Create a line plot of the sine function from 0 to 9, with the x and y grid lines turned off
 fig, ax, l = lines(0..9, sin; axis = (; xgridvisible = false, ygridvisible = false))
@@ -116,11 +111,9 @@ bracket!(Point(5.5, sin(5.5)), Point(7.0, sin(7.0)),
 fig
 ```
 
-![](../assets/images/bracket1.png)
-
 ### Create Subplots
 Subplots are a way to display multiple plots in different sub-regions of the same window. The following code demonstrates how to create multiple subplots using the CairoMakie library. It will generate a figure with three line plots, each representing the sin function, but with different colors (red, blue, and green).
-```julia
+```@example makie
 using CairoMakie
 x = LinRange(0, 10, 100)
 y = sin.(x)
@@ -137,11 +130,9 @@ lines!(ax3, x, y, color = :green, label = "sin")
 fig
 ```
 
-![](../assets/images/subplot1.png)
-
 ## Scatter Plot
 A scatter plot is a type of plot used to display the relationship between two variables, where each point represents an observation. The following code will generate a figure with two scatter plots, one representing the sin function and the other representing the cos function.
-```julia
+```@example makie
 using CairoMakie
 
 x = range(0, 10, length=100)
@@ -161,7 +152,6 @@ axislegend(ax; position = :rb, labelsize = 15)
 
 fig
 ```
-![](../assets/images/plotscatter.png)
 
 ## Bar plot
 A bar plot is a type of plot used to visualize categorical data. It consists of rectangular bars with lengths proportional to the values they represent. Bar plots are commonly used to compare the values of different categories or groups.
@@ -171,7 +161,7 @@ A heatmap is a graphical representation of data where individual values containe
 
 This following code is using CairoMakie to create a heatmap of the Mandelbrot set. The Mandelbrot set is a set of complex numbers for which the function $f(c) = z^2 + c$ does not diverge when iterated from z = 0.
 
-```julia
+```@example makie
 using CairoMakie
 fig = Figure()
 # Create an axis with title and labels
@@ -190,15 +180,12 @@ Colorbar(fig[1, 2], hm, label = "Color scale")
 fig
 ```
 
-![](../assets/images/heatmap2.png)
-
-
 ## Contour Plot
 A contour plot is a graphical technique used to represent a 3-dimensional surface in two dimensions. It is like a topographical map in which x and y show the location, and the contour lines represent the third dimension (z) by their level.
 
 Each contour line in a contour plot represents a set of points at the same height or value. The contour plot provides a way to visualize the relationship between three continuous variables. The color or the line style often indicates the value of the third variable. The following code demonstrates how to create a contour plot using the CairoMakie library.
 
-```julia
+```@example makie
 using CairoMakie
 # Define the Himmelblau function
 himmelblau(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
@@ -216,11 +203,9 @@ ax = Axis(fig[1, 1])
 ct = contour!(ax, x, y, z; labels=true, levels, colormap=:hsv, colorscale)
 fig
 ```
-![](../assets/images/contour2.png)
-
 
 ### 3D Contour Plot
-```julia
+```@example makie
 using CairoMakie
 
 fig = Figure()
@@ -236,13 +221,11 @@ contour3d!(+zs, levels=  .025:0.05:.475,  linewidth=2, color=:red2)
 fig
 ```
 
-![](../assets/images/contour3.png)
-
 ## Surface plot
 
 ## Colorbar of heatmap/contour
 This Julia code demonstrates how to create heatmaps and contour plots with colorbars using CairoMakie. It first defines a range of x and y values and calculates a corresponding z value for each (x, y) pair. It then creates four subplots: two heatmaps and two contour plots, each with different color maps and level settings. A colorbar is added to each subplot for reference. The `heatmap`, `contourf`, and `Colorbar` functions are used to create the plots and colorbars.
-```julia
+```@example makie
 using CairoMakie
 
 xs = LinRange(0, 20, 50)
@@ -269,15 +252,13 @@ Colorbar(fig[2, 2][1, 2], hm, ticks = -1:0.25:1)
 
 fig
 ```
-![](../assets/images/subplot2.png)
-
 
 ## Quiver Plot
 An arrow plot, also known as a quiver plot, is a type of plot that displays vector fields. This means it shows the direction and magnitude (strength) of data at different points in space. In these plots, each arrow represents a vector and points in the direction the vector is heading. The length (or color) of the arrow can also represent the magnitude of the vector.
 
 The following examples demonstrate how to create 2D and 3D arrows using the CairoMakie library. 
 
-```julia
+```@example makie
 using CairoMakie
 
 fig = Figure(size = (800, 800))
@@ -297,12 +278,11 @@ arrows!(xs, ys, us, vs, arrowsize = 10, lengthscale = 0.3,
 
 fig
 ```
-![](../assets/images/arrows1.png)
 
 
 ### 3D Quiver Plot
 
-```julia
+```@example makie
 using CairoMakie
 using LinearAlgebra
 
@@ -321,12 +301,11 @@ arrows(
     align = :center, axis=(type=Axis3,)
 )
 ```
-![](../assets/images/arrows2.png)
 
 ## Streamplot
 A streamplot is a type of plot used in fluid dynamics to visualize the flow of a fluid. It shows the direction and magnitude of the flow at different points in space. In a streamplot, the flow is represented by a series of lines that follow the direction of the flow. The density of the lines indicates the speed of the flow, with denser lines indicating faster flow.
 
-```julia
+```@example makie
 using CairoMakie
 
 # Define a struct to represent the Fitzhugh-Nagumo model, with parameters ϵ, s, γ, and β
@@ -351,8 +330,6 @@ fig, ax, pl = streamplot(f, -1.5..1.5, -1.5..1.5, colormap = :magma)
 streamplot(fig[1,2], f, -1.5 .. 1.5, -1.5 .. 1.5, color=(p)-> RGBAf(p..., 0.0, 1))
 fig
 ```
-
-![](../assets/images/streamplot1.png)
 
 ## Animate
 

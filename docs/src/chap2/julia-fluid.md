@@ -336,8 +336,8 @@ end
 *File*: `examples/barrier.jl`
 
 ```julia
-using Makie: RGBA # for visualization
-using Makie, CairoMakie
+using CairoMakie: RGBA # for visualization
+using CairoMakie
 using MyFirstPackage # our package
 
 # Set up the visualization with Makie:
@@ -365,7 +365,7 @@ pkg> activate examples
 
 pkg> dev .
 
-pkg> add Makie CairoMakie BenchmarkTools
+pkg> add CairoMakie BenchmarkTools
 ```
 
 Type `Backspace` to exit the package mode. To execute the code, type

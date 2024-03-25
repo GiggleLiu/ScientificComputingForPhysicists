@@ -156,7 +156,7 @@ fig
 A bar plot is a type of plot used to visualize categorical data. It consists of rectangular bars with lengths proportional to the values they represent. Bar plots are commonly used to compare the values of different categories or groups.
 
 The following code demonstrates how to create a bar plot using the CairoMakie library. It will generate a figure with a bar plot.
-```julia
+```@example makie
 using Makie, CairoMakie
 # Generate a color palette
 colors = Makie.wong_colors()
@@ -188,7 +188,6 @@ Legend(fig[1,2], elements, labels, title)
 
 fig
 ```
-![](../assets/images/barplot.png)
 
 ## Heatmap 
 A heatmap is a graphical representation of data where individual values contained in a matrix are represented as colors. It is a way of visualizing data density or intensity, making it easier to perceive patterns, trends, and outliers within large data sets.
@@ -256,6 +255,15 @@ fig
 ```
 
 ## Surface plot
+In Makie.jl, a surface plot is a three-dimensional plot that displays a surface defined by a grid of x, y, and z values. It's used to visualize data that changes over two independent variables, much like a topographical map or a view of a landscape.
+```@example makie
+using CairoMakie
+xs = LinRange(0, 10, 100)
+ys = LinRange(0, 15, 100)
+zs = [cos(x) * sin(y) for x in xs, y in ys]
+
+surface(xs, ys, zs, axis=(type=Axis3,))
+```
 
 ## Colorbar of heatmap/contour
 This Julia code demonstrates how to create heatmaps and contour plots with colorbars using CairoMakie. It first defines a range of x and y values and calculates a corresponding z value for each (x, y) pair. It then creates four subplots: two heatmaps and two contour plots, each with different color maps and level settings. A colorbar is added to each subplot for reference. The `heatmap`, `contourf`, and `Colorbar` functions are used to create the plots and colorbars.
@@ -369,7 +377,7 @@ fig
 
 ## Animation
 In Makie.jl, animation is a feature that allows you to create a sequence of frames, each of which is a different plot, and then combine them into a single animated file. This is useful for visualizing changes in data over time or the progression of an algorithm.
-```julia
+```@example makie
 using CairoMakie
 using Makie.Colors
 
@@ -394,7 +402,7 @@ Often, you want to animate a complex plot over time, and all the data that is di
 We can save a lot of work if we create our data depending on a single time `Observable`, so we don't have to change every plot's data manually as the animation progresses.
 
 Here is an example that plots two different functions. The y-values of each depend on time and therefore we only have to change the time for both plots to change. We use the convenient `@lift` macro which denotes that the `lifted` expression depends on each Observable marked with a `$`sign.
-```julia
+```@example makie
 using CairoMakie
 time = Observable(0.0)
 

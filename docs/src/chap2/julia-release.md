@@ -359,7 +359,7 @@ You might want to write some examples to visualize the results of the package wi
 
 *File*: `examples/lorenz.jl`
 ```julia
-using Makie, GLMakie, MyFirstPackage
+using CairoMakie, MyFirstPackage
 set_theme!(theme_black())
 
 # create a Lorenz system

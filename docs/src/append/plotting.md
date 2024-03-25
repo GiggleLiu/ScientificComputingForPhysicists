@@ -157,7 +157,7 @@ A bar plot is a type of plot used to visualize categorical data. It consists of 
 
 The following code demonstrates how to create a bar plot using the CairoMakie library. It will generate a figure with a bar plot.
 ```@example makie
-using Makie, CairoMakie
+using CairoMakie
 # Generate a color palette
 colors = Makie.wong_colors()
 # Define the data for the bar plot
@@ -377,7 +377,7 @@ fig
 In Makie.jl, animation is a feature that allows you to create a sequence of frames, each of which is a different plot, and then combine them into a single animated file. This is useful for visualizing changes in data over time or the progression of an algorithm.
 ```@example makie
 using CairoMakie
-using Makie.Colors
+using CairoMakie.Colors
 
 fig, ax, lineplot = lines(0..10, sin; linewidth=10)
 

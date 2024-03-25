@@ -3,9 +3,8 @@
 In this appendix, we have prepared a set of plotting scripts and simple tutorials to show how to generate different type of pictures, such as line plots, scatter plots, subplots, heatmaps, contour plots, colorbars, arrows, brackets, error bars, stream plots, and text. We will use the CairoMakie library, which is a high-performance, interactive plotting library for Julia. They could be installed by running the following command in the Julia REPL:
 
 ```julia
-julia> ]add Makie CairoMakie
+julia> add Makie CairoMakie
 ```
-
 ## Importing 
 First, we should import Makie and CairoMakie libraries to start plotting.
 
@@ -118,7 +117,7 @@ fig
 
 ![](../assets/images/bracket1.png)
 
-### Create Subplots
+### Subplots
 Subplots are a way to display multiple plots in different sub-regions of the same window. The following code demonstrates how to create multiple subplots using the CairoMakie library. It will generate a figure with three line plots, each representing the sin function, but with different colors (red, blue, and green).
 ```julia
 using CairoMakie
@@ -165,6 +164,41 @@ fig
 
 ## Bar plot
 A bar plot is a type of plot used to visualize categorical data. It consists of rectangular bars with lengths proportional to the values they represent. Bar plots are commonly used to compare the values of different categories or groups.
+
+The following code demonstrates how to create a bar plot using the CairoMakie library. It will generate a figure with a bar plot.
+```julia
+using Makie, CairoMakie
+# Generate a color palette
+colors = Makie.wong_colors()
+# Define the data for the bar plot
+tbl = (cat = [1, 1, 1, 2, 2, 2, 3, 3, 3],
+       height = 0.1:0.1:0.9,
+       grp = [1, 2, 3, 1, 2, 3, 1, 2, 3],
+       grp1 = [1, 2, 2, 1, 1, 2, 1, 1, 2],
+       grp2 = [1, 1, 2, 1, 2, 1, 1, 2, 1]
+       )
+    
+# Figure and Axis
+fig = Figure()
+ax = Axis(fig[1,1], xticks = (1:3, ["left", "middle", "right"]),
+        title = "Dodged bars with legend")
+
+# Plot
+barplot!(ax, tbl.cat, tbl.height,
+        dodge = tbl.grp,
+        color = colors[tbl.grp])
+
+# Define the labels for the legend
+labels = ["group 1", "group 2", "group 3"]
+# # Create the elements for the legend with custom colors
+elements = [PolyElement(polycolor = colors[i]) for i in 1:length(labels)]
+title = "Groups"
+
+Legend(fig[1,2], elements, labels, title)
+
+fig
+```
+![](../assets/images/barplot.png)
 
 ## Heatmap 
 A heatmap is a graphical representation of data where individual values contained in a matrix are represented as colors. It is a way of visualizing data density or intensity, making it easier to perceive patterns, trends, and outliers within large data sets.
@@ -354,7 +388,58 @@ fig
 
 ![](../assets/images/streamplot1.png)
 
-## Animate
+## Animation
+In Makie.jl, animation is a feature that allows you to create a sequence of frames, each of which is a different plot, and then combine them into a single animated file. This is useful for visualizing changes in data over time or the progression of an algorithm.
+```julia
+using CairoMakie
+using Makie.Colors
+
+fig, ax, lineplot = lines(0..10, sin; linewidth=10)
+
+# animation settings
+nframes = 30
+framerate = 30
+# Create an iterator for the hue values that will be used to change the color of the line
+hue_iterator = range(0, 360, length=nframes)
+# Start recording the animation
+record(fig, "color_animation.mp4", hue_iterator;
+        framerate = framerate) do hue
+    lineplot.color = HSV(hue, 1, 0.75)
+end
+```
+![](../assets/images/color_animation.gif)
+
+### Animation using `Observables`
+Often, you want to animate a complex plot over time, and all the data that is displayed should be determined by the current time stamp. Such a dependency is really easy to express with `Observables`.
+
+We can save a lot of work if we create our data depending on a single time `Observable`, so we don't have to change every plot's data manually as the animation progresses.
+
+Here is an example that plots two different functions. The y-values of each depend on time and therefore we only have to change the time for both plots to change. We use the convenient `@lift` macro which denotes that the `lifted` expression depends on each Observable marked with a `$`sign.
+```julia
+using CairoMakie
+time = Observable(0.0)
+
+xs = range(0, 7, length=40)
+
+ys_1 = @lift(sin.(xs .- $time))
+ys_2 = @lift(cos.(xs .- $time) .+ 3)
+# Create a line plot for the sine wave with a dynamic title
+fig = lines(xs, ys_1, color = :blue, linewidth = 4,
+    axis = (title = @lift("t = $(round($time, digits = 1))"),))
+# Add a scatter plot for the cosine wave to the same figure
+scatter!(xs, ys_2, color = :red, markersize = 15)
+# Set the framerate and the timestamps for the animation
+framerate = 30
+timestamps = range(0, 2, step=1/framerate)
+# Start recording the animation
+record(fig, "time_animation.gif", timestamps;
+        framerate = framerate) do t
+    time[] = t
+end
+```
+![](../assets/images/time_animation.gif)
+
+
 
 ## More
 For more information on plotting with Makie, please refer to the [official documentation](https://docs.makie.org/stable/).

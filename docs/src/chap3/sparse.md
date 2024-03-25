@@ -358,10 +358,11 @@ end
 Theorem: The number of connected components in the graph is the dimension of the nullspace of the Laplacian and the algebraic multiplicity of the 0 eigenvalue.
 
 ```@repl sparse
-graphsize = 10
-graph = random_regular_graph(graph_size, 3)
+graphsize = 1000
+graph = random_regular_graph(graphsize, 3)
 lmat = laplacian_matrix(graph)
-tri, Q = lanczos(lmat, randn(graphsize); abstol=1e-8, maxiter=100)
+q1 = randn(graphsize)
+tri, Q = lanczos(lmat, q1; abstol=1e-8, maxiter=100)
 -eigen(-tri).values  # the eigenvalues of the tridiagonal matrix
 Q' * Q             # the orthogonality of the Krylov vectors
 eigsolve(lmat, q1, 2, :SR)  # using function `KrylovKit.eigsolve`
@@ -411,6 +412,22 @@ function lanczos_reorthogonalize(A, q1::AbstractVector{T}; abstol, maxiter) wher
         push!(β, nrk)
     end
     return SymTridiagonal(α, β), hcat(q...)
+end
+struct HouseholderMatrix{T} <: AbstractArray{T, 2}
+    v::Vector{T}
+    β::T
+end
+
+# the `mul!` interfaces can take two extra factors.
+function left_mul!(B, A::HouseholderMatrix)
+    B .-= (A.β .* A.v) * (A.v' * B)
+    return B
+end
+
+function householder_matrix(v::AbstractVector{T}) where T
+    v = copy(v)
+    v[1] -= norm(v, 2)
+    return HouseholderMatrix(v, 2/norm(v, 2)^2)
 end
 ```
 
@@ -486,10 +503,10 @@ end
 ```
 
 ```@repl sparse
-n = 1000
-A = sprand(n, n)
+n = 100
+A = sprand(n, n, 0.1)
 q1 = randn(n)
-h, q = arnoldi_iteration(A, q1; maxiter=100)
+h, q = arnoldi_iteration(A, q1; maxiter=20)
 eigen(h).values   # naive implementation
 eigsolve(A, q1, 2, :LR)  # KrylovKit.eigsolve
 ```

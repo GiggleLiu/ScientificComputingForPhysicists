@@ -234,7 +234,7 @@ end
 
 By inverting the sign, $A\rightarrow -A$, we can use the same method to obtain the smallest eigenvalue.
 
-## The Arnoldi and Lanczos algorithm
+## The Krylov subspace method
 
 Let $A \in \mathbb{C}^{n \times n}$ be a large sparse matrix, the Arnoldi and Lanczos algorithms can be used to obtain its largest/smallest eigenvalue, with much faster convergence speed comparing with the power method.
 
@@ -276,7 +276,7 @@ The high level interface of KrylovKit is provided by the following functions:
 *   `expintegrator`: [exponential integrator](https://en.wikipedia.org/wiki/Exponential_integrator)
     for a linear non-homogeneous ODE, computes a linear combination of the `ϕⱼ` functions which generalize `ϕ₀(z) = exp(z)`.
 
-### Lanczos algorithm
+## The Lanczos algorithm
 
 In the Lanczos algorithm, we want to find a orthogonal matrix $Q^T$ such that
 ```math
@@ -321,7 +321,7 @@ T(\beta_2 = 0) = \left(\begin{array}{cc|ccc}
 \end{array}\right),
 ```
 
-### Naive implementation of the Lanczos algorithm
+### A Julia implementation
 
 ```@example sparse
 function lanczos(A, q1::AbstractVector{T}; abstol, maxiter) where T
@@ -353,9 +353,9 @@ function lanczos(A, q1::AbstractVector{T}; abstol, maxiter) where T
 end
 ```
 
-## Example: using dominant eigensolver to study the spectral graph theory
+### Example: The spectral graph theory
 
-Theorem: The number of connected components in the graph is the dimension of the nullspace of the Laplacian and the algebraic multiplicity of the 0 eigenvalue.
+*Theorem*: The number of connected components in the graph is the dimension of the nullspace of the Laplacian and the algebraic multiplicity of the 0 eigenvalue.
 
 ```@repl sparse
 graphsize = 1000
@@ -371,7 +371,7 @@ eigsolve(lmat, q1, 2, :SR)  # using function `KrylovKit.eigsolve`
 NOTE: with larger `graph_size`, you should see some "ghost" eigenvalues 
 
 
-## Reorthogonalization
+### Reorthogonalization
 
 Let $r_0, \ldots, r_{k-1} \in \mathbb{C}_n$ be linearly independent vectors and the corresponding Householder matrices $H_0, \ldots, H_{k-1}$ such that $(H_0\ldots H_{k- 1})^T [r_0\mid\ldots\mid r_{k-1}]$ is an upper triangular matrix. Let $[q_1 \mid \ldots \mid q_k ]$ denote the first $k$ columns of the Householder product $(H_0 \ldots H_{k-1})$, then $q_1, \ldots, q_k$ are orthonormal vectors up to machine precision. The Lanczos algorithm with complete reorthogonalization is as follows:
 
@@ -441,7 +441,7 @@ eigen(tr)
 eigsolve(A, q1, 2, :SR)
 ```
 
-## Notes on Lanczos
+### Notes on Lanczos
 A sophisticated Lanczos implementation should consider the following aspects:
 1. In practice, storing all $q$ vectors is not necessary.
 2. Blocking technique can be used to improve the solution, especially when the matrix has degenerate eigenvalues.
@@ -449,7 +449,7 @@ A sophisticated Lanczos implementation should consider the following aspects:
 
 These techniques could be found in Ref.[^Golub2013].
 
-## The Arnoldi Process
+## The Arnoldi algorithm
 
 If $A$ is not symmetric, then the orthogonal tridiagonalization $Q^T A Q = T$ does not exist in general. The Arnoldi approach involves the column by column generation of an orthogonal $Q$ such that $Q^TAQ = H$ is a Hessenberg matrix.
 ```math

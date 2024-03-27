@@ -40,8 +40,8 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
            # orthogonal
            @test H&#39; * H ≈ I
        end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr1">Test Summary:        | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
-householder property | <span class="sgr32">   3  </span><span class="sgr36">    3  </span>0.6s
-Test.DefaultTestSet(&quot;householder property&quot;, Any[], 3, false, false, true, 1.711531539890651e9, 1.711531540536614e9, false, &quot;REPL[2]&quot;)</code></pre><p>Let us define a function to compute the Householder matrix that projects a vector to <span>$e_1$</span>.</p><pre><code class="language-julia hljs">function householder_e1(v::AbstractVector{T}) where T
+householder property | <span class="sgr32">   3  </span><span class="sgr36">    3  </span>0.7s
+Test.DefaultTestSet(&quot;householder property&quot;, Any[], 3, false, false, true, 1.711551802780549e9, 1.71155180343131e9, false, &quot;REPL[2]&quot;)</code></pre><p>Let us define a function to compute the Householder matrix that projects a vector to <span>$e_1$</span>.</p><pre><code class="language-julia hljs">function householder_e1(v::AbstractVector{T}) where T
     v = copy(v)
     v[1] -= norm(v, 2)
     return HouseholderMatrix(v, 2/norm(v, 2)^2)
@@ -77,13 +77,13 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
            @info R
            @test Q * R ≈ A
            @test Q&#39; * Q ≈ I
-       end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr36"><span class="sgr1">[ Info: </span></span>[2.5221855299640663 0.6366154856152983 -0.10079626984400225; 0.0 1.8621321021846033 1.2131501374599023; 0.0 0.0 -0.21542202311341785]
+       end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr36"><span class="sgr1">[ Info: </span></span>[1.7754505503453708 1.5060745444897143 -0.8270185261783833; -2.220446049250313e-16 0.9232570525669916 -0.10925309027676666; -2.220446049250313e-16 2.220446049250313e-16 -0.4342570900158155]
 <span class="sgr1">Test Summary:  | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
 householder QR | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>2.5s
-Test.DefaultTestSet(&quot;householder QR&quot;, Any[], 2, false, false, true, 1.711531540809654e9, 1.711531543303878e9, false, &quot;REPL[1]&quot;)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = randn(3, 3)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
-  0.261737   0.0433024  -0.48752
- -0.892687  -1.35083     0.349203
-  0.616366   0.307223   -1.47627</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; g = givens_matrix(A, 2, 3)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `givens_matrix` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; left_mul!(copy(A), g)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `g` not defined</code></pre><h2 id="Givens-Rotations"><a class="docs-heading-anchor" href="#Givens-Rotations">Givens Rotations</a><a id="Givens-Rotations-1"></a><a class="docs-heading-anchor-permalink" href="#Givens-Rotations" title="Permalink"></a></h2><p class="math-container">\[G = \left(\begin{matrix}
+Test.DefaultTestSet(&quot;householder QR&quot;, Any[], 2, false, false, true, 1.711551803699893e9, 1.711551806211805e9, false, &quot;REPL[1]&quot;)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = randn(3, 3)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+ -0.227145  0.856516  -2.2134
+  0.427613  0.921897   0.620456
+  0.452479  1.65469    0.369545</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; g = givens_matrix(A, 2, 3)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `givens_matrix` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; left_mul!(copy(A), g)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `g` not defined</code></pre><h2 id="Givens-Rotations"><a class="docs-heading-anchor" href="#Givens-Rotations">Givens Rotations</a><a id="Givens-Rotations-1"></a><a class="docs-heading-anchor-permalink" href="#Givens-Rotations" title="Permalink"></a></h2><p class="math-container">\[G = \left(\begin{matrix}
 \cos\theta &amp; -\sin\theta\\
 \sin\theta &amp; \cos\theta
 \end{matrix}\right)\]</p><pre><code class="language-julia hljs">rotation_matrix(angle) = [cos(angle) -sin(angle); sin(angle) cos(angle)]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">rotation_matrix (generic function with 1 method)</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; angle = π/4</code><code class="nohighlight hljs ansi" style="display:block;">0.7853981633974483</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; initial_vector = [1.0, 0.0]</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
@@ -92,10 +92,10 @@ Test.DefaultTestSet(&quot;householder QR&quot;, Any[], 2, false, false, true, 1.
        # eliminating the y element</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
  0.7071067811865476
  0.7071067811865475</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; atan(0.1, 0.5)</code><code class="nohighlight hljs ansi" style="display:block;">0.19739555984988078</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; initial_vector = randn(2)</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
-  1.760420686945631
- -0.048783659768119846</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; angle = atan(initial_vector[2], initial_vector[1])</code><code class="nohighlight hljs ansi" style="display:block;">-0.02770427464779589</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; final_vector = rotation_matrix(-angle) * initial_vector</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
- 1.7610964881250826
- 6.938893903907228e-18</code></pre><p class="math-container">\[\left(
+  0.2918941321934498
+ -0.3512077664145221</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; angle = atan(initial_vector[2], initial_vector[1])</code><code class="nohighlight hljs ansi" style="display:block;">-0.8773685094589125</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; final_vector = rotation_matrix(-angle) * initial_vector</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
+  0.4566717416250371
+ -5.551115123125783e-17</code></pre><p class="math-container">\[\left(
 \begin{matrix}
 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
 0 &amp; c &amp; 0 &amp; s &amp; 0\\
@@ -178,10 +178,10 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
            @test Q * R ≈ A
            @test Q * Q&#39; ≈ I
            @info R
-       end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr36"><span class="sgr1">[ Info: </span></span>[2.522185529964066 0.6366154856152987 -0.10079626984400208; 0.0 1.8621321021846033 1.2131501374599019; 0.0 0.0 -0.21542202311341802]
+       end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr36"><span class="sgr1">[ Info: </span></span>[1.775450550345371 1.5060745444897143 -0.8270185261783832; -1.1102230246251565e-16 0.9232570525669915 -0.10925309027676652; 0.0 0.0 -0.43425709001581514]
 <span class="sgr1">Test Summary: | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
-givens QR     | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>0.1s
-Test.DefaultTestSet(&quot;givens QR&quot;, Any[], 2, false, false, true, 1.711531543344186e9, 1.711531543493008e9, false, &quot;REPL[1]&quot;)</code></pre><h2 id="Gram-Schmidt-Orthogonalization"><a class="docs-heading-anchor" href="#Gram-Schmidt-Orthogonalization">Gram-Schmidt Orthogonalization</a><a id="Gram-Schmidt-Orthogonalization-1"></a><a class="docs-heading-anchor-permalink" href="#Gram-Schmidt-Orthogonalization" title="Permalink"></a></h2><p>The Gram-Schmidt orthogonalization is a method to compute the QR factorization of a matrix <span>$A$</span> by constructing an orthogonal matrix <span>$Q$</span> and an upper triangular matrix <span>$R$</span>.</p><p class="math-container">\[q_k = \left(a_k - \sum_{i=1}^{k-1} r_{ik}q_i\right)/r_{kk}\]</p><pre><code class="language-julia hljs">function classical_gram_schmidt(A::AbstractMatrix{T}) where T
+givens QR     | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>0.2s
+Test.DefaultTestSet(&quot;givens QR&quot;, Any[], 2, false, false, true, 1.711551806254004e9, 1.711551806409973e9, false, &quot;REPL[1]&quot;)</code></pre><h2 id="Gram-Schmidt-Orthogonalization"><a class="docs-heading-anchor" href="#Gram-Schmidt-Orthogonalization">Gram-Schmidt Orthogonalization</a><a id="Gram-Schmidt-Orthogonalization-1"></a><a class="docs-heading-anchor-permalink" href="#Gram-Schmidt-Orthogonalization" title="Permalink"></a></h2><p>The Gram-Schmidt orthogonalization is a method to compute the QR factorization of a matrix <span>$A$</span> by constructing an orthogonal matrix <span>$Q$</span> and an upper triangular matrix <span>$R$</span>.</p><p class="math-container">\[q_k = \left(a_k - \sum_{i=1}^{k-1} r_{ik}q_i\right)/r_{kk}\]</p><pre><code class="language-julia hljs">function classical_gram_schmidt(A::AbstractMatrix{T}) where T
     m, n = size(A)
     Q = zeros(T, m, n)
     R = zeros(T, n, n)
@@ -239,4 +239,4 @@ let
     Q2, R2 = modified_gram_schmidt!(copy(A))
     @info norm(Q1&#39; * Q1 - I)
     @info norm(Q2&#39; * Q2 - I)
-end</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../lu/">« Solving linear equations by LU factorization: Bottom-up</a><a class="docs-footer-nextpage" href="../fft/">Fast Fourier transform »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Wednesday 27 March 2024 09:27">Wednesday 27 March 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+end</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../lu/">« Solving linear equations by LU factorization: Bottom-up</a><a class="docs-footer-nextpage" href="../fft/">Fast Fourier transform »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Wednesday 27 March 2024 15:05">Wednesday 27 March 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

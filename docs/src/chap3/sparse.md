@@ -123,19 +123,33 @@ Base.size(A::CSCMatrix, i::Int) = getindex((A.m, A.n), i)
 nnz(csc::CSCMatrix) = length(csc.nzval)
 
 # convert a COO matrix to a CSC matrix
-function CSCMatrix(coo::COOMatrix)
+function CSCMatrix(coo::COOMatrix{Tv, Ti}) where {Tv, Ti}
     m, n = size(coo)
     # sort the COO matrix by column
     order = sortperm(1:nnz(coo); by=i->coo.rowval[i] + m * (coo.colval[i]-1))
-    colval, rowval, nzval = coo.colval[order], coo.rowval[order], coo.nzval[order]
-    colptr = ones(Int, n+1)
-    ptr = 1
-    for j in 1:n
-        while ptr <= length(colval) && colval[ptr] == j
-            ptr += 1
+    colptr, rowval, nzval = similar(coo.rowval, n+1), similar(coo.rowval), similar(coo.nzval)
+    k = 0
+    ipre, jpre = 0, 0
+    colptr[1] = 1
+    for idx in order
+        i, j, v = coo.rowval[idx], coo.colval[idx], coo.nzval[idx]
+        # values with the same indices are accumulated
+        if i == ipre && j == jpre
+            nzval[k] += v
+        else
+            k += 1
+            if j != jpre
+                # a new column starts
+                colptr[jpre+1:j+1] .= k
+            end
+            rowval[k] = i
+            nzval[k] = v
+            ipre, jpre = i, j
         end
-        colptr[j+1] = ptr
     end
+    colptr[jpre+1:end] .= k + 1
+    resize!(rowval, k)
+    resize!(nzval, k)
     return CSCMatrix(m, n, colptr, rowval, nzval)
 end
 
@@ -172,7 +186,8 @@ nzrange(A::CSCMatrix, j::Int) = A.colptr[j]:A.colptr[j+1]-1
 ```
 
 ```@repl sparse
-csc_matrix = CSCMatrix(stiffmatrix)
+coo_matrix = COOMatrix(5, 4, [2, 3, 1, 4, 3, 4], [1, 1, 2, 2, 4, 4], [1, 2, 3, 4, 5, 6])
+csc_matrix = CSCMatrix(coo_matrix)
 ```
 
 The `csc_matrix` has type `CSCMatrix`, which contains 5 fields
@@ -204,7 +219,8 @@ csc_matrix.rowval[nzrange(csc_matrix, 3)] # or equivalently, we can use `nzrange
 Multiplying two CSC matrices is much faster than multiplying two COO matrices. The time complexity of multiplying two CSC matrices $A$ and $B$ is $O({\rm nnz}(A){\rm nnz}(B)/n)$.
 
 ```@repl sparse
-@test Matrix(csc_matrix)^2 ≈ csc_matrix * csc_matrix
+csc_matrix2 = CSCMatrix(COOMatrix(coo_matrix.n, coo_matrix.m, coo_matrix.rowval, coo_matrix.colval, coo_matrix.nzval))  # transpose
+@test Matrix(csc_matrix) * Matrix(csc_matrix2) ≈ csc_matrix * csc_matrix2
 ```
 
 !!! note "Question"

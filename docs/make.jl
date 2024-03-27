@@ -33,6 +33,7 @@ makedocs(;
             "chap3/sensitivity.md",
             "chap3/tensors.md",
             "chap3/cuda.md",
+            "chap3/sparse.md",
         ],
         # "Optimization (×)" => [
         #     "chap4/combinatorial.md",
@@ -43,13 +44,15 @@ makedocs(;
         #     "chap5/montecarlo.md",
         # ],
         # "Sparsity (×)" => [
-        #     "chap6/sparse.md",
         #     "chap6/compressedsensing.md",
         # ],
         # "High Performance Computing (×)" => [
         #     "chap7/hpc.md",
         #     "chap7/cuda.md",
         # ],
+        "Appendix" => [
+            "append/plotting.md"
+        ]
     ],
 )
 

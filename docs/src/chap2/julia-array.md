@@ -122,9 +122,9 @@ mesh2= (1:n) .* Ref(b1) .+ (1:n)' .* Ref(b2)  # broadcasting
 ```
 
 ```@example array
-using Plots
+using CairoMakie
 
-scatter(vec(getindex.(mesh2, 1)), vec(getindex.(mesh2, 2)), label="mesh2", ratio=1, markersize=5)
+scatter(vec(getindex.(mesh2, 1)), vec(getindex.(mesh2, 2)), label="mesh2", ratio=1, markersize=10)
 ```
 
 ## Benchmark: matrix multiplication

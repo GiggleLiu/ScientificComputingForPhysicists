@@ -113,19 +113,23 @@ maximum(spectrum)/minimum(spectrum)  # the same as the condition number
 !!! note "Numeric experiment on condition number"
     We randomly generate matrices of size $10\times 10$ and show the condition number approximately upper bounds the numeric error amplification factor of a linear equation solver.
     ```@example sensitivity
-    using Plots
-    n = 1000
+    n = 10000
     p = 2
     errors = zeros(n)
-    conds = zeros(n)
-    for k = 1:n
+    conds = map(1:n) do k
         A = rand(10, 10)
         b = rand(10)
         dx = A \ b
         sx = Float32.(A) \ Float32.(b)
         errors[k] = (norm(sx - dx, p)/norm(dx, p)) / (norm(b-Float32.(b), p)/norm(b, p))
-        conds[k] = cond(A, p)
+        cond(A, p)
     end
-    plt = plot(conds, conds; label="condition number", xlim=(1, 10000), ylim=(1, 10000), xscale=:log10, yscale=:log10)
-    scatter!(plt, conds, errors; label="samples")
+
+    # visualization
+    using CairoMakie
+    fig = Figure()
+    ax = Axis(fig[1, 1], xlabel="condition number", ylabel="error amplification factor", limits=(1, 10000, 1, 10000), xscale=log10, yscale=log10)
+    plot!(ax, conds, conds; label="condition number")
+    scatter!(ax, conds, errors; label="samples")
+    fig
     ```

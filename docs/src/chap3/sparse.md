@@ -186,7 +186,7 @@ nzrange(A::CSCMatrix, j::Int) = A.colptr[j]:A.colptr[j+1]-1
 ```
 
 ```@repl sparse
-coo_matrix = COOMatrix(5, 4, [2, 3, 1, 4, 3, 4], [1, 1, 2, 2, 4, 4], [1, 2, 3, 4, 5, 6])
+coo_matrix = COOMatrix(5, 4, [1, 1, 2, 2, 4, 4], [2, 3, 1, 4, 3, 4], [1, 2, 3, 4, 5, 6])
 csc_matrix = CSCMatrix(coo_matrix)
 ```
 

@@ -162,9 +162,7 @@ NVML.utilization_rates(nvml_dev)
 
 NVML.compute_processes(nvml_dev)
 
-## CUDA libraries and Kernel Programming"
-
-Please check [lib/CUDATutorial](../lib/CUDATutorial/kernel.jl)"
+## CUDA libraries and Kernel Programming
 
 # Appendix: The Navier-Stokes equation
 Reference: [https://youtu.be/Ra7aQlenTb8](https://youtu.be/Ra7aQlenTb8)

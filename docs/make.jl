@@ -31,9 +31,10 @@ makedocs(;
             "chap3/qr.md",
             "chap3/fft.md",
             "chap3/sensitivity.md",
-            "chap3/tensors.md",
-            "chap3/cuda.md",
             "chap3/sparse.md",
+        ],
+        "Tensors and Tensor Networks" => [
+            "chap4/tensors.md",
         ],
         # "Optimization (×)" => [
         #     "chap4/combinatorial.md",

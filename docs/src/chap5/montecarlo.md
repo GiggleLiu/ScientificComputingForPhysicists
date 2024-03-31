@@ -22,7 +22,18 @@ Z = \sum_{\{s\}} e^{-\beta H(\{s\})}
 where the sum is over all possible configurations of spins.
 
 ## Metropolis-Hastings Algorithm
-The Metropolis-Hastings algorithm is a popular MCMC method that is used to sample from a probability distribution. It works by constructing a Markov chain that has the desired distribution as its stationary distribution. The algorithm proceeds as follows:
+!!! note "Why importance sampling?"
+    Consider a target function $f(x)$ that to be integrated over a domain $D$. The integral is given by:
+    ```math
+    I = \int_D f(x) dx
+    ```
+    If we can sample from a probability distribution $p(x)$, we can estimate the integral by averaging over the samples:
+    ```math
+    I = \int_D \frac{f(x)}{p(x)} p(x)dx \approx \frac{1}{N} \sum_{i=1}^N \frac{f(x_i)}{p(x_i)}
+    ```
+    where $x_i$ are the samples drawn from the distribution $p(x)$. It can be shown that the standard deviation of the estimation scales as $1/\sqrt{N}$, and the result converges the faster the better the importance sampling distribution $p(x)$ matches the target function $f(x)$.
+
+The Metropolis-Hastings algorithm is a popular importance sampling method that is used to sample from a probability distribution. It works by constructing a Markov chain that has the desired distribution as its stationary distribution. The algorithm proceeds as follows:
 1. Start with an initial configuration of spins $\{s\}$.
 2. Propose a new configuration $\{s'\}$ by flipping the spin of a randomly chosen site.
 3. Calculate the change in energy $\Delta E = H(\{s'\}) - H(\{s\})$.

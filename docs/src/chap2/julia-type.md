@@ -127,7 +127,7 @@ fight(Human(170), Human(180))
 Quiz: How many method instances are generated for fight so far?
 
 ```@repl animal
-julia> methodinstances(fight)
+methodinstances(fight)
 ```
 
 ## Example: Julia number system

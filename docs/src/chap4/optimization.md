@@ -1,13 +1,6 @@
 # Optimization
 
-```@example optimization
-using Plots
-using Optim
-using ForwardDiff
-using Luxor
-```
-
-A general continous optimization problem has the following form
+A general continuous optimization problem has the following form
 ```math
 \min_{\mathbf x}f(\mathbf x)~~~\text{ subject to certian constraints}
 ```
@@ -45,40 +38,40 @@ Here are the steps involved in the one dimentional downhill simplex algorithm:
     3. If $f(x_c)$ is larger than $f(x_2)$, then **shrink** the simplex: evaluate $f$ on $x_d\leftarrow (x_1 + x_2)/2$, if it is larger than $f(x_1)$, then $x_2 \leftarrow x_d$, otherwise $x_1\leftarrow x_d, x_2\leftarrow x_1$.
 4. Repeat step 2-3 until convergence.
 
-
+```@example optimization
 function simplex1d(f, x1, x2; tol=1e-6)
-	# initial simplex
-	history = [[x1, x2]]
-	f1, f2 = f(x1), f(x2)
-	while abs(x2 - x1) > tol
-		xc = 2x1 - x2
-		fc = f(xc)
-		if fc < f1   # flip
-			x1, f1, x2, f2 = xc, fc, x1, f1
-		else         # shrink
-			if fc < f2   # let the smaller one be x2.
-				x2, f2 = xc, fc
-			end
-			xd = (x1 + x2) / 2
-			fd = f(xd)
-			if fd < f1   # update x1 and x2
-				x1, f1, x2, f2 = xd, fd, x1, f1
-			else
-				x2, f2 = xd, fd
-			end
-		end
-		push!(history, [x1, x2])
-	end
-	return x1, f1, history
+    # initial simplex
+    history = [[x1, x2]]
+    f1, f2 = f(x1), f(x2)
+    while abs(x2 - x1) > tol
+        xc = 2x1 - x2
+        fc = f(xc)
+        if fc < f1   # flip
+            x1, f1, x2, f2 = xc, fc, x1, f1
+        else         # shrink
+            if fc < f2   # let the smaller one be x2.
+                x2, f2 = xc, fc
+            end
+            xd = (x1 + x2) / 2
+            fd = f(xd)
+            if fd < f1   # update x1 and x2
+                x1, f1, x2, f2 = xd, fd, x1, f1
+            else
+                x2, f2 = xd, fd
+            end
+        end
+        push!(history, [x1, x2])
+    end
+    return x1, f1, history
 end
 
 simplex1d(x->x^2, -1.0, 6.0)
-
+```
 
 The Nelder-Mead method is well summarized in this [wiki page](https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method).
 Here is a Julia implementation:
 
-
+```@example optimization
 function simplex(f, x0; tol=1e-6, maxiter=1000)
     n = length(x0)
     x = zeros(n+1, n)
@@ -93,7 +86,7 @@ function simplex(f, x0; tol=1e-6, maxiter=1000)
         x[i+1,i] += 1.0
         fvals[i+1] = f(x[i+1,:])
     end
-	history = [x]
+    history = [x]
     for iter in 1:maxiter
         # Sort the vertices by function value
         order = sortperm(fvals)
@@ -141,7 +134,7 @@ function simplex(f, x0; tol=1e-6, maxiter=1000)
                 end
             end
         end
-		push!(history, x)
+        push!(history, x)
         # Check for convergence
         if maximum(abs.(x[2:end,:] .- x[1,:])) < tol && maximum(abs.(fvals[2:end] .- fvals[1])) < tol
             break
@@ -152,7 +145,7 @@ function simplex(f, x0; tol=1e-6, maxiter=1000)
     bestf = fvals[1]
     return (bestx, bestf, history)
 end
-
+```
 
 The `simplex` function takes three arguments: the objective function `f`, the initial guess `x0`, and optional arguments for the tolerance `tol` and maximum number of iterations `maxiter`.
 
@@ -160,48 +153,36 @@ The algorithm initializes a simplex (a high dimensional triangle) with `n+1` ver
 
 The algorithm then iteratively performs **reflection**, **expansion**, **contraction**, and **shrink** operations on the simplex until convergence is achieved. The best vertex and function value are returned.
 
-
-
 We use the [Rosenbrock function](https://en.wikipedia.org/wiki/Rosenbrock_function) as the test function.
 
-
+```@example optimization
 function rosenbrock(x)
-	(1.0 - x[1])^2 + 100.0 * (x[2] - x[1]^2)^2
+    (1.0 - x[1])^2 + 100.0 * (x[2] - x[1]^2)^2
 end
 
-let
-	x = -2:0.01:2
-	y = -2:0.01:2
-	f = [rosenbrock((a, b)) for b in y, a in x]
-	heatmap(x, y, log.(f); label="log(f)", xlabel="x₁", ylabel="x₂")
-end
+using CairoMakie
+x = -2:0.01:2
+y = -2:0.01:2
+f = [rosenbrock((a, b)) for b in y, a in x]
+heatmap(x, y, log.(f); label="log(f)", xlabel="x₁", ylabel="x₂")
+```
+    
+```@example optimization
+bestx, bestf, history = simplex(rosenbrock, [-1.2, -1.0]; tol=1e-3)
+@info "converged in $(length(history)) steps, with error $bestf"
+```
 
-function show_triangles(history)
-	x = -2:0.02:2
-	y = -2:0.02:2
-	f = [rosenbrock((a, b)) for b in y, a in x]
-	@gif for item in history
-		plt = heatmap(x, y, log.(f); label="log(f)", xlabel="x₁", ylabel="x₂", xlim=(-2, 2), ylim=(-2, 2))
-		plot!(plt, [item[:,1]..., item[1,1]], [item[:,2]..., item[1, 2]]; label="", color="white")
-	end fps=5
-end
-
-let
-	bestx, bestf, history = simplex(rosenbrock, [-1.2, -1.0]; tol=1e-3)
-	@info "converged in $(length(history)) steps, with error $bestf"
-	show_triangles(history)
-end
-
-let
-	# Set the initial guess
-	x0 = [-1, -1.0]
-	# Set the optimization options
-	options = Optim.Options(iterations = 1000)
-	# Optimize the Rosenbrock function using the simplex method
-	result = optimize(rosenbrock, x0, NelderMead(), options)
-	# Print the optimization result
-	result
-end
+```@example optimization
+using Optim
+# Set the initial guess
+x0 = [-1, -1.0]
+# Set the optimization options
+options = Optim.Options(iterations = 1000)
+# Optimize the Rosenbrock function using the simplex method
+result = optimize(rosenbrock, x0, NelderMead(), options)
+# Print the optimization result
+result
+```
 
 # Gradient based optimization
 
@@ -242,35 +223,35 @@ where
 
 One can obtain the gradient with `ForwardDiff`.
 
+```@example optimization
+using ForwardDiff
 ForwardDiff.gradient(rosenbrock, [1.0, 3.0])
 
 function gradient_descent(f, x; niters::Int, learning_rate::Real)
-	history = [x]
-	for i=1:niters
-		g = ForwardDiff.gradient(f, x)
-		x -= learning_rate * g
-		push!(history, x)
-	end
-	return history
+    history = [x]
+    for i=1:niters
+        g = ForwardDiff.gradient(f, x)
+        x -= learning_rate * g
+        push!(history, x)
+    end
+    return history
 end
 
 function show_history(history)
-	x = -2:0.01:2
-	y = -2:0.01:2
-	f = [rosenbrock((a, b)) for b in y, a in x]
-	plt = heatmap(x, y, log.(f); label="log(f)", xlabel="x₁", ylabel="x₂", xlim=(-2, 2), ylim=(-2, 2))
-	plot!(plt, getindex.(history, 1), getindex.(history, 2); label="optimization", color="white")
+    x = -2:0.01:2
+    y = -2:0.01:2
+    f = [rosenbrock((a, b)) for b in y, a in x]
+    plt = heatmap(x, y, log.(f); label="log(f)", xlabel="x₁", ylabel="x₂", xlim=(-2, 2), ylim=(-2, 2))
+    plot!(plt, getindex.(history, 1), getindex.(history, 2); label="optimization", color="white")
 end
 
-let
-	x0 = [-1, -1.0]
-	history = gradient_descent(rosenbrock, x0; niters=10000, learning_rate=0.002)
-	@info rosenbrock(history[end])
+x0 = [-1, -1.0]
+history = gradient_descent(rosenbrock, x0; niters=10000, learning_rate=0.002)
+@info rosenbrock(history[end])
 
-	# plot
-	show_history(history)
-end
-
+# plot
+show_history(history)
+```
 
 The problem of gradient descent: easy trapped by plateaus.
 
@@ -279,8 +260,9 @@ using Enzyme
 using Optim
 rosenbrock_inp(x) = (1.0 - x[1])^2 + 100.0 * (x[2] - x[1]^2)^2
 function g!(G, x)
-    G[1:length(x)]=gradient(Reverse, rosenbrock_inp, x)
+    G[1:length(x)]=gradient(Enzyme.Reverse, rosenbrock_inp, x)
 end
+x0 = [-1, -1.0]
 a=optimize(rosenbrock_inp, g!, x0, LBFGS())
 ```
 
@@ -304,33 +286,30 @@ where
 *  $\beta$ is the parameter for the gradient accumulation.
 
 ```@example optimization
-```
 function gradient_descent_momentum(f, x; niters::Int, β::Real, learning_rate::Real)
-	history = [x]
-	v = zero(x)
-	for i=1:niters
-		g = ForwardDiff.gradient(f, x)
-		v = β .* v .- learning_rate .* g
-		x += v
-		push!(history, x)
-	end
-	return history
+    history = [x]
+    v = zero(x)
+    for i=1:niters
+        g = ForwardDiff.gradient(f, x)
+        v = β .* v .- learning_rate .* g
+        x += v
+        push!(history, x)
+    end
+    return history
 end
 
 let
-	x0 = [-1, -1.0]
-	history = gradient_descent_momentum(rosenbrock, x0; niters=10000, learning_rate=0.002, β=0.5)
-	@info rosenbrock(history[end])
+    x0 = [-1, -1.0]
+    history = gradient_descent_momentum(rosenbrock, x0; niters=10000, learning_rate=0.002, β=0.5)
+    @info rosenbrock(history[end])
 
-	# plot
-	show_history(history)
+    # plot
+    show_history(history)
 end
-
+```
 
 The problem of momentum based method, easily got overshoted.
 Moreover, it is not **scale-invariant**.
-
-
 
 ## AdaGrad
 AdaGrad is an optimization algorithm used in machine learning for solving convex optimization problems. It is a gradient-based algorithm that adapts the learning rate for each parameter based on the historical gradient information. The main idea behind AdaGrad is to give more weight to the parameters that have a smaller gradient magnitude, which allows for a larger learning rate for those parameters.
@@ -341,7 +320,7 @@ In each iteration, the update rule of AdaGrad is
 
 ```math
 \begin{align}
-	&r_t = r_t + g_t^2\\
+    &r_t = r_t + g_t^2\\
     &\mathbf{\eta} = \frac{\alpha}{\sqrt{r_t + \epsilon}}\\
     &\theta_{t+1} = \theta_t - \eta \odot g_t
 \end{align}
@@ -355,29 +334,30 @@ where
 *  $\epsilon$ is a small positive number.
 *  $\odot$ is the element-wise multiplication.
 
-
+```@example optimization
 function adagrad_optimize(f, x; niters, learning_rate, ϵ=1e-8)
-	rt = zero(x)
-	η = zero(x)
-	history = [x]
-	for step in 1:niters
-	    Δ = ForwardDiff.gradient(f, x)
-	    @. rt = rt + Δ .^ 2
-		@. η = learning_rate ./ sqrt.(rt + ϵ)
-	    x = x .- Δ .* η
-		push!(history, x)
-	end
-	return history
+    rt = zero(x)
+    η = zero(x)
+    history = [x]
+    for step in 1:niters
+        Δ = ForwardDiff.gradient(f, x)
+        @. rt = rt + Δ .^ 2
+        @. η = learning_rate ./ sqrt.(rt + ϵ)
+        x = x .- Δ .* η
+        push!(history, x)
+    end
+    return history
 end
 
 let
-	x0 = [-1, -1.0]
-	history = adagrad_optimize(rosenbrock, x0; niters=10000, learning_rate=1.0)
-	@info rosenbrock(history[end])
+    x0 = [-1, -1.0]
+    history = adagrad_optimize(rosenbrock, x0; niters=10000, learning_rate=1.0)
+    @info rosenbrock(history[end])
 
-	# plot
-	show_history(history)
+    # plot
+    show_history(history)
 end
+```
 
 ## Adam
 The Adam optimizer is a popular optimization algorithm used in deep learning for training neural networks. It stands for Adaptive Moment Estimation and is a variant of stochastic gradient descent (SGD) that is designed to be more efficient and effective in finding the optimal weights for the neural network.
@@ -408,61 +388,54 @@ where
 *  $s_t$ is the exponential average of squares of gradients along $\theta$.
 *  $\beta_1, \beta_2$ are hyperparameters.
 
-
+```@example optimization
 function adam_optimize(f, x; niters, learning_rate, β1=0.9, β2=0.999, ϵ=1e-8)
-	mt = zero(x)
-	vt = zero(x)
-	βp1 = β1
-	βp2 = β2
-	history = [x]
-	for step in 1:niters
-	    Δ = ForwardDiff.gradient(f, x)
-	    @. mt = β1 * mt + (1 - β1) * Δ
-	    @. vt = β2 * vt + (1 - β2) * Δ^2
-	    @. Δ =  mt / (1 - βp1) / (√(vt / (1 - βp2)) + ϵ) * learning_rate
-	    βp1, βp2 = βp1 * β1, βp2 * β2
-	    x = x .- Δ
-		push!(history, x)
-	end
-	return history
+    mt = zero(x)
+    vt = zero(x)
+    βp1 = β1
+    βp2 = β2
+    history = [x]
+    for step in 1:niters
+        Δ = ForwardDiff.gradient(f, x)
+        @. mt = β1 * mt + (1 - β1) * Δ
+        @. vt = β2 * vt + (1 - β2) * Δ^2
+        @. Δ =  mt / (1 - βp1) / (√(vt / (1 - βp2)) + ϵ) * learning_rate
+        βp1, βp2 = βp1 * β1, βp2 * β2
+        x = x .- Δ
+        push!(history, x)
+    end
+    return history
 end
 
-let
-	x0 = [-1, -1.0]
-	history = adam_optimize(rosenbrock, x0; niters=10000, learning_rate=0.01)
-	@info rosenbrock(history[end])
+x0 = [-1, -1.0]
+history = adam_optimize(rosenbrock, x0; niters=10000, learning_rate=0.01)
+@info rosenbrock(history[end])
 
-	# plot
-	show_history(history)
-end
-
+# plot
+show_history(history)
+```
 
 ## The Julia package `Optimisers.jl`
 
-
-import Optimisers
-
-PlutoLecturing.@xbind gradient_based_optimizer Select(["Descent", "Momentum", "Nesterov", "Rprop", "RMSProp", "Adam", "RAdam", "AdaMax", "OAdam", "AdaGrad", "AdaDelta", "AMSGrad", "NAdam", "AdamW", "AdaBelief"])
-
-PlutoLecturing.@xbind learning_rate NumberField(0:1e-4:1.0, default=1e-4)
-
 The different optimizers are introduced in the [documentation page](https://fluxml.ai/Optimisers.jl/dev/api/)
 
-let
-	x0 = [-1, -1.0]
-	method = eval(:(Optimisers.$(Symbol(gradient_based_optimizer))(learning_rate)))
-	state = Optimisers.setup(method, x0)
-	history = [x0]
-	for i=1:10000
-		grad = ForwardDiff.gradient(rosenbrock, x0)
-		state, x0 = Optimisers.update(state, x0, grad)
-		push!(history, x0)
-	end
-	@info rosenbrock(history[end])
+```@example optimization
+import Optimisers
 
-	# plot
-	show_history(history)
+x0 = [-1, -1.0]
+method = eval(:(Optimisers.$(Symbol(gradient_based_optimizer))(learning_rate)))
+state = Optimisers.setup(method, x0)
+history = [x0]
+for i=1:10000
+    grad = ForwardDiff.gradient(rosenbrock, x0)
+    state, x0 = Optimisers.update(state, x0, grad)
+    push!(history, x0)
 end
+@info rosenbrock(history[end])
+
+# plot
+show_history(history)
+```
 
 [Optimisers.jl documentation](https://fluxml.ai/Optimisers.jl/dev/api/#Optimisation-Rules) contains **stochastic** gradient based optimizers.
 
@@ -470,9 +443,7 @@ end
 
 # Hessian based optimizers
 
-
 ## Newton's Method
-
 
 Newton's method is an optimization algorithm used to find the roots of a function, which can also be used to find the minimum or maximum of a function. The method involves using the first and second derivatives of the function to approximate the function as a quadratic function and then finding the minimum or maximum of this quadratic function. The minimum or maximum of the quadratic function is then used as the next estimate for the minimum or maximum of the original function, and the process is repeated until convergence is achieved.
 
@@ -487,30 +458,29 @@ Newton's method is an optimization algorithm used to find the roots of a functio
 where
 *  $g_k$ is the gradient at time $k$ along $x_k$.
 
-
+```@example optimization
 function newton_optimizer(f, x; tol=1e-5)
-	k = 0
-	history = [x]
-	while k < 1000
-		k += 1
-		gk = ForwardDiff.gradient(f, x)
-		hk = ForwardDiff.hessian(f, x)
-		dx = -hk \ gk
-		x += dx
-		push!(history, x)
-		sum(abs2, dx) < tol && break
-	end
-	return history
+    k = 0
+    history = [x]
+    while k < 1000
+        k += 1
+        gk = ForwardDiff.gradient(f, x)
+        hk = ForwardDiff.hessian(f, x)
+        dx = -hk \ gk
+        x += dx
+        push!(history, x)
+        sum(abs2, dx) < tol && break
+    end
+    return history
 end
 
-let
-	x0 = [-1, -1.0]
-	history = newton_optimizer(rosenbrock, x0; tol=1e-5)
-	@info "number iterations = $(length(history)), got $(rosenbrock(history[end]))"
+x0 = [-1, -1.0]
+history = newton_optimizer(rosenbrock, x0; tol=1e-5)
+@info "number iterations = $(length(history)), got $(rosenbrock(history[end]))"
 
-	# plot
-	show_history(history)
-end
+# plot
+show_history(history)
+```
 
 The drawback of Newton's method is, the Hessian is very expensive to compute!
 While gradients can be computed with the automatic differentiation method with constant overhead. The Hessian requires $O(n)$ times more resources, where $n$ is the number of parameters.
@@ -540,19 +510,17 @@ where
 
 We can show $B_{k+1}s_k = y_k$ (secant equation) is satisfied.
 
-
-let
-	# Set the initial guess
-	x0 = [-1.0, -1.0]
-	# Set the optimization options
-	options = Optim.Options(iterations = 1000, store_trace=true, extended_trace=true)
-	# Optimize the Rosenbrock function using the simplex method
-	result = optimize(rosenbrock, x->ForwardDiff.gradient(rosenbrock, x), x0, BFGS(), options, inplace=false)
-	# Print the optimization result
-	@info result
-	show_history([t.metadata["x"] for t in result.trace])
-end
-
+```@example optimization
+# Set the initial guess
+x0 = [-1.0, -1.0]
+# Set the optimization options
+options = Optim.Options(iterations = 1000, store_trace=true, extended_trace=true)
+# Optimize the Rosenbrock function using the simplex method
+result = optimize(rosenbrock, x->ForwardDiff.gradient(rosenbrock, x), x0, BFGS(), options, inplace=false)
+# Print the optimization result
+@info result
+show_history([t.metadata["x"] for t in result.trace])
+```
 
 # Mathematical optimization
 
@@ -565,33 +533,6 @@ A set $S\subseteq \mathbb{R}^n$ is convex if it contains the line segment betwee
 ```
 for all $\mathbf{x}, \mathbf{y} \in S$.
 
-let
-	@drawsvg begin
-	function segment(a, b)
-		line(a, b, :stroke)
-		circle(a, 5, :fill)
-		circle(b, 5, :fill)
-	end
-	fontsize(20)
-	c1 = Point(-180, -20)
-	sethue("red")
-	ellipse(c1, 130, 80, :fill)
-	sethue("black")
-	ellipse(c1, 130, 80, :stroke)
-	segment(c1 - Point(50, 25), c1 + Point(50, -25))
-	Luxor.text("convex set", c1 + Point(0, 90), halign=:center)
-	c2 = Point(0, -20)
-	f(t) = Point(4cos(t) + 2cos(3t), 4sin(t) + 3sin(3t+π/2))
-	sethue("red")
-    poly(10 .* f.(range(0, 2π, length=160)) .+ c2, action = :fill)
-	sethue("black")
-    poly(10 .* f.(range(0, 2π, length=160)) .+ c2, action = :stroke)
-	a, b = Point(c2.x-30, c2.y+30), Point(c2.x+45, c2.y)
-	segment(a, b)
-	Luxor.text("nonconvex set", c2 + Point(0, 90), halign=:center)
-end 520 200
-end
-
 
 A function $f: S \in R^n \rightarrow R$ is convex on a convex set $S$ if its graph along any line segment in $S$ lies on or blow the chord connecting the function values at the endpoints of the segment, i.e., if
 ```math
@@ -599,39 +540,6 @@ f(\alpha \mathbf{x} + (1-\alpha) \mathbf{y}) \leq \alpha f(\mathbf{x}) + (1+\alp
 ```
 for all $\alpha \in [0, 1]$ and all $\mathbf{x}, \mathbf{y}\in S$.
 
-
-let
-@drawsvg begin
-	function segment(a, b)
-		line(a, b, :stroke)
-		circle(a, 5, :fill)
-		circle(b, 5, :fill)
-	end
-	fontsize(20)
-	c1 = Point(-180, -20)
-	xs = -1.6:0.01:1.6
-	ys = 0.8 * (2.0xs .^ 2 .- xs .^ 4 .- 0.2*xs .+ 1)
-	Luxor.poly(30 .* Point.(xs, ys) .+ Ref(c1), :stroke)
-	Luxor.text("nonconvex", c1 + Point(0, 90), halign=:center)
-	segment(c1+Point(-17, 40), c1+Point(18, 35))
-	
-	c2 = Point(0, -20)
-	xs = [-1.8, -0.9, 0.0, 0.7, 1.8]
-	ys = [-0.7, 1.3, 1.7, 1.2, -0.7]
-	Luxor.poly(30 .* Point.(xs, ys) .+ Ref(c2), :stroke)
-	Luxor.text("convex", c2 + Point(0, 90), halign=:center)
-	segment(c2+Point(-17, 43), c2+Point(25, 30))
-
-	
-	fontsize(20)
-	c3 = Point(180, -20)
-	xs = -1.4:0.01:1.3
-	ys = 0.8 * (- xs .^ 4 .- 0.2*xs .+ 2.2)
-	Luxor.poly(30 .* Point.(xs, ys) .+ Ref(c3), :stroke)
-	Luxor.text("strictly convex", c3 + Point(0, 90), halign=:center)
-	segment(c3+Point(-27, 40), c3+Point(25, 35))
-end 520 200
-end
 
 Any local minimum of a convex function $f$ on a convex set $S\subseteq \mathbb{R}^n$ is a global minimum of $f$ on $S$.
 
@@ -652,63 +560,34 @@ Here the components of $\mathbf x$ are the variables to be determined, $\mathbf 
 
 [JuMP.jl documentation](https://jump.dev/JuMP.jl/stable/) also contains mathematical models such as **semidefinite programming** and **integer programming**.
 
+## Golden section search
 
-
-# Assignments
-
-1. Show the following graph $G=(V, E)$ has a unit-disk embedding.
-```
-V = 1, 2, ..., 10
-E = [(1, 2), (1, 3),
-	(2, 3), (2, 4), (2, 5), (2, 6),
-	(3, 5), (3, 6), (3, 7),
-	(4, 5), (4, 8),
-	(5, 6), (5, 8), (5, 9),
-	(6, 7), (6, 8), (6, 9),
-	(7,9), (8, 9), (8, 10), (9, 10)]
-```
-
-So what is uni-disk embedding of a graph? Ask Chat-GPT with the following question
-```
-What is a unit-disk embedding of a graph?
-```
-
-### Hint:
-To solve this issue, you can utilize an optimizer. Here's how:
-
-1. Begin by assigning each vertex with a coordinate. You can represent the locations of all vertices as a $2 \times n$ matrix, denoted as $x$, where each column represents a coordinate of vertices in a two-dimensional space.
-
-2. Construct a loss function, denoted as $f(x)$, that returns a positive value as punishment if any connected vertex pair $(v, w)$ has a distance ${\rm dist}(x_v, x_w) > 1$ (the unit distance), or if any disconnected vertex pair has a distance smaller than $1$. If all unit-disk constraints are satisfied, the function returns $0$.
-
-3. Use an optimizer to optimize the loss function $f(x)$. If the loss can be reduced to $0$, then the corresponding $x$ represents a unit-disk embedding. If not, you may need to try multiple times to ensure that your optimizer does not trap you into a local minimum.
-
-
-## Golden section search";
-
+```@example optimization
 function golden_section_search(f, a, b; tol=1e-5)
-	τ = (√5 - 1) / 2
-	x1 = a + (1 - τ) * (b - a)
-	x2 = a + τ * (b - a)
-	f1, f2 = f(x1), f(x2)
-	k = 0
-	while b - a > tol
-		k += 1
-		if f1 > f2
-			a = x1
-			x1 = x2
-			f1 = f2
-			x2 = a + τ * (b - a)
-			f2 = f(x2)
-		else
-			b = x2
-			x2 = x1
-			f2 = f1
-			x1 = a + (1 - τ) * (b - a)
-			f1 = f(x1)
-		end
-	end
-	#@info "number of iterations = $k"
-	return f1 < f2 ? (a, f1) : (b, f2)
+    τ = (√5 - 1) / 2
+    x1 = a + (1 - τ) * (b - a)
+    x2 = a + τ * (b - a)
+    f1, f2 = f(x1), f(x2)
+    k = 0
+    while b - a > tol
+        k += 1
+        if f1 > f2
+            a = x1
+            x1 = x2
+            f1 = f2
+            x2 = a + τ * (b - a)
+            f2 = f(x2)
+        else
+            b = x2
+            x2 = x1
+            f2 = f1
+            x1 = a + (1 - τ) * (b - a)
+            f1 = f(x1)
+        end
+    end
+    #@info "number of iterations = $k"
+    return f1 < f2 ? (a, f1) : (b, f2)
 end;
 
 golden_section_search(x->(x-4)^2, -5, 5; tol=1e-5);
+```

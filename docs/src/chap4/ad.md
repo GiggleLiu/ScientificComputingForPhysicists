@@ -1,12 +1,5 @@
 # Automatic Differentiation
 
-```@example ad
-using FiniteDifferences
-using BenchmarkTools
-using ForwardDiff
-using Enzyme
-```
-
 ## A brief history of autodiff
 
 * 1964 (**forward mode AD**) ~ Robert Edwin Wengert, A simple automatic derivative evaluation program.
@@ -46,29 +39,34 @@ In each step, the state transfer can be described as $(k_i, s_i, out_i) \rightar
 using CairoMakie
 
 x = 0.0:0.01:10
-plt = plot([], []; label="", xlabel="x", ylabel="y")
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel="x", ylabel="J(ν, x)")
 for i=0:5
     yi = poor_besselj.(i, x)
-    plot!(plt, x, yi; label="J(ν=$i)", lw=2)
+    lines!(ax, x, yi; label="J(ν=$i)", linewidth=2)
 end
-plt
+fig
 ```
 
 ```@repl ad
-yi = poor_besselj.(i, x)
+using FiniteDifferences: central_fdm
+using Enzyme
 
-g_f = [autodiff(Forward, poor_besselj, i, Enzyme.Duplicated(xi, 1.0))[1] for xi in x] # forward mode
-g_m = ((i == 0 ? -poor_besselj.(i+1, x) : poor_besselj.(i-1, x)) - poor_besselj.(i+1, x)) ./ 2 # manual
-g_b = [autodiff(Reverse, poor_besselj, i, Enzyme.Active(xi))[1] for xi in x]
-g_c = central_fdm(5, i)(x->poor_besselj(i, x), x) # central finite difference
+ν = 2
+yi = poor_besselj.(ν, x)
+
+g_f = [Enzyme.autodiff(Enzyme.Forward, poor_besselj, ν, Enzyme.Duplicated(xi, 1.0))[1] for xi in x] # forward mode
+g_m = (poor_besselj.(ν-1, x) - poor_besselj.(ν+1, x)) ./ 2 # manual
+g_b = [Enzyme.autodiff(Enzyme.Reverse, poor_besselj, ν, Enzyme.Active(xi))[1][2] for xi in x]
+g_c = central_fdm(5, 1).(z->poor_besselj(ν, z), x) # central finite difference
 ```
 
 ```@example ad
-x = 0.0:0.01:10
-plt = plot([], []; label="", xlabel="x", ylabel="y")
-plot!(plt, x, yi; label="J(ν=$i)", lw=2, color=i)
-plot!(plt, x, gi; label="g(ν=$i)", lw=2, color=i, ls=:dash)
-plt
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel="x", ylabel="y")
+lines!(ax, x, yi; label="J(ν=$ν)", linewidth=2)
+lines!(ax, x, g_b; label="g(ν=$ν)", linewidth=2, linestyle=:dash)
+fig
 ```
 
 ## Finite difference
@@ -127,12 +125,24 @@ Let the finite difference coefficients be $\vec \alpha^T = (\alpha_{-2}, \alpha_
 b = [0.0, 1, 0, 0, 0]
 A = [i^j for i=-2:2, j=0:4]
 A' \ b
-
 [i^j for i=-2:2, j=0:4]
-
 central_fdm(5, 1)(x->poor_besselj(2, x), 0.5)
+```
 
-@benchmark central_fdm(5, 1)(y->poor_besselj(2, y), x) setup=(x=0.5)
+```julia-repl
+julia> using BenchmarkTools
+
+julia> @benchmark central_fdm(5, 1)(y->poor_besselj(2, y), x) setup=(x=0.5)
+BenchmarkTools.Trial: 10000 samples with 9 evaluations.
+ Range (min … max):  2.588 μs … 434.102 μs  ┊ GC (min … max): 0.00% … 98.68%
+ Time  (median):     2.708 μs               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   2.832 μs ±   5.422 μs  ┊ GC (mean ± σ):  3.49% ±  1.96%
+
+   ▁▂▅▆▇██▆▅▄▂▁                                               ▂
+  ▇███████████████▆▆▆▅▄▅▅▄▆▄▅▇██▆▆▆▄▆▆▆▆▅▆▄▄▄▄▃▄▄▄▃▁▄▄▄▁▁▄▁▃▄ █
+  2.59 μs      Histogram: log(frequency) by time      3.62 μs <
+
+ Memory estimate: 2.47 KiB, allocs estimate: 36.
 ```
 
 ## Forward mode automatic differentiation
@@ -151,9 +161,11 @@ The higher order infinitesimal is ignored.
 f((x, g)) = (f(x), f'(x)*g)
 ```
 
+```@repl ad
+using ForwardDiff
 res = sin(ForwardDiff.Dual(π/4, 2.0))
-
 res === ForwardDiff.Dual(sin(π/4), cos(π/4)*2.0)
+```
 
 
 We can apply this transformation consecutively, it reflects the chain rule.
@@ -167,10 +179,21 @@ We can apply this transformation consecutively, it reflects the chain rule.
 
 **Example:** Computing two gradients $\frac{\partial z\sin x}{\partial x}$ and $\frac{\partial \sin^2x}{\partial x}$ at one sweep
 
-```@repl ad
-autodiff(Forward, poor_besselj, 2, Duplicated(0.5, 1.0))[1]
+```julia-repl
+julia> autodiff(Forward, poor_besselj, 2, Duplicated(0.5, 1.0))[1]
+0.11985236384014333
 
-@benchmark autodiff(Forward, poor_besselj, 2, Duplicated(x, 1.0))[1] setup=(x=0.5)
+julia> @benchmark autodiff(Forward, poor_besselj, 2, Duplicated(x, 1.0))[1] setup=(x=0.5)
+BenchmarkTools.Trial: 10000 samples with 996 evaluations.
+ Range (min … max):  22.256 ns … 66.349 ns  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     23.050 ns              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   23.290 ns ±  1.986 ns  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+  ▅▅  █▆▂▂▄▂▂▂▁                                               ▁
+  ██▅▇██████████▅▅▄▅▅▅▅▃▄▄▄▅▆▅▅▃▄▃▄▅▄▅▄▆▅▅▄▃▂▄▃▃▂▃▄▃▄▄▃▂▂▃▂▃▃ █
+  22.3 ns      Histogram: log(frequency) by time      31.8 ns <
+
+ Memory estimate: 0 bytes, allocs estimate: 0.
 ```
 
 The computing time grows **linearly** as the number of variables that we want to differentiate. But does not grow significantly with the number of outputs.

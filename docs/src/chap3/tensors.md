@@ -121,9 +121,6 @@ Z = \sum_{\sigma} e^{-\beta H(\sigma)} = \sum_{\sigma} e^{\beta \sum_{i,j} J_{ij
 ### Best configuration
 ### Landscape
 
-```@example tensor
-```
-
 ## The backward rule of tensor contraction
 
 The backward rule for matrix multiplication is

@@ -1,26 +1,11 @@
+# Optimization
+
+```@example optimization
 using Plots
-
 using Optim
-
 using ForwardDiff
-
 using Luxor
-
-
-# Announcements
-1. How to avoid PR like: [https://github.com/GiggleLiu/ModernScientificComputing/pull/27](https://github.com/GiggleLiu/ModernScientificComputing/pull/27). Help desk event (Saturday night, hosted by Yusheng Zhao) will be announced in the `#coding-club` stream?
-2. Why we should never add a big file into a Github repo?
-2. The ChatGPT bot in [HKUST-GZ Zulip workspace](http://zulip.hkust-gz.edu.cn/), `@ChatGPT` (user stream: `#chatgpt-discussion`), credit Yijie Xu, Github repo: [https://github.com/yeahjack/chatgpt_zulip_bot](https://github.com/yeahjack/chatgpt_zulip_bot).
-3. Have to cancel the next lecture, we will not have final exam!
-
-
-LocalResource("images/chatgpt.png")
-
-TableOfContents()
-
-# Optimization"
-
-Reference: **Scientific Computing - Chapter 6**"
+```
 
 A general continous optimization problem has the following form
 ```math
@@ -28,11 +13,7 @@ A general continous optimization problem has the following form
 ```
 The constraints may be either equality or inequality constraints.
 
-
-
-# Gradient free optimization
-
-
+## Gradient free optimization
 
 Gradient-free optimizers are optimization algorithms that do not rely on the gradient of the objective function to find the optimal solution. Instead, they use other methods such as random search, genetic algorithms, or simulated annealing to explore the search space and find the optimal solution. These methods are particularly useful when the objective function is non-differentiable or when the gradient is difficult to compute. However, gradient-free optimizers can be $(PlutoLecturing.highlight("slower and less efficient than gradient-based methods")), especially when the search space is high-dimensional.
 
@@ -48,7 +29,7 @@ There are several popular gradient-free optimizers, including:
 * **Nelder-Mead algorithm**: This is a direct search method that does not require the computation of gradients of the objective function. Instead, it uses a set of simplex (a geometrical figure that generalizes the concept of a triangle to higher dimensions) to iteratively explore the search space and improve the objective function value. The Nelder-Mead algorithm is particularly effective in optimizing nonlinear and non-smooth functions, and it is widely used in engineering, physics, and other fields.
 
 
-NOTE: [Optim.jl documentation](https://julianlsolvers.github.io/Optim.jl/stable/) contains more detailed introduction of gradient free, gradient based and hessian based optimizers."
+NOTE: [Optim.jl documentation](https://julianlsolvers.github.io/Optim.jl/stable/) contains more detailed introduction of gradient free, gradient based and hessian based optimizers.
 
 
 ## The downhill simplex method
@@ -222,7 +203,7 @@ let
 	result
 end
 
-# Gradient based optimization"
+# Gradient based optimization
 
 
 If $f: R^n \rightarrow R$ is differentiable, then the vector-valued function $\nabla f: R^n \rightarrow R^n$ defined by
@@ -259,7 +240,7 @@ where
 *  $\alpha$ is the learning rate.
 
 
-One can obtain the gradient with `ForwardDiff`."
+One can obtain the gradient with `ForwardDiff`.
 
 ForwardDiff.gradient(rosenbrock, [1.0, 3.0])
 
@@ -293,7 +274,15 @@ end
 
 The problem of gradient descent: easy trapped by plateaus.
 
-
+```@example optimization
+using Enzyme
+using Optim
+rosenbrock_inp(x) = (1.0 - x[1])^2 + 100.0 * (x[2] - x[1]^2)^2
+function g!(G, x)
+    G[1:length(x)]=gradient(Reverse, rosenbrock_inp, x)
+end
+a=optimize(rosenbrock_inp, g!, x0, LBFGS())
+```
 
 ## Gradient descent with momentum
 
@@ -314,7 +303,8 @@ where
 *  $\alpha$ is the initial learning rate.
 *  $\beta$ is the parameter for the gradient accumulation.
 
-
+```@example optimization
+```
 function gradient_descent_momentum(f, x; niters::Int, β::Real, learning_rate::Real)
 	history = [x]
 	v = zero(x)
@@ -456,7 +446,7 @@ PlutoLecturing.@xbind gradient_based_optimizer Select(["Descent", "Momentum", "N
 
 PlutoLecturing.@xbind learning_rate NumberField(0:1e-4:1.0, default=1e-4)
 
-The different optimizers are introduced in the [documentation page](https://fluxml.ai/Optimisers.jl/dev/api/)"
+The different optimizers are introduced in the [documentation page](https://fluxml.ai/Optimisers.jl/dev/api/)
 
 let
 	x0 = [-1, -1.0]
@@ -481,7 +471,7 @@ end
 # Hessian based optimizers
 
 
-## Newton's Method"
+## Newton's Method
 
 
 Newton's method is an optimization algorithm used to find the roots of a function, which can also be used to find the minimum or maximum of a function. The method involves using the first and second derivatives of the function to approximate the function as a quadratic function and then finding the minimum or maximum of this quadratic function. The minimum or maximum of the quadratic function is then used as the next estimate for the minimum or maximum of the original function, and the process is repeated until convergence is achieved.
@@ -523,9 +513,9 @@ let
 end
 
 The drawback of Newton's method is, the Hessian is very expensive to compute!
-While gradients can be computed with the automatic differentiation method with constant overhead. The Hessian requires $O(n)$ times more resources, where $n$ is the number of parameters."
+While gradients can be computed with the automatic differentiation method with constant overhead. The Hessian requires $O(n)$ times more resources, where $n$ is the number of parameters.
 
-## The Broyden–Fletcher–Goldfarb–Shanno (BFGS) algorithm"
+## The Broyden–Fletcher–Goldfarb–Shanno (BFGS) algorithm
 
 
 The BFGS method is a popular numerical optimization algorithm used to solve unconstrained optimization problems. It is an iterative method that seeks to find the minimum of a function by iteratively updating an estimate of the inverse Hessian matrix of the function.
@@ -567,7 +557,7 @@ end
 # Mathematical optimization
 
 
-## Convex optimization"
+## Convex optimization
 
 A set $S\subseteq \mathbb{R}^n$ is convex if it contains the line segment between any two of its points, i.e.,
 ```math
@@ -643,9 +633,9 @@ let
 end 520 200
 end
 
-Any local minimum of a convex function $f$ on a convex set $S\subseteq \mathbb{R}^n$ is a global minimum of $f$ on $S$."
+Any local minimum of a convex function $f$ on a convex set $S\subseteq \mathbb{R}^n$ is a global minimum of $f$ on $S$.
 
-## Linear programming"
+## Linear programming
 
 
 Linear programs are problems that can be expressed in canonical form as

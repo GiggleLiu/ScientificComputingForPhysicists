@@ -34,20 +34,20 @@ makedocs(;
             "chap3/sparse.md",
         ],
         "Tensors and Tensor Networks" => [
-            "chap4/tensors.md",
+            "chap3/tensors.md",
         ],
-        # "Optimization (×)" => [
+        "Optimization" => [
         #     "chap4/combinatorial.md",
         #     "chap4/optimization.md",
-        #     "chap4/ad.md",
+            "chap4/ad.md",
         # ],
-        # "Randomness (×)" => [
+        # "Randomness" => [
         #     "chap5/montecarlo.md",
         # ],
-        # "Sparsity (×)" => [
+        # "Sparsity" => [
         #     "chap6/compressedsensing.md",
         # ],
-        # "High Performance Computing (×)" => [
+        # "High Performance Computing" => [
         #     "chap7/hpc.md",
         #     "chap7/cuda.md",
         # ],

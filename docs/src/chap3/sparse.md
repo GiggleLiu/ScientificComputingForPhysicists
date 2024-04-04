@@ -301,7 +301,7 @@ The high level interface of KrylovKit is provided by the following functions:
 
 ## The Lanczos algorithm
 
-In the Lanczos algorithm, we want to find a orthogonal matrix $Q^T$ such that
+The Lanczos algorithm is used to solve the symmetric eigenvalue problem. Given a symmetric matrix $A \in \mathbb{R}^{n \times n}$, the Lanczos algorithm generates an orthogonal matrix $Q \in \mathbb{R}^{n \times k}$, such that
 ```math
 Q^T A Q = T
 ```

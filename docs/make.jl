@@ -40,11 +40,11 @@ makedocs(;
         #     "chap4/combinatorial.md",
         #     "chap4/optimization.md",
             "chap4/ad.md",
-        # ],
-        # "Randomness" => [
-        #     "chap5/montecarlo.md",
-        # ],
-        # "Sparsity" => [
+        ],
+        "Randomness" => [
+            "chap5/montecarlo.md",
+        ],
+        # "Sparsity (×)" => [
         #     "chap6/compressedsensing.md",
         # ],
         # "High Performance Computing" => [

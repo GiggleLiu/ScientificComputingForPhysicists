@@ -127,7 +127,8 @@ fight(Human(170), Human(180))
 Quiz: How many method instances are generated for fight so far?
 
 ```@repl animal
-julia> methodinstances(fight)
+using MethodAnalysis
+methodinstances(fight)
 ```
 
 ## Example: Julia number system
@@ -335,7 +336,7 @@ addup(Val(5), Val(7))
 ```
 
 Finally, we can define the Fibonacci number in a zero cost way.
-```@repl
+```@repl number
 fib(::Val{x}) where x = x <= 2 ? Val(1) : addup(fib(Val(x-1)), fib(Val(x-2)))
 ```
 

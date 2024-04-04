@@ -47,6 +47,8 @@ jlfactorial (generic function with 1 method)
 
 To make sure the performance is measured correctly, we use the `@btime` macro in the `BenchmarkTools` package to measure the performance of the function.
 ```julia-repl
+julia> using BenchmarkTools
+
 julia> @btime jlfactorial(x) setup=(x=5)
 2.208 ns (0 allocations: 0 bytes)
 120

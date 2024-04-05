@@ -1,2 +1,311 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Optimization · Scientific Computing For Physicists</title><meta name="title" content="Optimization · Scientific Computing For Physicists"/><meta property="og:title" content="Optimization · Scientific Computing For Physicists"/><meta property="twitter:title" content="Optimization · Scientific Computing For Physicists"/><meta name="description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:description" content="Documentation for Scientific Computing For Physicists."/><meta property="twitter:description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:url" content="https://book.jinguo-group.science/chap4/optimization/"/><meta property="twitter:url" content="https://book.jinguo-group.science/chap4/optimization/"/><link rel="canonical" href="https://book.jinguo-group.science/chap4/optimization/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Scientific Computing For Physicists</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Become an Open-source Developer</span><ul><li><a class="tocitem" href="../../chap1/terminal/">Get a Terminal!</a></li><li><a class="tocitem" href="../../chap1/git/">Maintainability - Version Control</a></li><li><a class="tocitem" href="../../chap1/ci/">Correctness - Unit Tests</a></li></ul></li><li><span class="tocitem">Julia Programming Language</span><ul><li><a class="tocitem" href="../../chap2/julia-setup/">Setup Julia</a></li><li><a class="tocitem" href="../../chap2/julia-why/">Why Julia?</a></li><li><a class="tocitem" href="../../chap2/julia-type/">Types and Multiple-dispatch</a></li><li><a class="tocitem" href="../../chap2/julia-array/">Array and Broadcasting</a></li><li><a class="tocitem" href="../../chap2/julia-release/">My First Package</a></li><li><a class="tocitem" href="../../chap2/julia-fluid/">Project: Fluid dynamics</a></li></ul></li><li><span class="tocitem">Linear Algebra</span><ul><li><a class="tocitem" href="../../chap3/linalg/">Matrix Computation</a></li><li><a class="tocitem" href="../../chap3/lu/">Solving linear equations by LU factorization: Bottom-up</a></li><li><a class="tocitem" href="../../chap3/qr/">QR Factorization: Bottom-up</a></li><li><a class="tocitem" href="../../chap3/fft/">Fast Fourier transform</a></li><li><a class="tocitem" href="../../chap3/sensitivity/">Sensitivity Analysis</a></li><li><a class="tocitem" href="../../chap3/tensors/">Tensor Operations</a></li><li><a class="tocitem" href="../../chap3/cuda/">Arrays on GPU</a></li><li><a class="tocitem" href="../../chap3/sparse/">Sparse Matrices and Graphs</a></li></ul></li><li><span class="tocitem">Randomness</span><ul><li><a class="tocitem" href="../../chap5/montecarlo/">Markov Chain Monte Carlo</a></li></ul></li><li><span class="tocitem">Appendix</span><ul><li><a class="tocitem" href="../../append/plotting/">Plotting recipes with CairoMakie</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Optimization</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Optimization</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists/blob/main/docs/src/chap4/optimization.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Optimization"><a class="docs-heading-anchor" href="#Optimization">Optimization</a><a id="Optimization-1"></a><a class="docs-heading-anchor-permalink" href="#Optimization" title="Permalink"></a></h1></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Tuesday 2 April 2024 04:08">Tuesday 2 April 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Optimization · Scientific Computing For Physicists</title><meta name="title" content="Optimization · Scientific Computing For Physicists"/><meta property="og:title" content="Optimization · Scientific Computing For Physicists"/><meta property="twitter:title" content="Optimization · Scientific Computing For Physicists"/><meta name="description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:description" content="Documentation for Scientific Computing For Physicists."/><meta property="twitter:description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:url" content="https://book.jinguo-group.science/chap4/optimization/"/><meta property="twitter:url" content="https://book.jinguo-group.science/chap4/optimization/"/><link rel="canonical" href="https://book.jinguo-group.science/chap4/optimization/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Scientific Computing For Physicists</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Become an Open-source Developer</span><ul><li><a class="tocitem" href="../../chap1/terminal/">Get a Terminal!</a></li><li><a class="tocitem" href="../../chap1/git/">Maintainability - Version Control</a></li><li><a class="tocitem" href="../../chap1/ci/">Correctness - Unit Tests</a></li></ul></li><li><span class="tocitem">Julia Programming Language</span><ul><li><a class="tocitem" href="../../chap2/julia-setup/">Setup Julia</a></li><li><a class="tocitem" href="../../chap2/julia-why/">Why Julia?</a></li><li><a class="tocitem" href="../../chap2/julia-type/">Types and Multiple-dispatch</a></li><li><a class="tocitem" href="../../chap2/julia-array/">Array and Broadcasting</a></li><li><a class="tocitem" href="../../chap2/julia-release/">My First Package</a></li><li><a class="tocitem" href="../../chap2/julia-fluid/">Project: Fluid dynamics</a></li></ul></li><li><span class="tocitem">Linear Algebra</span><ul><li><a class="tocitem" href="../../chap3/linalg/">Matrix Computation</a></li><li><a class="tocitem" href="../../chap3/lu/">Solving linear equations by LU factorization: Bottom-up</a></li><li><a class="tocitem" href="../../chap3/qr/">QR Factorization: Bottom-up</a></li><li><a class="tocitem" href="../../chap3/fft/">Fast Fourier transform</a></li><li><a class="tocitem" href="../../chap3/sensitivity/">Sensitivity Analysis</a></li><li><a class="tocitem" href="../../chap3/sparse/">Sparse Matrices and Graphs</a></li></ul></li><li><span class="tocitem">Tensors and Tensor Networks</span><ul><li><a class="tocitem" href="../../chap3/tensors/">Tensor Operations</a></li></ul></li><li><span class="tocitem">Optimization</span><ul><li class="is-active"><a class="tocitem" href>Optimization</a><ul class="internal"><li><a class="tocitem" href="#Gradient-free-optimization"><span>Gradient free optimization</span></a></li><li><a class="tocitem" href="#Gradient-based-optimization"><span>Gradient based optimization</span></a></li><li><a class="tocitem" href="#Hessian-based-optimizers"><span>Hessian based optimizers</span></a></li><li><a class="tocitem" href="#Linear-programming"><span>Linear programming</span></a></li></ul></li><li><a class="tocitem" href="../ad/">Automatic Differentiation</a></li></ul></li><li><span class="tocitem">Randomness</span><ul><li><a class="tocitem" href="../../chap5/montecarlo/">Markov Chain Monte Carlo</a></li></ul></li><li><span class="tocitem">Appendix</span><ul><li><a class="tocitem" href="../../append/plotting/">Plotting recipes with CairoMakie</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Optimization</a></li><li class="is-active"><a href>Optimization</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Optimization</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists/blob/main/docs/src/chap4/optimization.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Optimization"><a class="docs-heading-anchor" href="#Optimization">Optimization</a><a id="Optimization-1"></a><a class="docs-heading-anchor-permalink" href="#Optimization" title="Permalink"></a></h1><p>A general continuous optimization problem has the following form</p><p class="math-container">\[\min_{\mathbf x}f(\mathbf x)~~~\text{ subject to certian constraints}\]</p><p>The constraints may be either equality or inequality constraints.</p><h2 id="Gradient-free-optimization"><a class="docs-heading-anchor" href="#Gradient-free-optimization">Gradient free optimization</a><a id="Gradient-free-optimization-1"></a><a class="docs-heading-anchor-permalink" href="#Gradient-free-optimization" title="Permalink"></a></h2><p>Gradient-free optimizers are optimization algorithms that do not rely on the gradient of the objective function to find the optimal solution. Instead, they use other methods such as Bayesian optimization, Nelder-Mead algorithm, genetic algorithms, or simulated annealing to explore the search space and find the optimal solution. These methods are particularly useful when the objective function is non-differentiable or when the gradient is difficult to compute. However, gradient-free optimizers can be slower and less efficient than gradient-based methods, especially when the search space is high-dimensional.</p><h3 id="Golden-section-search"><a class="docs-heading-anchor" href="#Golden-section-search">Golden section search</a><a id="Golden-section-search-1"></a><a class="docs-heading-anchor-permalink" href="#Golden-section-search" title="Permalink"></a></h3><p>The golden section search is a simple optimization algorithm that can be used to find the minimum of a unimodal function. A unimodal function is a function that has a single minimum within a given interval. The golden section search algorithm works by iteratively narrowing down the search interval until the minimum is found with a specified tolerance.</p><p>The Julia implementation of the golden section search algorithm is as follows:</p><pre><code class="language-julia hljs">function golden_section_search(f, a, b; tol=1e-5)
+    τ = (√5 - 1) / 2  # golden ratio
+    x1 = a + (1 - τ) * (b - a)
+    x2 = a + τ * (b - a)
+    f1, f2 = f(x1), f(x2)
+    k = 0
+    while b - a &gt; tol
+        k += 1
+        if f1 &gt; f2
+            a = x1
+            x1 = x2
+            f1 = f2
+            x2 = a + τ * (b - a)  # update x2
+            f2 = f(x2)
+        else
+            b = x2
+            x2 = x1
+            f2 = f1
+            x1 = a + (1 - τ) * (b - a)  # update x1
+            f1 = f(x1)
+        end
+    end
+    return f1 &lt; f2 ? (a, f1) : (b, f2)
+end;
+
+golden_section_search(x-&gt;(x-4)^2, -5, 5; tol=1e-5)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(3.9999961406355244, 2.888960377059731e-13)</code></pre><p>It converges to the minimum in <span>$O(\log(\frac{b-a}{\epsilon}))$</span> iterations, where <span>$\epsilon$</span> is the tolerance.</p><h3 id="The-downhill-simplex-method-the-one-dimensional-case"><a class="docs-heading-anchor" href="#The-downhill-simplex-method-the-one-dimensional-case">The downhill simplex method - the one-dimensional case</a><a id="The-downhill-simplex-method-the-one-dimensional-case-1"></a><a class="docs-heading-anchor-permalink" href="#The-downhill-simplex-method-the-one-dimensional-case" title="Permalink"></a></h3><p>The downhill simplex method, also known as the Nelder-Mead method, is a popular optimization algorithm that does not require the gradient of the objective function. It is a heuristic algorithm that iteratively constructs a simplex (a geometric shape with <span>$n+1$</span> vertices in <span>$n$</span> dimensions) and updates the vertices of the simplex to minimize the objective function. The algorithm is based on the concept of &quot;downhill&quot; movement, where the simplex moves towards the minimum of the objective function by iteratively evaluating the function at different points in the search space.</p><p>The following is the basic idea of the one-dimensional downhill simplex method:</p><ol><li>Initialize a one dimensional simplex, evaluate the function at the end points <span>$x_1$</span> and <span>$x_2$</span> and assume <span>$f(x_2) &gt; f(x_1)$</span>.</li><li>Evaluate the function at <span>$x_c = 2x_1 - x_2$</span>.</li><li>Select one of the folloing operations<ol><li>If <span>$f(x_c)$</span> is smaller than <span>$f(x_1)$</span>, <strong>flip</strong> the simplex by doing <span>$x_1 \leftarrow x_c$</span> and <span>$x_2 \leftarrow x_1$</span>.</li><li>If <span>$f(x_c)$</span> is larger than <span>$f(x_1)$</span>, but smaller than <span>$f(x_2)$</span>, then <span>$x_2\leftarrow x_c$</span>, goto case 3.</li><li>If <span>$f(x_c)$</span> is larger than <span>$f(x_2)$</span>, then <strong>shrink</strong> the simplex: evaluate <span>$f$</span> on <span>$x_d\leftarrow (x_1 + x_2)/2$</span>, if it is larger than <span>$f(x_1)$</span>, then <span>$x_2 \leftarrow x_d$</span>, otherwise <span>$x_1\leftarrow x_d, x_2\leftarrow x_1$</span>.</li></ol></li><li>Repeat step 2-3 until convergence.</li></ol><pre><code class="language-julia hljs">function simplex1d(f, x1, x2; tol=1e-6)
+    # initial 1D simplex with two points
+    history = [[x1, x2]]
+    f1, f2 = f(x1), f(x2)
+    while abs(x2 - x1) &gt; tol
+        xc = 2x1 - x2
+        fc = f(xc)
+        if fc &lt; f1   # flip
+            x1, f1, x2, f2 = xc, fc, x1, f1
+        else         # shrink
+            if fc &lt; f2   # let the smaller one be x2.
+                x2, f2 = xc, fc
+            end
+            xd = (x1 + x2) / 2
+            fd = f(xd)
+            if fd &lt; f1   # update x1 and x2
+                x1, f1, x2, f2 = xd, fd, x1, f1
+            else
+                x2, f2 = xd, fd
+            end
+        end
+        push!(history, [x1, x2])
+    end
+    return x1, f1, history
+end
+
+simplex1d(x -&gt; (x-1)^2, -1.0, 6.0) # optimize a simple quadratic function</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(0.9999998807907104, 1.4210854715202004e-14, [[-1.0, 6.0], [2.5, -1.0], [0.75, 2.5], [0.75, 1.625], [1.1875, 0.75], [0.96875, 1.1875], [0.96875, 1.078125], [1.0234375, 0.96875], [0.99609375, 1.0234375], [0.99609375, 1.009765625]  …  [0.99993896484375, 1.0003662109375], [0.99993896484375, 1.000152587890625], [1.0000457763671875, 0.99993896484375], [0.9999923706054688, 1.0000457763671875], [0.9999923706054688, 1.0000190734863281], [1.0000057220458984, 0.9999923706054688], [0.9999990463256836, 1.0000057220458984], [0.9999990463256836, 1.000002384185791], [1.0000007152557373, 0.9999990463256836], [0.9999998807907104, 1.0000007152557373]])</code></pre><h3 id="The-Nelder-Mead-method"><a class="docs-heading-anchor" href="#The-Nelder-Mead-method">The Nelder-Mead method</a><a id="The-Nelder-Mead-method-1"></a><a class="docs-heading-anchor-permalink" href="#The-Nelder-Mead-method" title="Permalink"></a></h3><p>The Nelder-Mead method for multidimensional optimization is a generalization of the one-dimensional downhill simplex method to higher dimensions. The algorithm constructs an <span>$n$</span>-dimensional simplex in the search space and iteratively updates the vertices of the simplex to minimize the objective function. The algorithm is based on the concept of &quot;reflection,&quot; &quot;expansion,&quot; &quot;contraction,&quot; and &quot;shrink&quot; operations on the simplex to explore the search space efficiently.</p><p>Here is a Julia implementation:</p><pre><code class="language-julia hljs">function simplex(f, x0; tol=1e-6, maxiter=1000)
+    n = length(x0)
+    x = zeros(n+1, n)
+    fvals = zeros(n+1)
+    x[1,:] = x0
+    fvals[1] = f(x0)
+    alpha = 1.0
+    beta = 0.5
+    gamma = 2.0
+    for i in 1:n
+        x[i+1,:] = x[i,:]
+        x[i+1,i] += 1.0
+        fvals[i+1] = f(x[i+1,:])
+    end
+    history = [x]
+    for iter in 1:maxiter
+        # Sort the vertices by function value
+        order = sortperm(fvals)
+        x = x[order,:]
+        fvals = fvals[order]
+        # Calculate the centroid of the n best vertices
+        xbar = dropdims(sum(x[1:n,:], dims=1) ./ n, dims=1)
+        # Reflection
+        xr = xbar + alpha*(xbar - x[n+1,:])
+        fr = f(xr)
+        if fr &lt; fvals[1]
+            # Expansion
+            xe = xbar + gamma*(xr - xbar)
+            fe = f(xe)
+            if fe &lt; fr
+                x[n+1,:] = xe
+                fvals[n+1] = fe
+            else
+                x[n+1,:] = xr
+                fvals[n+1] = fr
+            end
+        elseif fr &lt; fvals[n]
+            x[n+1,:] = xr
+            fvals[n+1] = fr
+        else
+            # Contraction
+            if fr &lt; fvals[n+1]
+                xc = xbar + beta*(x[n+1,:] - xbar)
+                fc = f(xc)
+                if fc &lt; fr
+                    x[n+1,:] = xc
+                    fvals[n+1] = fc
+                else
+                    # Shrink
+                    for i in 2:n+1
+                        x[i,:] = x[1,:] + beta*(x[i,:] - x[1,:])
+                        fvals[i] = f(x[i,:])
+                    end
+                end
+            else
+                # Shrink
+                for i in 2:n+1
+                    x[i,:] = x[1,:] + beta*(x[i,:] - x[1,:])
+                    fvals[i] = f(x[i,:])
+                end
+            end
+        end
+        push!(history, x)
+        # Check for convergence
+        if maximum(abs.(x[2:end,:] .- x[1,:])) &lt; tol &amp;&amp; maximum(abs.(fvals[2:end] .- fvals[1])) &lt; tol
+            break
+        end
+    end
+    # Return the best vertex and function value
+    bestx = x[1,:]
+    bestf = fvals[1]
+    return (bestx, bestf, history)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">simplex (generic function with 1 method)</code></pre><p>The <code>simplex</code> function takes three arguments: the objective function <code>f</code>, the initial guess <code>x0</code>, and optional arguments for the tolerance <code>tol</code> and maximum number of iterations <code>maxiter</code>.</p><p>The algorithm initializes a simplex (a high dimensional triangle) with <code>n+1</code> vertices, where <code>n</code> is the number of dimensions of the problem. The vertices are initially set to <code>x0</code> and <code>x0 + h_i</code>, where <code>h_i</code> is a small step size in the <code>i</code>th dimension. The function values at the vertices are also calculated.</p><p>The algorithm then iteratively performs <strong>reflection</strong>, <strong>expansion</strong>, <strong>contraction</strong>, and <strong>shrink</strong> operations on the simplex until convergence is achieved. The best vertex and function value are returned.</p><p>We use the <a href="https://en.wikipedia.org/wiki/Rosenbrock_function">Rosenbrock function</a> as the test function.</p><pre><code class="language-julia hljs">function rosenbrock(x)
+    (1.0 - x[1])^2 + 100.0 * (x[2] - x[1]^2)^2
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">rosenbrock (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">using CairoMakie
+x = -2:0.01:2
+y = -2:0.01:2
+f = [rosenbrock((a, b)) for b in y, a in x]
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel=&quot;x₁&quot;, ylabel=&quot;x₂&quot;)
+heatmap!(ax, x, y, log.(f))
+contour!(ax, x, y, f; levels=exp.(-2:2:7), labels=true, color=&quot;white&quot;, lw=0.5)
+scatter!(ax, [1.0], [1.0]; color=&quot;red&quot;, marker=:star, markersize=5)
+CairoMakie.text!(ax, 1.02, 0.8; text=&quot;Minimum at (1, 1)&quot;, color=&quot;black&quot;)
+fig</code></pre><img src="885f4cb9.png" alt="Example block output"/><pre><code class="language-julia hljs">bestx, bestf, history = simplex(rosenbrock, [-1.2, -1.0]; tol=1e-3)
+bestx, bestf</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">([0.9992454528808594, 0.9985113143920898], 6.087010938696048e-7)</code></pre><p>The optimization process can be visualized by plotting the simplex at each iteration.</p><video width="560" height="480" controls>
+  <source src="../../assets/images/simplex.mp4" type="video/mp4">
+</video><p><a href="https://julianlsolvers.github.io/Optim.jl/stable/">Optim.jl</a> is a Julia package for optimization algorithms. It provides a common interface for various optimization algorithms, including the Nelder-Mead method.</p><pre><code class="language-julia hljs">using Optim
+# Set the initial guess
+x0 = [-1, -1.0]
+# Set the optimization options
+options = Optim.Options(iterations = 1000)
+# Optimize the Rosenbrock function using the simplex method
+result = optimize(rosenbrock, x0, NelderMead(), options)
+# Print the optimization result
+result.minimizer, result.minimum</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">([1.0000257901344998, 1.0000499809855428], 9.211145858887768e-10)</code></pre><h2 id="Gradient-based-optimization"><a class="docs-heading-anchor" href="#Gradient-based-optimization">Gradient based optimization</a><a id="Gradient-based-optimization-1"></a><a class="docs-heading-anchor-permalink" href="#Gradient-based-optimization" title="Permalink"></a></h2><p>Consider a differentiable function <span>$f: R^n \rightarrow R$</span>, the gradient of <span>$f$</span> is defined as</p><p class="math-container">\[\nabla f(\mathbf{x}) = \left(\begin{matrix}
+\frac{\partial f(\mathbf{x})}{\partial x_1}\\
+\frac{\partial f(\mathbf{x})}{\partial x_2}\\
+\vdots\\
+\frac{\partial f(\mathbf{x})}{\partial x_n}\\
+\end{matrix}\right).\]</p><p>Gradient descent is a first-order optimization algorithm that is used to find the minimum of a function. It works by iteratively moving in the direction of the negative gradient of the function at each point until convergence is achieved. The learning rate is a hyperparameter that determines the step size of the update at each iteration. At the first-order approximation, the gradient descent method can be understood as follows:</p><p class="math-container">\[f(\mathbf{x} - \epsilon \nabla f(\mathbf x)) \approx f(\mathbf x) - \epsilon \nabla f(\mathbf x)^T \nabla f(\mathbf x) = f(\mathbf x) - \epsilon \|\nabla f(\mathbf x)\|_2 &lt; f(\mathbf{x})\]</p><p>The loss function is reduced at each iteration.</p><h3 id="Simple-gradient-descent"><a class="docs-heading-anchor" href="#Simple-gradient-descent">Simple gradient descent</a><a id="Simple-gradient-descent-1"></a><a class="docs-heading-anchor-permalink" href="#Simple-gradient-descent" title="Permalink"></a></h3><p>The update rule of gradient descent is</p><p class="math-container">\[\begin{align*}
+&amp;\theta_{t+1} = \theta_t - \alpha g_t
+\end{align*}\]</p><p>where </p><ul><li><span>$\theta_t$</span> is the values of variables at time step <span>$t$</span>.</li><li><span>$g_t$</span> is the gradient at time <span>$t$</span> along <span>$\theta_t$</span>, i.e. <span>$\nabla_{\theta_t} f(\theta_t)$</span>.</li><li><span>$\alpha$</span> is the learning rate.</li></ul><p>In the following example, we optimize the Rosenbrock function using the gradient descent method.</p><pre><code class="language-julia hljs">using ForwardDiff  # forward mode automatic differentiation
+ForwardDiff.gradient(rosenbrock, [1.0, 3.0])
+
+function gradient_descent(f, x; niters::Int, learning_rate::Real)
+    history = [x]
+    for i=1:niters
+        g = ForwardDiff.gradient(f, x)
+        x -= learning_rate * g
+        push!(history, x)
+    end
+    return history
+end
+
+x0 = [-1, -1.0]
+history = gradient_descent(rosenbrock, x0; niters=10000, learning_rate=0.002)
+history[end], rosenbrock(history[end])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">([0.9999055353507325, 0.9998107015958712], 8.937860566104837e-9)</code></pre><p>In the above example, we use the <a href="https://github.com/JuliaDiff/ForwardDiff.jl"><code>ForwardDiff</code></a> package to compute the gradient of the Rosenbrock function. The <code>gradient_descent</code> function implements the gradient descent algorithm with a specified number of iterations and learning rate.</p><p>The training history can be visualized by plotting the loss function and the optimization path.</p><pre><code class="language-julia hljs">function show_history(history)
+    x = -2:0.01:2
+    y = -2:0.01:2
+    f = [rosenbrock((a, b)) for b in y, a in x]
+    fig = Figure()
+    ax = Axis(fig[1, 1]; xlabel=&quot;x₁&quot;, ylabel=&quot;x₂&quot;, limits=(-2, 2, -2, 2))
+    hm = heatmap!(ax, x, y, log.(f); label=&quot;log(f)&quot;)
+    lines!(ax, getindex.(history, 1), getindex.(history, 2); color=&quot;white&quot;)
+    scatter!(ax, getindex.(history, 1), getindex.(history, 2); color=&quot;red&quot;, markersize=3)
+    CairoMakie.text!(ax, -1.8, 1.5; text=&quot;Minimum loss = $(rosenbrock(history[end]))&quot;, color=&quot;black&quot;)
+    CairoMakie.text!(ax, -1.8, 1.3; text=&quot;Steps = $(length(history))&quot;, color=&quot;black&quot;)
+    Colorbar(fig[1, 2], hm)
+    fig
+end
+
+# plot
+show_history(history)</code></pre><img src="24bfa3ce.png" alt="Example block output"/><p>The main drawback of the simple gradient descent method is that it can be slow to converge, especially for functions with complex or high-dimensional surfaces. It can also get stuck in local minima and saddle points.</p><h3 id="Gradient-descent-with-momentum"><a class="docs-heading-anchor" href="#Gradient-descent-with-momentum">Gradient descent with momentum</a><a id="Gradient-descent-with-momentum-1"></a><a class="docs-heading-anchor-permalink" href="#Gradient-descent-with-momentum" title="Permalink"></a></h3><p>We can add a &quot;momentum&quot; term to the weight update, which helps the optimization algorithm to move more quickly in the right direction and avoid getting stuck in local minima.</p><p>The intuition behind the momentum method can be understood by considering a ball rolling down a hill. Without momentum, the ball would roll down the hill and eventually come to a stop at the bottom. However, with momentum, the ball would continue to roll past the bottom of the hill and up the other side, before eventually coming to a stop at a higher point. This is because the momentum of the ball helps it to overcome small bumps and obstacles in its path and continue moving in the right direction.</p><p>The update rule of gradient descent with momentum is</p><p class="math-container">\[\begin{align*}
+&amp;v_{t+1} = \beta v_t - \alpha g_t\\
+&amp;\theta_{t+1} = \theta_t + v_{t+1}
+\end{align*}\]</p><p>where </p><ul><li><span>$g_t$</span> is the gradient at time <span>$t$</span> along <span>$\theta_t$</span>, i.e. <span>$\nabla_{\theta_t} f(\theta_t)$</span>.</li><li><span>$\alpha$</span> is the initial learning rate.</li><li><span>$\beta$</span> is the parameter for the gradient accumulation.</li></ul><pre><code class="language-julia hljs">function gradient_descent_momentum(f, x; niters::Int, β::Real, learning_rate::Real)
+    history = [x]
+    v = zero(x)
+    for i=1:niters
+        g = ForwardDiff.gradient(f, x)
+        v = β .* v .- learning_rate .* g
+        x += v
+        push!(history, x)
+    end
+    return history
+end
+
+x0 = [-1, -1.0]
+history = gradient_descent_momentum(rosenbrock, x0; niters=10000, learning_rate=0.002, β=0.5)
+
+# plot
+show_history(history)</code></pre><img src="2c892791.png" alt="Example block output"/><p>We can see the optimization path is more direct and faster than the simple gradient descent method. However, the momentum method may overshoot the minimum and oscillate around it.</p><h4 id="Adaptive-Gradient-Algorithm-(Adagrad)"><a class="docs-heading-anchor" href="#Adaptive-Gradient-Algorithm-(Adagrad)">Adaptive Gradient Algorithm (Adagrad)</a><a id="Adaptive-Gradient-Algorithm-(Adagrad)-1"></a><a class="docs-heading-anchor-permalink" href="#Adaptive-Gradient-Algorithm-(Adagrad)" title="Permalink"></a></h4><p>AdaGrad is an optimization algorithm used in machine learning for solving convex optimization problems. It is a gradient-based algorithm that adapts the learning rate for each parameter based on the historical gradient information. The main idea behind AdaGrad is to give more weight to the parameters that have a smaller gradient magnitude, which allows for a larger learning rate for those parameters.</p><p>The update rule of AdaGrad is</p><p class="math-container">\[\begin{align*}
+    &amp;r_t = r_t + g_t^2\\
+    &amp;\mathbf{\eta} = \frac{\alpha}{\sqrt{r_t + \epsilon}}\\
+    &amp;\theta_{t+1} = \theta_t - \eta \odot g_t
+\end{align*}\]</p><p>where </p><ul><li><span>$\theta_t$</span> is the values of variables at time <span>$t$</span>.</li><li><span>$\alpha$</span> is the initial learning rate.</li><li><span>$g_t$</span> is the gradient at time <span>$t$</span> along <span>$\theta_t$</span></li><li><span>$r_t$</span> is the historical squared gradient sum, which is initialized to <span>$0$</span>.</li><li><span>$\epsilon$</span> is a small positive number.</li><li><span>$\odot$</span> is the element-wise multiplication.</li></ul><pre><code class="language-julia hljs">function adagrad_optimize(f, x; niters, learning_rate, ϵ=1e-8)
+    rt = zero(x)
+    η = zero(x)
+    history = [x]
+    for step in 1:niters
+        Δ = ForwardDiff.gradient(f, x)
+        @. rt = rt + Δ .^ 2
+        @. η = learning_rate ./ sqrt.(rt + ϵ)
+        x = x .- Δ .* η
+        push!(history, x)
+    end
+    return history
+end
+
+x0 = [-1, -1.0]
+history = adagrad_optimize(rosenbrock, x0; niters=10000, learning_rate=1.0)
+
+# plot
+show_history(history)</code></pre><img src="c86ed5ac.png" alt="Example block output"/><h4 id="Adaptive-Moment-Estimation-(Adam)"><a class="docs-heading-anchor" href="#Adaptive-Moment-Estimation-(Adam)">Adaptive Moment Estimation (Adam)</a><a id="Adaptive-Moment-Estimation-(Adam)-1"></a><a class="docs-heading-anchor-permalink" href="#Adaptive-Moment-Estimation-(Adam)" title="Permalink"></a></h4><p>The Adam optimizer is a popular optimization algorithm used in deep learning for training neural networks. It stands for Adaptive Moment Estimation and is a variant of stochastic gradient descent (SGD) that is designed to be more efficient and effective in finding the optimal weights for the neural network.</p><p>The Adam optimizer maintains a running estimate of the first and second moments of the gradients of the weights with respect to the loss function. These estimates are used to adaptively adjust the learning rate for each weight parameter during training. The first moment estimate is the mean of the gradients, while the second moment estimate is the uncentered variance of the gradients.</p><p>The Adam optimizer combines the benefits of two other optimization algorithms: AdaGrad, which adapts the learning rate based on the historical gradient information, and RMSProp, which uses a moving average of the squared gradients to scale the learning rate.</p><p>The Adam optimizer has become a popular choice for training deep neural networks due to its fast convergence and good generalization performance. It is widely used in many deep learning frameworks, such as TensorFlow, PyTorch, and Keras.</p><p>The update rule of Adam is</p><p class="math-container">\[\begin{align*}
+&amp;v_t = \beta_1 v_{t-1} - (1-\beta_1) g_t\\
+&amp;s_t = \beta_2 s_{t-1} - (1-\beta_2) g^2\\
+&amp;\hat v_t = v_t / (1-\beta_1^t)\\
+&amp;\hat s_t = s_t / (1-\beta_2^t)\\
+&amp;\theta_{t+1} = \theta_t -\eta \frac{\hat v_t}{\sqrt{\hat s_t} + \epsilon}
+&amp;\end{align*}\]</p><p>where</p><ul><li><span>$\theta_t$</span> is the values of variables at time <span>$t$</span>.</li><li><span>$\eta$</span> is the initial learning rate.</li><li><span>$g_t$</span> is the gradient at time <span>$t$</span> along <span>$\theta$</span>.</li><li><span>$v_t$</span> is the exponential average of gradients along <span>$\theta$</span>.</li><li><span>$s_t$</span> is the exponential average of squares of gradients along <span>$\theta$</span>.</li><li><span>$\beta_1, \beta_2$</span> are hyperparameters.</li></ul><pre><code class="language-julia hljs">function adam_optimize(f, x; niters, learning_rate, β1=0.9, β2=0.999, ϵ=1e-8)
+    mt = zero(x)
+    vt = zero(x)
+    βp1 = β1
+    βp2 = β2
+    history = [x]
+    for step in 1:niters
+        Δ = ForwardDiff.gradient(f, x)
+        @. mt = β1 * mt + (1 - β1) * Δ
+        @. vt = β2 * vt + (1 - β2) * Δ^2
+        @. Δ =  mt / (1 - βp1) / (√(vt / (1 - βp2)) + ϵ) * learning_rate
+        βp1, βp2 = βp1 * β1, βp2 * β2
+        x = x .- Δ
+        push!(history, x)
+    end
+    return history
+end
+
+x0 = [-1, -1.0]
+history = adam_optimize(rosenbrock, x0; niters=10000, learning_rate=0.01)
+
+# plot
+show_history(history)</code></pre><img src="bf455d44.png" alt="Example block output"/><h4 id="More-gradient-based-optimizers"><a class="docs-heading-anchor" href="#More-gradient-based-optimizers">More gradient based optimizers</a><a id="More-gradient-based-optimizers-1"></a><a class="docs-heading-anchor-permalink" href="#More-gradient-based-optimizers" title="Permalink"></a></h4><p>The Julia package <a href="https://fluxml.ai/Optimisers.jl/dev/api/">Optimisers.jl</a> contains various optimization algorithms for differentiable functions.</p><pre><code class="language-julia hljs">import Optimisers
+
+x0 = [-1, -1.0]
+method = Optimisers.RMSProp(0.01)
+state = Optimisers.setup(method, x0)
+history = [x0]
+for i=1:10000
+    global x0, state
+    grad = ForwardDiff.gradient(rosenbrock, x0)
+    state, x0 = Optimisers.update(state, x0, grad)
+    push!(history, x0)
+end
+
+# plot
+show_history(history)</code></pre><img src="ec3b2a73.png" alt="Example block output"/><p><a href="https://fluxml.ai/Optimisers.jl/dev/api/#Optimisation-Rules">Optimisers.jl documentation</a> contains <strong>stochastic</strong> gradient based optimizers.</p><h2 id="Hessian-based-optimizers"><a class="docs-heading-anchor" href="#Hessian-based-optimizers">Hessian based optimizers</a><a id="Hessian-based-optimizers-1"></a><a class="docs-heading-anchor-permalink" href="#Hessian-based-optimizers" title="Permalink"></a></h2><h3 id="Newton&#39;s-Method"><a class="docs-heading-anchor" href="#Newton&#39;s-Method">Newton&#39;s Method</a><a id="Newton&#39;s-Method-1"></a><a class="docs-heading-anchor-permalink" href="#Newton&#39;s-Method" title="Permalink"></a></h3><p>Newton&#39;s method is an optimization algorithm used to find the roots of a function, which can also be used to find the minimum or maximum of a function. The method involves using the first and second derivatives of the function to approximate the function as a quadratic function and then finding the minimum or maximum of this quadratic function. The minimum or maximum of the quadratic function is then used as the next estimate for the minimum or maximum of the original function, and the process is repeated until convergence is achieved.</p><p class="math-container">\[\begin{align*}
+&amp; H_{k}p_{k}=-g_k\\
+&amp; x_{k+1}=x_{k}+p_k
+\end{align*}\]</p><p>where</p><ul><li><span>$g_k$</span> is the gradient at time <span>$k$</span> along <span>$x_k$</span>.</li></ul><pre><code class="language-julia hljs">function newton_optimizer(f, x; tol=1e-5)
+    k = 0
+    history = [x]
+    while k &lt; 1000
+        k += 1
+        gk = ForwardDiff.gradient(f, x)
+        hk = ForwardDiff.hessian(f, x)
+        dx = -hk \ gk
+        x += dx
+        push!(history, x)
+        sum(abs2, dx) &lt; tol &amp;&amp; break
+    end
+    return history
+end
+
+x0 = [-1, -1.0]
+history = newton_optimizer(rosenbrock, x0; tol=1e-5)
+
+# plot
+show_history(history)</code></pre><img src="b5e3b93f.png" alt="Example block output"/><h3 id="The-Broyden–Fletcher–Goldfarb–Shanno-(BFGS)-algorithm"><a class="docs-heading-anchor" href="#The-Broyden–Fletcher–Goldfarb–Shanno-(BFGS)-algorithm">The Broyden–Fletcher–Goldfarb–Shanno (BFGS) algorithm</a><a id="The-Broyden–Fletcher–Goldfarb–Shanno-(BFGS)-algorithm-1"></a><a class="docs-heading-anchor-permalink" href="#The-Broyden–Fletcher–Goldfarb–Shanno-(BFGS)-algorithm" title="Permalink"></a></h3><p>The Hessians are expensive to compute, and the inversion of the Hessian is also expensive. In practice, the Hessian matrix is often approximated using the BFGS algorithm, which is a quasi-Newton method that updates an approximation of the Hessian matrix at each iteration.</p><p>The BFGS method is a popular numerical optimization algorithm used to solve unconstrained optimization problems. It is an iterative method that seeks to find the minimum of a function by iteratively updating an estimate of the inverse Hessian matrix of the function.</p><p class="math-container">\[\begin{align*}
+&amp; B_{k}p_{k}=-g_k~~~~~~~~~~\text{// Newton method like update rule}\\
+&amp; \alpha_k = {\rm argmin} ~f(x + \alpha p_k)~~~~~~~~~~\text{// using line search}\\
+&amp; s_k=\alpha_{k}p_k\\
+&amp; x_{k+1}=x_{k}+s_k\\
+&amp;y_k=g_{k+1}-g_k\\
+&amp;B_{k+1}=B_{k}+{\frac {y_{k}y_{k}^{\mathrm {T} }}{y_{k}^{\mathrm {T} }s_{k}}}-{\frac {B_{k}s_{k}s_{k}^{\mathrm {T} }B_{k}^{\mathrm {T} }}{s_{k}^{\mathrm {T} }B_{k}s_{k}}}
+\end{align*}\]</p><p>where</p><ul><li><span>$B_k$</span> is an approximation of the Hessian matrix, which is intialized to identity.</li><li><span>$g_k$</span> is the gradient at time <span>$k$</span> along <span>$x_k$</span>.</li></ul><p>We can show <span>$B_{k+1}s_k = y_k$</span> (secant equation) is satisfied.</p><pre><code class="language-julia hljs"># Set the initial guess
+x0 = [-1.0, -1.0]
+# Set the optimization options
+options = Optim.Options(iterations = 1000, store_trace=true, extended_trace=true)
+# Optimize the Rosenbrock function using the BFGS method
+result = optimize(rosenbrock, x-&gt;ForwardDiff.gradient(rosenbrock, x), x0, BFGS(), options, inplace=false)
+# Print the optimization result
+show_history([t.metadata[&quot;x&quot;] for t in result.trace])</code></pre><img src="9c6f6b44.png" alt="Example block output"/><p>The L-BFGS algorithm is a limited-memory variant of the BFGS algorithm that uses a limited amount of memory to store the approximation of the Hessian matrix. It is often used for large-scale optimization problems where the full Hessian matrix is too expensive to compute and store. In the following example, we use the L-BFGS algorithm to optimize the Rosenbrock function.</p><pre><code class="language-julia hljs">using Enzyme
+function g!(G, x)
+    G[1:length(x)]=gradient(Enzyme.Reverse, rosenbrock, x)
+end
+x0 = [-1, -1.0]
+a = optimize(rosenbrock, g!, x0, LBFGS())
+a.minimizer, a.minimum</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">([0.9999999999998727, 0.9999999999997511], 1.9549070241072996e-26)</code></pre><h2 id="Linear-programming"><a class="docs-heading-anchor" href="#Linear-programming">Linear programming</a><a id="Linear-programming-1"></a><a class="docs-heading-anchor-permalink" href="#Linear-programming" title="Permalink"></a></h2><h3 id="Convex-optimization"><a class="docs-heading-anchor" href="#Convex-optimization">Convex optimization</a><a id="Convex-optimization-1"></a><a class="docs-heading-anchor-permalink" href="#Convex-optimization" title="Permalink"></a></h3><p>A set <span>$S\subseteq \mathbb{R}^n$</span> is convex if it contains the line segment between any two of its points, i.e.,</p><p class="math-container">\[\{\alpha \mathbf{x} + (1-\alpha)\mathbf{y}: 0\leq \alpha \leq 1\} \subseteq S\]</p><p>for all <span>$\mathbf{x}, \mathbf{y} \in S$</span>.</p><p>A function <span>$f: S \in R^n \rightarrow R$</span> is convex on a convex set <span>$S$</span> if its graph along any line segment in <span>$S$</span> lies on or blow the chord connecting the function values at the endpoints of the segment, i.e., if</p><p class="math-container">\[f(\alpha \mathbf{x} + (1-\alpha) \mathbf{y}) \leq \alpha f(\mathbf{x}) + (1+\alpha)f(\mathbf{y})\]</p><p>for all <span>$\alpha \in [0, 1]$</span> and all <span>$\mathbf{x}, \mathbf{y}\in S$</span>.</p><p>Any local minimum of a convex function <span>$f$</span> on a convex set <span>$S\subseteq \mathbb{R}^n$</span> is a global minimum of <span>$f$</span> on <span>$S$</span>.</p><h3 id="Linear-programming-and-integer-programming"><a class="docs-heading-anchor" href="#Linear-programming-and-integer-programming">Linear programming and integer programming</a><a id="Linear-programming-and-integer-programming-1"></a><a class="docs-heading-anchor-permalink" href="#Linear-programming-and-integer-programming" title="Permalink"></a></h3><p><em>Linear programming</em> is a method to achieve the best outcome in a mathematical model whose requirements are represented by linear relationships. Linear programming is a special case of mathematical programming (mathematical optimization). It can be formulated as</p><p class="math-container">\[{\begin{aligned}&amp;{\text{Find a vector}}&amp;&amp;\mathbf {x} \\&amp;{\text{that maximizes}}&amp;&amp;\mathbf {c} ^{T}\mathbf {x} \\&amp;{\text{subject to}}&amp;&amp;A\mathbf {x} \leq \mathbf {b} \\&amp;{\text{and}}&amp;&amp;\mathbf {x} \geq \mathbf {0} .\end{aligned}}\]</p><p>where</p><ul><li><span>$\mathbf{x}$</span> is the vector of variables to be determined.</li><li><span>$\mathbf{c}$</span> is the vector of coefficients of the objective function.</li><li><span>$A$</span> is the matrix of coefficients of the constraints, which is required to be non-negative.</li><li><span>$\mathbf{b}$</span> is the vector.</li></ul><p><em>Integer programming</em> is a generalization of the linear programming where some or all of the variables are required to be integers. Unlike linear programming, which can be solved efficiently in polynomial time, integer programming is <strong>NP-hard</strong> and computationally intractable in general. However, there are efficient algorithms for solving special cases of integer programming, such as binary integer programming, where the variables are restricted to be binary (0 or 1).</p><p>For examples, please refer to the <a href="https://jump.dev/JuMP.jl/stable/">JuMP.jl documentation</a>.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../chap3/tensors/">« Tensor Operations</a><a class="docs-footer-nextpage" href="../ad/">Automatic Differentiation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Friday 5 April 2024 16:21">Friday 5 April 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

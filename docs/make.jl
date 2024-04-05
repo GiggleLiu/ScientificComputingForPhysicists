@@ -38,7 +38,7 @@ makedocs(;
         ],
         "Optimization" => [
         #     "chap4/combinatorial.md",
-        #     "chap4/optimization.md",
+            "chap4/optimization.md",
             "chap4/ad.md",
         ],
         "Randomness" => [

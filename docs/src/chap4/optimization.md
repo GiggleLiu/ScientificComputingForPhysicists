@@ -468,10 +468,10 @@ Newton's method is an optimization algorithm used to find the roots of a functio
 
 
 ```math
-\begin{align}
+\begin{align*}
 & H_{k}p_{k}=-g_k\\
 & x_{k+1}=x_{k}+p_k
-\end{align}
+\end{align*}
 ```
 where
 *  $g_k$ is the gradient at time $k$ along $x_k$.
@@ -499,27 +499,21 @@ history = newton_optimizer(rosenbrock, x0; tol=1e-5)
 show_history(history)
 ```
 
-The drawback of Newton's method is, the Hessian is very expensive to compute!
-While gradients can be computed with the automatic differentiation method with constant overhead. The Hessian requires $O(n)$ times more resources, where $n$ is the number of parameters.
-
 ### The Broyden–Fletcher–Goldfarb–Shanno (BFGS) algorithm
 
+The Hessians are expensive to compute, and the inversion of the Hessian is also expensive. In practice, the Hessian matrix is often approximated using the BFGS algorithm, which is a quasi-Newton method that updates an approximation of the Hessian matrix at each iteration.
 
 The BFGS method is a popular numerical optimization algorithm used to solve unconstrained optimization problems. It is an iterative method that seeks to find the minimum of a function by iteratively updating an estimate of the inverse Hessian matrix of the function.
 
-The BFGS method belongs to a class of $(PlutoLecturing.highlight("quasi-Newton methods")), which means that it approximates the Hessian matrix of the function using only first-order derivative information. The BFGS method updates the inverse Hessian matrix at each iteration using information from the current and previous iterations. This allows it to converge quickly to the minimum of the function.
-
-The BFGS method is widely used in many areas of science and engineering, including machine learning, finance, and physics. It is particularly well-suited to problems where the Hessian matrix is too large to compute directly, as it only requires first-order derivative information.
-
 ```math
-\begin{align}
+\begin{align*}
 & B_{k}p_{k}=-g_k~~~~~~~~~~\text{// Newton method like update rule}\\
 & \alpha_k = {\rm argmin} ~f(x + \alpha p_k)~~~~~~~~~~\text{// using line search}\\
 & s_k=\alpha_{k}p_k\\
 & x_{k+1}=x_{k}+s_k\\
 &y_k=g_{k+1}-g_k\\
 &B_{k+1}=B_{k}+{\frac {y_{k}y_{k}^{\mathrm {T} }}{y_{k}^{\mathrm {T} }s_{k}}}-{\frac {B_{k}s_{k}s_{k}^{\mathrm {T} }B_{k}^{\mathrm {T} }}{s_{k}^{\mathrm {T} }B_{k}s_{k}}}
-\end{align}
+\end{align*}
 ```
 where
 *  $B_k$ is an approximation of the Hessian matrix, which is intialized to identity.
@@ -532,27 +526,25 @@ We can show $B_{k+1}s_k = y_k$ (secant equation) is satisfied.
 x0 = [-1.0, -1.0]
 # Set the optimization options
 options = Optim.Options(iterations = 1000, store_trace=true, extended_trace=true)
-# Optimize the Rosenbrock function using the simplex method
+# Optimize the Rosenbrock function using the BFGS method
 result = optimize(rosenbrock, x->ForwardDiff.gradient(rosenbrock, x), x0, BFGS(), options, inplace=false)
 # Print the optimization result
 show_history([t.metadata["x"] for t in result.trace])
 ```
 
+The L-BFGS algorithm is a limited-memory variant of the BFGS algorithm that uses a limited amount of memory to store the approximation of the Hessian matrix. It is often used for large-scale optimization problems where the full Hessian matrix is too expensive to compute and store. In the following example, we use the L-BFGS algorithm to optimize the Rosenbrock function.
+
 ```@example optimization
 using Enzyme
-using Optim
-rosenbrock_inp(x) = (1.0 - x[1])^2 + 100.0 * (x[2] - x[1]^2)^2
 function g!(G, x)
-    G[1:length(x)]=gradient(Enzyme.Reverse, rosenbrock_inp, x)
+    G[1:length(x)]=gradient(Enzyme.Reverse, rosenbrock, x)
 end
 x0 = [-1, -1.0]
-a = optimize(rosenbrock_inp, g!, x0, LBFGS())
+a = optimize(rosenbrock, g!, x0, LBFGS())
 a.minimizer, a.minimum
 ```
 
-
-## Mathematical optimization
-
+## Linear programming
 
 ### Convex optimization
 
@@ -572,19 +564,18 @@ for all $\alpha \in [0, 1]$ and all $\mathbf{x}, \mathbf{y}\in S$.
 
 Any local minimum of a convex function $f$ on a convex set $S\subseteq \mathbb{R}^n$ is a global minimum of $f$ on $S$.
 
-### Linear programming
+### Linear programming and integer programming
 
-Linear programs are problems that can be expressed in canonical form as
+*Linear programming* is a method to achieve the best outcome in a mathematical model whose requirements are represented by linear relationships. Linear programming is a special case of mathematical programming (mathematical optimization). It can be formulated as
 ```math
 {\begin{aligned}&{\text{Find a vector}}&&\mathbf {x} \\&{\text{that maximizes}}&&\mathbf {c} ^{T}\mathbf {x} \\&{\text{subject to}}&&A\mathbf {x} \leq \mathbf {b} \\&{\text{and}}&&\mathbf {x} \geq \mathbf {0} .\end{aligned}}
 ```
-Here the components of $\mathbf x$ are the variables to be determined, $\mathbf c$ and $\mathbf b$ are given vectors (with $\mathbf {c} ^{T}$ indicating that the coefficients of $\mathbf c$ are used as a single-row matrix for the purpose of forming the matrix product), and $A$ is a given matrix.
+where
+*  $\mathbf{x}$ is the vector of variables to be determined.
+*  $\mathbf{c}$ is the vector of coefficients of the objective function.
+*  $A$ is the matrix of coefficients of the constraints, which is required to be non-negative.
+*  $\mathbf{b}$ is the vector.
 
+*Integer programming* is a generalization of the linear programming where some or all of the variables are required to be integers. Unlike linear programming, which can be solved efficiently in polynomial time, integer programming is **NP-hard** and computationally intractable in general. However, there are efficient algorithms for solving special cases of integer programming, such as binary integer programming, where the variables are restricted to be binary (0 or 1).
 
-### Example
-[https://jump.dev/JuMP.jl/stable/tutorials/linear/diet/](https://jump.dev/JuMP.jl/stable/tutorials/linear/diet/)
-
-
-
-[JuMP.jl documentation](https://jump.dev/JuMP.jl/stable/) also contains mathematical models such as **semidefinite programming** and **integer programming**.
-
+For examples, please refer to the [JuMP.jl documentation](https://jump.dev/JuMP.jl/stable/).

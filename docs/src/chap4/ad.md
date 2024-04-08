@@ -270,6 +270,145 @@ BenchmarkTools.Trial: 10000 samples with 998 evaluations.
  Memory estimate: 0 bytes, allocs estimate: 0.
 ```
 
+## Example: Hit the earth
+
+Let us consider a simple example of throwing a stone on Pluto to hit the earth. To goal is to find the initial velocity $v_0$ such that the stone hits the earth.
+
+The following code is based on the `PhysicsSimulation` package in the [demo repository](https://github.com/GiggleLiu/ScientificComputingDemos). Clone the repository to local and run the following command in a terminal to start the Julia REPL:
+```bash
+$ make init-PhysicsSimulation  # install dependencies
+$ make example-PhysicsSimulation  # run the example (optional)
+$ cd PhysicsSimulation
+$ julia --project=examples
+```
+
+The solar system is defined as
+```julia-repl
+julia> using PhysicsSimulation
+
+julia> data = PhysicsSimulation.Bodies.solar_system_data()
+10×8 DataFrame
+ Row │ name     mass        x             y             z            vx           vy            vz           
+     │ String7  Float64     Float64       Float64       Float64      Float64      Float64       Float64      
+─────┼───────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ sun      1.98854e30   -0.00343003    0.00176188   1.24669e-5   3.43312e-6  -5.2313e-6    -2.97297e-8
+   2 │ mercury  3.302e23      0.0888799    -0.442615    -0.0447572    0.0219088    0.00716157   -0.00142593
+  ⋮  │    ⋮         ⋮            ⋮             ⋮             ⋮            ⋮            ⋮             ⋮
+  10 │ pluto    1.307e22    -21.2907      -18.9663       8.18796      0.0022763   -0.00267048   -0.000366955
+                                                                                               7 rows omitted
+
+julia> const solar = PhysicsSimulation.Bodies.newton_system_from_data(data);
+WARNING: redefinition of constant Main.solar. This may fail, cause incorrect answers, or produce other errors.
+
+julia> const Δt, num_steps = 0.01, 1000
+(0.01, 1000)
+
+julia> states = leapfrog_simulation(solar; dt=Δt, nsteps=num_steps); # simulation
+```
+
+Then we modify the solar system by adding a location close to the pluto. The loss function is defined as the distance between the stone and the earth after the simulation.
+
+```julia-repl
+julia> function modified_solar_system(v0)
+           # I throw a stone on Pluto, with velocity v0
+           newbody = Body(solar.bodies[end].r + PhysicsSimulation.Point(0.01, 0.0, 0.0), v0, 1e-16)
+           bds = copy(solar.bodies)
+           push!(bds, newbody)
+           return NewtonSystem(bds)
+       end
+modified_solar_system (generic function with 1 method)
+
+julia> function loss_hit_earth(v0)
+           # simulate the system
+           lf = LeapFrogSystem(modified_solar_system(PhysicsSimulation.Point(v0...)))
+           for _ = 1:num_steps
+               step!(lf, Δt)
+           end
+           return PhysicsSimulation.distance(lf.sys.bodies[end].r, lf.sys.bodies[4].r)  # final distance to earth
+       end
+loss_hit_earth (generic function with 1 method)
+
+julia> v0 = solar.bodies[end].v * 2
+Point3D{Float64}((1.6628340497679406, -1.9507869905754016, -0.26806028935392806))
+
+julia> y0 = loss_hit_earth(v0)
+36.347500179711304
+```
+
+The trajectory of the stone is shown in the following video, where the stone is in red and the earth is in yellow.
+
+```@raw html
+<video width="580" height="420" controls style="margin-bottom:30px">
+  <source src="../../assets/images/solar-system-hit-earth-beforeopt.mp4" type="video/mp4">
+</video>
+```
+
+We use Enzyme to obtain the gradient of the loss function.
+
+```julia-repl
+julia> using Enzyme
+
+julia> function gradient_hit_earth!(g, v)
+           g .= Enzyme.autodiff(Enzyme.Reverse, loss_hit_earth, Active, Active(PhysicsSimulation.Point(v...)))[1][1]
+           return g
+       end
+gradient_hit_earth! (generic function with 1 method)
+
+julia> gradient_hit_earth!(zeros(3), v0)
+┌ Warning: TODO forward zero-set of arraycopy used memset rather than runtime type
+└ @ Enzyme.Compiler ~/.julia/packages/GPUCompiler/U36Ed/src/utils.jl:59
+3-element Vector{Float64}:
+  -1.1166522031161832
+ -10.153844722578679
+   1.4730813620938634
+```
+
+The gradients can be verified by the finite difference method
+```julia-repl
+using Test, FiniteDifferences
+
+julia> @testset "grad" begin
+           enzyme_gradient = gradient_hit_earth!(zeros(3), v0)
+           finitediff_gradient, = FiniteDifferences.jacobian(central_fdm(5,1), loss_hit_earth, v0)
+           # compare the jacobian
+           @test sum(abs2, enzyme_gradient - finitediff_gradient') < 1e-6
+       end
+Test Summary: | Pass  Total  Time
+grad          |    1      1  2.6s
+Test.DefaultTestSet("grad", Any[], 1, false, false, true, 1.712588089584372e9, 1.712588092166565e9, false, "REPL[17]")
+```
+
+We use the `Optim` package to optimize the loss function with respect to the initial velocity. The optimizer is LBFGS.
+
+```julia-repl
+julia> using Optim
+
+julia> function hit_earth(v0)
+           # optimize the velocity, such that the stone hits the earth
+           # the optimizer is LBFGS
+           return Optim.optimize(loss_hit_earth, gradient_hit_earth!, [v0...], LBFGS()).minimizer
+       end
+hit_earth (generic function with 1 method)
+
+julia> vopt = hit_earth(v0)
+3-element Vector{Float64}:
+  1.6330750836153596
+  1.3140656278615053
+ -0.6512732118117887
+
+julia> yopt = loss_hit_earth(vopt)
+2.9515292346456305e-15
+```
+
+Finally, we visualize the result as a video.
+```@raw html
+<video width="580" height="420" controls style="margin-bottom:30px">
+  <source src="../../assets/images/solar-system-hit-earth.mp4" type="video/mp4">
+</video>
+```
+
+Yeah, the stone hits the earth!
+
 ### Rule based or not?
 
 ```@raw html
@@ -593,9 +732,9 @@ The backward rules for QR decomposition are derived in multiple references, incl
 dA = dQR+QdR
 ```
 
-$
 ```math
 dQ = dAR^{-1}-QdRR^{-1}
+```
 
 ```math
 \begin{cases}

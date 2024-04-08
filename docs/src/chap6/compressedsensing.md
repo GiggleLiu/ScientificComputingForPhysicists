@@ -15,37 +15,14 @@ using Optim
 
 using FiniteDifferences
 
-begin
-	function ingredients(path::String)
-		# this is from the Julia source code (evalfile in base/loading.jl)
-		# but with the modification that it returns the module instead of the last object
-		name = Symbol(basename(path))
-		m = Module(name)
-		Core.eval(m,
-	        Expr(:toplevel,
-	             :(eval(x) = $(Expr(:core, :eval))($name, x)),
-	             :(include(x) = $(Expr(:top, :include))($name, x)),
-	             :(include(mapexpr::Function, x) = $(Expr(:top, :include))(mapexpr, $name, x)),
-	             :(include($path))))
-		m
-	end
-	function highlight(str)
-	    HTML(<span style="background-color:yellow">$(str)</span>)
-	end
-end;
-
-
 # Sparsity Detection
 
-
 Beyond sparse matrices and Principle Component Analysis (PCA)!"
-
-TableOfContents()
 
 
 # Information
 
-A measure of $(highlight("randomness")), usually measured by the entropy
+A measure of randomness, usually measured by the entropy
 ```math
 S = -\sum_k p_k\log p_k.
 ```
@@ -58,7 +35,7 @@ Quiz: Which knowledge bellow removes more information?
 
 
 # Huffman coding
-In computer science and information theory, a Huffman code is a particular type of optimal prefix code that is commonly used for $(highlight("lossless data compression")). The process of finding or using such a code proceeds by means of Huffman coding.
+In computer science and information theory, a Huffman code is a particular type of optimal prefix code that is commonly used for lossless data compression. The process of finding or using such a code proceeds by means of Huffman coding.
 
 
 Ref: [https://www.programiz.com/dsa/huffman-coding](https://www.programiz.com/dsa/huffman-coding)"
@@ -351,8 +328,6 @@ Gray.(FFTW.dct(img))
 
 # We have to use the Pluto ingredients for loading a local project
 # Please check the issue: https://github.com/fonsp/Pluto.jl/issues/115#issuecomment-661722426
-mod = ingredients("../lib/CompressedSensingTutorial/src/CompressedSensingTutorial.jl")
-
 CT = mod.CompressedSensingTutorial
 
 Let us check the project!"
@@ -411,7 +386,7 @@ If we can defined an inner product between two vectors, we can defined a measure
 
 
 ### Kernel functions
-By extending the dot product by an arbitrary $(highlight("symmetric positive definite")) kernel funciton.
+By extending the dot product by an arbitrary symmetric positive definite kernel funciton.
 ```math
 x^T y \rightarrow \kappa(x, y)
 ```

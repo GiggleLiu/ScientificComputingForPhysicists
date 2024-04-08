@@ -193,7 +193,7 @@ fig = Figure()
 ax = Axis(fig[1, 1]; xlabel="x₁", ylabel="x₂")
 heatmap!(ax, x, y, log.(f))
 contour!(ax, x, y, f; levels=exp.(-2:2:7), labels=true, color="white", lw=0.5)
-scatter!(ax, [1.0], [1.0]; color="red", marker=:star, markersize=5)
+scatter!(ax, [1.0], [1.0]; color="red", marker=:star5, markersize=5)
 CairoMakie.text!(ax, 1.02, 0.8; text="Minimum at (1, 1)", color="black")
 fig
 ```

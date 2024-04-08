@@ -166,9 +166,7 @@ The central finite difference can be generalized to the $n$th order. The $n$th o
 
 Forward mode AD attaches a infitesimal number $\epsilon$ to a variable, when applying a function $f$, it does the following transformation
 ```math
-\begin{align}
-    f(x+g \epsilon) = f(x) + f'(x) g\epsilon + \mathcal{O}(\epsilon^2)
-\end{align}
+f(x+g \epsilon) = f(x) + f'(x) g\epsilon + \mathcal{O}(\epsilon^2)
 ```
 
 The higher order infinitesimal is ignored. 
@@ -187,10 +185,10 @@ res === ForwardDiff.Dual(sin(π/4), cos(π/4)*2.0)
 
 We can apply this transformation consecutively, it reflects the chain rule.
 ```math
-\begin{align}
+\begin{align*}
 \frac{\partial \vec y_{i+1}}{\partial x} &= \boxed{\frac{\partial \vec y_{i+1}}{\partial \vec y_i}}\frac{\partial \vec y_i}{\partial x}\\
 &\text{local Jacobian}
-\end{align}
+\end{align*}
 ```
 
 
@@ -220,10 +218,10 @@ The computing time grows **linearly** as the number of variables that we want to
 On the other side, the back-propagation can differentiate **many inputs** with respect to a **single output** efficiently
 
 ```math
-\begin{align}
+\begin{align*}
     \frac{\partial \mathcal{L}}{\partial \vec y_i} = \frac{\partial \mathcal{L}}{\partial \vec y_{i+1}}&\boxed{\frac{\partial \vec y_{i+1}}{\partial \vec y_i}}\\
 &\text{local jacobian?}
-\end{align}
+\end{align*}
 ```
 
 ```julia-repl
@@ -248,10 +246,10 @@ Computing local Jacobian directly can be expensive. In practice, we can use the 
 ## Rule based AD and source code transformation
 Rule based AD is a technique to define the backward rules of the functions. The backward rules are the derivatives of the functions with respect to the inputs. The backward rules are crucial for the reverse mode AD. For example, the backward rule of the Bessel function is
 ```math
-\begin{align}
+\begin{align*}
 &J'_{\nu}(z) =  \frac{J_{\nu-1}(z) - J_{\nu+1}(z) }2\\
 &J'_{0}(z) =  - J_{1}(z)
-\end{align}
+\end{align*}
 ```
 
 ```julia-repl
@@ -271,6 +269,145 @@ BenchmarkTools.Trial: 10000 samples with 998 evaluations.
 
  Memory estimate: 0 bytes, allocs estimate: 0.
 ```
+
+## Example: Hit the earth
+
+Let us consider a simple example of throwing a stone on Pluto to hit the earth. To goal is to find the initial velocity $v_0$ such that the stone hits the earth.
+
+The following code is based on the `PhysicsSimulation` package in the [demo repository](https://github.com/GiggleLiu/ScientificComputingDemos). Clone the repository to local and run the following command in a terminal to start the Julia REPL:
+```bash
+$ make init-PhysicsSimulation  # install dependencies
+$ make example-PhysicsSimulation  # run the example (optional)
+$ cd PhysicsSimulation
+$ julia --project=examples
+```
+
+The solar system is defined as
+```julia-repl
+julia> using PhysicsSimulation
+
+julia> data = PhysicsSimulation.Bodies.solar_system_data()
+10×8 DataFrame
+ Row │ name     mass        x             y             z            vx           vy            vz           
+     │ String7  Float64     Float64       Float64       Float64      Float64      Float64       Float64      
+─────┼───────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ sun      1.98854e30   -0.00343003    0.00176188   1.24669e-5   3.43312e-6  -5.2313e-6    -2.97297e-8
+   2 │ mercury  3.302e23      0.0888799    -0.442615    -0.0447572    0.0219088    0.00716157   -0.00142593
+  ⋮  │    ⋮         ⋮            ⋮             ⋮             ⋮            ⋮            ⋮             ⋮
+  10 │ pluto    1.307e22    -21.2907      -18.9663       8.18796      0.0022763   -0.00267048   -0.000366955
+                                                                                               7 rows omitted
+
+julia> const solar = PhysicsSimulation.Bodies.newton_system_from_data(data);
+WARNING: redefinition of constant Main.solar. This may fail, cause incorrect answers, or produce other errors.
+
+julia> const Δt, num_steps = 0.01, 1000
+(0.01, 1000)
+
+julia> states = leapfrog_simulation(solar; dt=Δt, nsteps=num_steps); # simulation
+```
+
+Then we modify the solar system by adding a location close to the pluto. The loss function is defined as the distance between the stone and the earth after the simulation.
+
+```julia-repl
+julia> function modified_solar_system(v0)
+           # I throw a stone on Pluto, with velocity v0
+           newbody = Body(solar.bodies[end].r + PhysicsSimulation.Point(0.01, 0.0, 0.0), v0, 1e-16)
+           bds = copy(solar.bodies)
+           push!(bds, newbody)
+           return NewtonSystem(bds)
+       end
+modified_solar_system (generic function with 1 method)
+
+julia> function loss_hit_earth(v0)
+           # simulate the system
+           lf = LeapFrogSystem(modified_solar_system(PhysicsSimulation.Point(v0...)))
+           for _ = 1:num_steps
+               step!(lf, Δt)
+           end
+           return PhysicsSimulation.distance(lf.sys.bodies[end].r, lf.sys.bodies[4].r)  # final distance to earth
+       end
+loss_hit_earth (generic function with 1 method)
+
+julia> v0 = solar.bodies[end].v * 2
+Point3D{Float64}((1.6628340497679406, -1.9507869905754016, -0.26806028935392806))
+
+julia> y0 = loss_hit_earth(v0)
+36.347500179711304
+```
+
+The trajectory of the stone is shown in the following video, where the stone is in red and the earth is in yellow.
+
+```@raw html
+<video width="580" height="420" controls style="margin-bottom:30px">
+  <source src="../../assets/images/solar-system-hit-earth-beforeopt.mp4" type="video/mp4">
+</video>
+```
+
+We use Enzyme to obtain the gradient of the loss function.
+
+```julia-repl
+julia> using Enzyme
+
+julia> function gradient_hit_earth!(g, v)
+           g .= Enzyme.autodiff(Enzyme.Reverse, loss_hit_earth, Active, Active(PhysicsSimulation.Point(v...)))[1][1]
+           return g
+       end
+gradient_hit_earth! (generic function with 1 method)
+
+julia> gradient_hit_earth!(zeros(3), v0)
+┌ Warning: TODO forward zero-set of arraycopy used memset rather than runtime type
+└ @ Enzyme.Compiler ~/.julia/packages/GPUCompiler/U36Ed/src/utils.jl:59
+3-element Vector{Float64}:
+  -1.1166522031161832
+ -10.153844722578679
+   1.4730813620938634
+```
+
+The gradients can be verified by the finite difference method
+```julia-repl
+using Test, FiniteDifferences
+
+julia> @testset "grad" begin
+           enzyme_gradient = gradient_hit_earth!(zeros(3), v0)
+           finitediff_gradient, = FiniteDifferences.jacobian(central_fdm(5,1), loss_hit_earth, v0)
+           # compare the jacobian
+           @test sum(abs2, enzyme_gradient - finitediff_gradient') < 1e-6
+       end
+Test Summary: | Pass  Total  Time
+grad          |    1      1  2.6s
+Test.DefaultTestSet("grad", Any[], 1, false, false, true, 1.712588089584372e9, 1.712588092166565e9, false, "REPL[17]")
+```
+
+We use the `Optim` package to optimize the loss function with respect to the initial velocity. The optimizer is LBFGS.
+
+```julia-repl
+julia> using Optim
+
+julia> function hit_earth(v0)
+           # optimize the velocity, such that the stone hits the earth
+           # the optimizer is LBFGS
+           return Optim.optimize(loss_hit_earth, gradient_hit_earth!, [v0...], LBFGS()).minimizer
+       end
+hit_earth (generic function with 1 method)
+
+julia> vopt = hit_earth(v0)
+3-element Vector{Float64}:
+  1.6330750836153596
+  1.3140656278615053
+ -0.6512732118117887
+
+julia> yopt = loss_hit_earth(vopt)
+2.9515292346456305e-15
+```
+
+Finally, we visualize the result as a video.
+```@raw html
+<video width="580" height="420" controls style="margin-bottom:30px">
+  <source src="../../assets/images/solar-system-hit-earth.mp4" type="video/mp4">
+</video>
+```
+
+Yeah, the stone hits the earth!
 
 ### Rule based or not?
 
@@ -318,30 +455,30 @@ BenchmarkTools.Trial: 10000 samples with 998 evaluations.
 
 ## Deriving the backward rules for linear algebra
 
-Please check [blog](https://giggleliu.github.io/posts/2019-04-02-einsumbp/)
+Many backward rules could be found in the notes[^Giles2008][^Seeger2017]. Here we list some of the latest improvements.
 
 ### Matrix multiplication
 Let $\mathcal{T}$ be a stack, and $x \rightarrow \mathcal{T}$ and $x\leftarrow \mathcal{T}$ be the operation of pushing and poping an element from this stack.
 Given $A \in R^{l\times m}$ and $B\in R^{m\times n}$, the forward pass computation of matrix multiplication is
 ```math
-\begin{align}
+\begin{align*}
 &C = A B\\
 &A \rightarrow \mathcal{T}\\
 &B \rightarrow \mathcal{T}\\
 &\ldots
-\end{align}
+\end{align*}
 ```
 
 Let the adjoint of $x$ be $\overline{x} = \frac{\partial \mathcal{L}}{\partial x}$, where $\mathcal{L}$ is a real loss as the final output.
 The backward pass computes
 ```math
-\begin{align}
+\begin{align*}
 &\ldots\\
 &B \leftarrow \mathcal{T}\\
 &\overline{A} = \overline{C}B\\
 &A \leftarrow \mathcal{T}\\
 &\overline{B} = A\overline{C}
-\end{align}
+\end{align*}
 ```
 
 The rules to compute $\overline{A}$ and $\overline{B}$ are called the backward rules for matrix multiplication. They are crucial for rule based automatic differentiation.
@@ -365,14 +502,15 @@ It is easy to see
 ```
 We have the backward rules for matrix multiplication as
 ```math
-\begin{align}
+\begin{align*}
 &\overline{A} = \overline{C}B^T\\
 &\overline{B} = A^T\overline{C}
-\end{align}
+\end{align*}
 ```
 
-### Eigen decomposition
-Ref: [https://arxiv.org/abs/1710.08717](https://arxiv.org/abs/1710.08717)
+### Einsum
+
+### Symmetric Eigen decomposition
 
 Given a symmetric matrix $A$, the eigen decomposition is
 
@@ -380,7 +518,7 @@ Given a symmetric matrix $A$, the eigen decomposition is
 A = UEU^\dagger
 ```
 
-We have
+Where $U$ is the eigenvector matrix, and $E$ is the eigenvalue matrix. The backward rules for the symmetric eigen decomposition are[^Seeger2017]
 
 ```math
 \overline{A} = U\left[\overline{E} + \frac{1}{2}\left(\overline{U}^\dagger U \circ F + h.c.\right)\right]U^\dagger
@@ -394,6 +532,268 @@ We have
 ```math
 \overline{A} = U\left[\overline{E} + \frac{1}{2}\left(\overline{U}^\dagger U \circ \Re [G(E_i, E_j)] + h.c.\right)\right]U^\dagger
 ```
+
+### Singular Value Decomposition (SVD)
+
+*references*:
+
+Complex valued SVD is defined as $A = USV^\dagger$. For simplicity, we consider a **full rank square matrix** $A$.
+Differentiating the SVD[^Wan2019][^Francuz2023], we have
+
+```math
+dA = dUSV^\dagger + U dS V^\dagger + USdV^\dagger
+```
+
+```math
+U^\dagger dA V = U^\dagger dU S + dS + SdV^\dagger V
+```
+
+Defining matrices $dC=U^\dagger dU$ and $dD = dV^\dagger V$ and $dP = U^\dagger dA V$, then we have
+
+```math
+\begin{cases}dC^\dagger+dC=0,\\dD^\dagger +dD=0\end{cases}
+```
+
+We have
+
+```math
+dP = dC S + dS + SdD
+```
+
+where $dCS$ and $SdD$ has zero real part in diagonal elements. So that $dS = \Re[{\rm diag}(dP)]$. 
+
+```math
+\begin{align*}
+d\mathcal{L} &= {\rm Tr}\left[\overline{A}^TdA+\overline{A^*}^TdA^*\right]\\
+&= {\rm Tr}\left[\overline{A}^TdA+dA^\dagger\overline{A}^*\right] ~~~~~~~\#rule~3
+\end{align*}
+```
+
+Easy to show $\overline A_s = U^*\overline SV^T$. Notice here, $\overline A$ is the **derivative** rather than **gradient**, they are different by a conjugate, this is why we have transpose rather than conjugate here. see my [complex valued autodiff blog](https://giggleliu.github.io/2018/02/01/complex_bp.html) for detail.
+
+Using the relations $dC^\dagger+dC=0$ and $dD^\dagger+dD=0$ 
+
+```
+\begin{cases}
+dPS + SdP^\dagger &= dC S^2-S^2dC\\
+SdP + dP^\dagger S &= S^2dD-dD S^2
+\end{cases}
+```
+
+```math
+\begin{cases}
+dC = F\circ(dPS+SdP^\dagger)\\
+dD = -F\circ (SdP+dP^\dagger S)
+\end{cases}
+```
+
+where $F_{ij} = \frac{1}{s_j^2-s_i^2}$, easy to verify $F^T = -F$. Notice here, the relation between the imaginary diagonal parts  is lost
+
+```math
+\color{red}{\Im[I\circ dP] = \Im[I\circ(dC+dD)]}
+```
+
+This **the missing diagonal imaginary part** is definitely not trivial, but has been ignored for a long time until [@refraction-ray](https://github.com/tensorflow/tensorflow/issues/13641#issuecomment-526976200) (Shixin Zhang) mentioned and solved it. Let's first focus on the off-diagonal contributions from $dU$
+
+
+```math
+\begin{align*}
+{\rm Tr}\overline U^TdU &= {\rm Tr} \overline U ^TU dC + \overline U^T (I-UU^\dagger) dAVS^{-1}\\
+&= {\rm Tr}\overline U^T U (F\circ(dPS+SdP^\dagger))\\
+ &=  {\rm Tr}(dPS+SdP^\dagger)(-F\circ (\overline U^T U)) \# rule~1,2\\
+ &= {\rm Tr}(dPS+SdP^\dagger)J^T
+\end{align*}
+```
+
+Here, we defined $J=F\circ(U^T\overline U)$.
+
+```math
+\begin{align*}
+d\mathcal L &= {\rm Tr} (dPS+SdP^\dagger)(J+J^\dagger)^T\\
+&= {\rm Tr} dPS(J+J^\dagger)^T+h.c.\\
+&= {\rm Tr} U^\dagger dA V S(J+J^\dagger)^T+h.c.\\
+&= {\rm Tr}\left[ VS(J+J^\dagger)^TU^\dagger\right] dA+h.c.
+\end{align*}
+```
+
+By comparing with $d\mathcal L = {\rm Tr}\left[\overline{A}^TdA+h.c. \right]$, we have
+
+```math
+\bar A_U^{(\rm real)} =  \left[VS(J+J^\dagger)^TU^\dagger\right]^T\\
+=U^*(J+J^\dagger)SV^T
+```
+
+#### Update: The missing diagonal imaginary part
+
+Now let's inspect the diagonal imaginary parts of $dC$ and $dD$ in Eq. 16. At a first glance, it is not sufficient to derive $dC$ and $dD$ from $dP$, but consider there is still an information not used, **the loss must be gauge invariant**, which means
+
+```math
+\mathcal{L}(U\Lambda, S, V\Lambda)
+```
+
+Should be independent of the choice of gauge $\Lambda$, which is defined as ${\rm diag}(e^i\phi, ...)$
+
+```math
+\begin{align*}
+d\mathcal{L} &={\rm Tr}[ \overline{U\Lambda}^T d(U\Lambda) +\overline  SdS+\overline{V\Lambda}^Td(V\Lambda)] + h.c.\\
+&={\rm Tr}[ \overline {U\Lambda}^T (dU\Lambda+Ud\Lambda) +\overline{S}dS+  \overline{V\Lambda}^T(Vd\Lambda +dV\Lambda)] + h.c.\\
+&= {\rm Tr}[(\overline{U\Lambda}^TU+\overline{V\Lambda}^TV )d\Lambda ] + \ldots + h.c.
+\end{align*}
+```
+
+Gauge invariance refers to
+
+```math
+\overline{\Lambda} =  I\circ(\overline{U\Lambda}^TU+\overline{V\Lambda}^TV) = 0
+```
+
+For any $\Lambda$, where $I$ refers to the diagonal mask matrix. It is of cause valid when $\Lambda\rightarrow1$, $I\circ(\overline{U}^TU+\overline V^TV) = 0$.
+
+Consider the contribution from the **diagonal imaginary part**, we have
+
+```math
+\begin{align*}
+&{\rm Tr} [\overline U^T U (I \circ \Im [dC])+\overline V^T V (I \circ \Im [dD^\dagger])] + h.c.\\
+&={\rm Tr} [ I \circ (\overline U^T U)\Im [dC]-I\circ (\overline V^T V) \Im [dD]] +h.c. ~~~~~~~~~~~~~~\#  rule 1\\
+&={\rm Tr} [ I \circ (\overline U^T U)(\Im [dC]+ \Im [dD])] \\
+&={\rm Tr}[I\circ (\overline U^T U) \Im[dP]S^{-1}]  \\
+&={\rm Tr}[S^{-1}\Lambda_J U^{\dagger}dA V]\\
+\end{align*}
+```
+
+where $\Lambda_J  = \Im[I\circ(\overline U^TU)]= \frac 1 2I\circ(\overline U^TU)-h.c.$, with $I$ the mask for diagonal part. Since only the real part contribute to $\delta \mathcal{L}$ (the imaginary part will be canceled by the Hermitian conjugate counterpart), we can safely move $\Im$ from right to left.
+
+```math
+\color{red}{\bar A_{U+V}^{(\rm imag)} = U^*\Lambda_J S^{-1}V^T}
+```
+
+When $U$ is **not full rank**, this formula should take an extra term (Ref. 2)
+
+```math
+\bar A_U^{(\rm real)} =U^*(J+J^\dagger)SV^T + (VS^{-1}\overline U^T(I-UU^\dagger))^T
+```
+
+Similarly, for $V​$ we have
+
+```math
+\overline A_V^{(\rm real)} =U^*S(K+K^\dagger)V^T + (U S^{-1} \overline V^T (I - VV^\dagger))^*,
+```
+
+where $K=F\circ(V^T\overline V)​$.
+
+To wrap up
+
+```math
+\overline A = \overline A_U^{\rm (real)} + \overline A_S + \overline A_V^{\rm (real)} +  \overline A_{U+V}^{\rm (imag)}
+```
+
+This result can be directly used in **autograd**.
+
+For the **gradient** used in training, one should change the convention
+
+```math
+\mathcal{\overline A} = \overline A^*,\\ \mathcal{\overline U} = \overline U^*,\\ \mathcal{\overline V}= \overline V^*.
+```
+
+This convention is used in **tensorflow**, **Zygote.jl**. Which is
+
+```math
+\begin{align*}
+\mathcal{\overline A} =& U(\mathcal{J}+\mathcal{J}^\dagger)SV^\dagger + (I-UU^\dagger)\mathcal{\overline U}S^{-1}V^\dagger\\
+&+ U\overline SV^\dagger\\
+&+US(\mathcal{K}+\mathcal{K}^\dagger)V^\dagger + U S^{-1} \mathcal{\overline V}^\dagger (I - VV^\dagger)\\
+&\color{red}{+\frac 1 2 U (I\circ(U^\dagger\overline U)-h.c.)S^{-1}V^\dagger}
+\end{align*}
+```
+
+where $J=F\circ(U^\dagger\mathcal{\overline U})$ and $K=F\circ(V^\dagger \mathcal{\overline V})$.
+
+#### Rules
+
+rule 1. ${\rm Tr} \left[A(C\circ B\right)] = \sum A^T\circ C\circ B = {\rm Tr} ((C\circ A^T)^TB)={\rm Tr}(C^T\circ A)B$
+
+rule2. $(C\circ A)^T = C^T \circ A^T$
+
+rule3. When $\mathcal L$ is real, 
+```math
+\frac{\partial \mathcal{L}}{\partial x^*} =  \left(\frac{\partial \mathcal{L}}{\partial x}\right)^*
+```
+
+### QR decomposition
+
+Let $A$ be a full rank matrix, the QR decomposition is defined as
+```math
+A = QR
+```
+with $Q^\dagger Q = \mathbb{I}$, so that $dQ^\dagger Q+Q^\dagger dQ=0$. $R$ is a complex upper triangular matrix, with diagonal part real.
+
+The backward rules for QR decomposition are derived in multiple references, including [^Hubig2019] and [^Liao2019]. To derive the backward rules, we first consider differentiating the QR decomposition
+```math
+dA = dQR+QdR
+```
+
+```math
+dQ = dAR^{-1}-QdRR^{-1}
+```
+
+```math
+\begin{cases}
+Q^\dagger dQ = dC - dRR^{-1}\\
+dQ^\dagger Q =dC^\dagger - R^{-\dagger}dR^\dagger
+\end{cases}
+```
+
+where $dC=Q^\dagger dAR^{-1}$.
+
+Then
+
+```math
+dC+dC^\dagger = dRR^{-1} +(dRR^{-1})^\dagger
+```
+
+Notice $dR$ is upper triangular and its diag is lower triangular, this restriction gives
+
+```math
+U\circ(dC+dC^\dagger) = dRR^{-1}
+```
+
+where $U$ is a mask operator that its element value is $1$ for upper triangular part, $0.5$ for diagonal part and $0$ for lower triangular part. One should also notice here both $R$ and $dR$ has real diagonal parts, as well as the product $dRR^{-1}$.
+
+Now let's wrap up using the Zygote convension of gradient
+
+```math
+\begin{align*}
+d\mathcal L &= {\rm Tr}\left[\overline{\mathcal{Q}}^\dagger dQ+\overline{\mathcal{R}}^\dagger dR +h.c. \right]\\
+&={\rm Tr}\left[\overline{\mathcal{Q}}^\dagger dA R^{-1}-\overline{\mathcal{Q}}^\dagger QdR
+R^{-1}+\overline{\mathcal{R}}^\dagger dR +h.c. \right]\\
+&={\rm Tr}\left[ R^{-1}\overline{\mathcal{Q}}^\dagger dA+ R^{-1}(-\overline{\mathcal{Q}}^\dagger Q +R\overline{\mathcal{R}}^\dagger) dR +h.c. \right]\\
+&={\rm Tr}\left[ R^{-1}\overline{\mathcal{Q}}^\dagger dA+ R^{-1}M dR +h.c. \right]
+\end{align*}
+```
+
+here, $M=R\overline{\mathcal{R}}^\dagger-\overline{\mathcal{Q}}^\dagger Q$. Plug in $dR$ we have
+
+```math
+\begin{align*}
+d\mathcal{L}&={\rm Tr}\left[ R^{-1}\overline{\mathcal{Q}}^\dagger dA + M \left[U\circ(dC+dC^\dagger)\right] +h.c. \right]\\
+&={\rm Tr}\left[ R^{-1}\overline{\mathcal{Q}}^\dagger dA + (M\circ L)(dC+dC^\dagger) +h.c. \right]  \;\;\# rule\; 1\\
+&={\rm Tr}\left[ (R^{-1}\overline{\mathcal{Q}}^\dagger dA+h.c.) + (M\circ L)(dC + dC^\dagger)+ (M\circ L)^\dagger (dC + dC^\dagger)\right]\\
+&={\rm Tr}\left[ R^{-1}\overline{\mathcal{Q}}^\dagger dA + (M\circ L+h.c.)dC + h.c.\right]\\
+&={\rm Tr}\left[ R^{-1}\overline{\mathcal{Q}}^\dagger dA + (M\circ L+h.c.)Q^\dagger dAR^{-1}\right]+h.c.\\
+\end{align*}
+```
+
+where $L =U^\dagger = 1-U$ is the mask of lower triangular part of a matrix.
+
+```math
+\begin{align*}
+\mathcal{\overline A}^\dagger &= R^{-1}\left[\overline{\mathcal{Q}}^\dagger + (M\circ L+h.c.)Q^\dagger\right]\\
+\mathcal{\overline A} &= \left[\overline{\mathcal{Q}} + Q(M\circ L+h.c.)\right]R^{-\dagger}\\
+&=\left[\overline{\mathcal{Q}} + Q \texttt{copyltu}(M)\right]R^{-\dagger}
+\end{align*}
+```
+
+Here, the $\texttt{copyltu}​$ takes conjugate when copying elements to upper triangular part.
 
 ## Obtaining Hessian
 
@@ -409,3 +809,9 @@ Given the binomial function $\eta(\tau, \delta) = \frac{(\tau + \delta)!}{\tau!\
 
 ## References
 [^Griewank2008]: Griewank A, Walther A. Evaluating derivatives: principles and techniques of algorithmic differentiation. Society for industrial and applied mathematics, 2008.
+[^Wan2019]: Wan, Zhou-Quan, and Shi-Xin Zhang. "Automatic differentiation for complex valued SVD." arXiv preprint arXiv:1909.02659 (2019).
+[^Francuz2023]: Francuz, Anna, Norbert Schuch, and Bram Vanhecke. "Stable and efficient differentiation of tensor network algorithms." arXiv preprint arXiv:2311.11894 (2023).
+[^Seeger2017]: Seeger, Matthias, et al. "Auto-differentiating linear algebra." arXiv preprint arXiv:1710.08717 (2017).
+[^Giles2008]: Giles, Mike. "An extended collection of matrix derivative results for forward and reverse mode automatic differentiation." (2008).
+[^Hubig2019]: Hubig, Claudius. "Use and implementation of autodifferentiation in tensor network methods with complex scalars." arXiv preprint arXiv:1907.13422 (2019).
+[^Liao2019]: Liao, Hai-Jun, et al. "Differentiable programming tensor networks." Physical Review X 9.3 (2019): 031041.

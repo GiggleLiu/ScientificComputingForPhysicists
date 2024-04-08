@@ -4,12 +4,6 @@ using Test
 using CUDA; CUDA.allowscalar(false)
 using BenchmarkTools
 
-TableOfContents()
-
-function highlight(str)
-	HTML(<span style="background-color:yellow">$(str)</span>)
-end;
-
 # Simulting lattice gas cellular automata"
 
 
@@ -43,7 +37,7 @@ The following rules also govern the model:
 
 
 # CUDA programming with Julia
-CUDA programming is a $(highlight("parallel computing platform and programming model")) developed by NVIDIA for performing general-purpose computations on its GPUs (Graphics Processing Units). CUDA stands for Compute Unified Device Architecture.
+CUDA programming is a parallel computing platform and programming model developed by NVIDIA for performing general-purpose computations on its GPUs (Graphics Processing Units). CUDA stands for Compute Unified Device Architecture.
 
 References:
 1. [JuliaComputing/Training](https://github.com/JuliaComputing/Training)
@@ -69,7 +63,7 @@ run(`nvidia-smi`)
 
 CUDA.jl provides wrappers for several CUDA libraries that are part of the CUDA toolkit:
 
-* Driver library: manage the device, $(highlight("launch kernels")), etc.
+* Driver library: manage the device, launch kernels, etc.
 * CUBLAS: linear algebra
 * CURAND: random number generation
 * CUFFT: fast fourier transform

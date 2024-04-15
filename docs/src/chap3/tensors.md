@@ -91,12 +91,20 @@ In the following example, we demonstrate the einsum notation for matrix multipli
     ein"ia,ajb,bkc,cld,dm->ijklm"(A, T1, T2, T1, A)  # tensor train contraction.
     ```
 
+!!! note "Example: Trace under cyclic permutation"
+    Consider 3 matrices $A, B, C$ and the cyclic permutation of the trace $\text{Tr}(ABC)$. The trace of a product of matrices is invariant under cyclic permutations, i.e., $\text{Tr}(ABC) = \text{Tr}(CAB) = \text{Tr}(BCA)$. This can be verified using the einsum diagram.
+
+    ![](../assets/images/perm.svg)
+
+
 ## The spin-glass problem
 The spin-glass problem is a combinatorial optimization problem that is widely used in physics, computer science, and mathematics. The problem is to find the ground state of a spin-glass Hamiltonian, which is a function of the spin configuration. The Hamiltonian is defined as
 ```math
 H(\sigma) = -\sum_{i,j} J_{ij} \sigma_i \sigma_j + \sum_i h_i \sigma_i,
 ```
 where $\sigma_i \in \{-1, 1\}$ is the spin variable, $J_{ij}$ is the coupling strength between spins $i$ and $j$, and $h_i$ is the external field acting on spin $i$. The first term is the interaction energy between spins, and the second term is the energy due to the external field. The ground state is the spin configuration that minimizes the Hamiltonian.
+
+The topology of the spin-glass system is typically represented as a graph, where the spins are the nodes and the couplings are the edges. The graph can be a complete graph, where every spin is connected to every other spin, or a sparse graph, where only a few spins are connected. The spin-glass problem is NP-hard, and finding the ground state is computationally intractable for large systems.
 
 ```@raw html
 <img src="../../assets/images/spinglass.png" width="400" />
@@ -118,8 +126,55 @@ The partition function can be expressed as a tensor contraction using the einsum
 Z = \sum_{\sigma} e^{-\beta H(\sigma)} = \sum_{\sigma} e^{\beta \sum_{i,j} J_{ij} \sigma_i \sigma_j + \sum_i h_i \sigma_i} = \sum_{\sigma} \prod_{i,j} e^{\beta J_{ij} \sigma_i \sigma_j} \prod_i e^{h_i \sigma_i}.
 ```
 
-### Best configuration
+!!! note "Example: Triangle"
+    ![](../assets/images/triangle.svg)
+    Consider a simple example of a spin-glass system with three spins arranged in a triangle. The Hamiltonian is given by
+    ```math
+    H(\sigma) = J \sigma_1 \sigma_2 + J \sigma_2 \sigma_3 + J \sigma_3 \sigma_1,
+    ```
+    where $J$ is the coupling strength. The partition function is given by
+    ```math
+    Z = \sum_{\sigma} e^{-\beta H(\sigma)} = \sum_{\sigma} e^{-\beta J \sigma_1 \sigma_2 - \beta J \sigma_2 \sigma_3 - \beta J \sigma_3 \sigma_1}.
+    ```
+    The partition function can be expressed as a tensor contraction using the einsum notation.
+
+    ```@repl tensor
+    function partition_function(beta, J)
+        M = [exp(-beta * J) exp(beta * J);
+            exp(beta * J) exp(-beta * J)]
+        Z = ein"(ij,jk),ki->"(M, M, M)[]  # () denotes the order of the contraction.
+        return Z
+    end
+    J = 1.0
+    partition_function(2.0, J)
+    ```
+
+    The ground state of the spin-glass system is the spin configuration that minimizes the Hamiltonian. From the partition function, we can compute the ground state energy and degeneracy of the ground state.
+    ```math
+    E_G = \lim_{\beta\rightarrow \infty} - \frac{1}{Z}\frac{\partial Z}{\partial \beta},
+    ```
+    where $E_G$ is the ground state energy. The degeneracy of the ground state is the number of spin configurations that achieve the minimum energy.
+
+    ```@repl tensor
+    using ForwardDiff
+    beta = 10.0
+    Z = partition_function(beta, J)
+    E_G = -ForwardDiff.derivative(b -> partition_function(b, J), beta)/Z
+    ```
+
+    The ground state degeneracy can be computed with
+    ```math
+    S_G = \lim_{\beta\rightarrow \infty} Z/e^{-\beta E_G}.
+    ```
+
+    In Julia, the ground state energy and degeneracy can be computed as follows:
+    ```@repl tensor
+    S_G = Z/exp(-beta * E_G)
+    ```
+
 ### Landscape
+
+Generic tensor network[^Liu2023] provides a unified framework for computing the solution space properties of combinatorial optimization problems. The landscape of the spin-glass problem can be analyzed using tensor networks to understand the structure of the energy landscape and the complexity of the optimization problem. Please refer to the [manual](https://queracomputing.github.io/GenericTensorNetworks.jl/dev/generated/SpinGlass/#Spin-glass-problem) for more details.
 
 ## The backward rule of tensor contraction
 
@@ -163,3 +218,6 @@ P(V) = \prod_{v\in V} P(v \mid pa(v)).
 
 ## The partition function
 [https://uaicompetition.github.io/uci-2022/competition-entry/tasks/](https://uaicompetition.github.io/uci-2022/competition-entry/tasks/)
+
+## References
+[^Liu2023]: Liu, Jin-Guo, et al. "Computing solution space properties of combinatorial optimization problems via generic tensor networks." SIAM Journal on Scientific Computing 45.3 (2023): A1239-A1270.

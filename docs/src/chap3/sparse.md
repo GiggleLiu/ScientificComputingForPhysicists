@@ -223,9 +223,6 @@ csc_matrix2 = CSCMatrix(COOMatrix(coo_matrix.n, coo_matrix.m, coo_matrix.rowval,
 @test Matrix(csc_matrix) * Matrix(csc_matrix2) ≈ csc_matrix * csc_matrix2
 ```
 
-!!! note "Question"
-    Can you explain why the above test does not pass?
-
 ## Dominant eigenvalue problem
 
 Given a matrix $A \in \mathbb{R}^{n \times n}$, the dominant eigenvalue problem is to find the largest eigenvalue $\lambda_1$ and its corresponding eigenvector $x_1$ such that

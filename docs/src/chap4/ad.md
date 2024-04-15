@@ -61,9 +61,9 @@ using Enzyme
 ν = 2
 yi = poor_besselj.(ν, x)
 
-g_f = [Enzyme.autodiff(Enzyme.Forward, poor_besselj, ν, Enzyme.Duplicated(xi, 1.0))[1] for xi in x] # forward mode
+g_f = [Enzyme.autodiff(Enzyme.Forward, poor_besselj, Active, Enzyme.Const(ν), Enzyme.Duplicated(xi, 1.0))[1] for xi in x] # forward mode
 g_m = (poor_besselj.(ν-1, x) - poor_besselj.(ν+1, x)) ./ 2 # manual
-g_b = [Enzyme.autodiff(Enzyme.Reverse, poor_besselj, ν, Enzyme.Active(xi))[1][2] for xi in x]
+g_b = [Enzyme.autodiff(Enzyme.Reverse, poor_besselj, Active, Enzyme.Const(ν), Enzyme.Active(xi))[1][2] for xi in x]
 g_c = central_fdm(5, 1).(z->poor_besselj(ν, z), x) # central finite difference
 ```
 Here, the forward and backward mode AD are implemented using the [`Enzyme`](https://github.com/EnzymeAD/Enzyme.jl) package. The manual method is the direct application of the derivative formula. The central finite difference is computed using the `central_fdm` function from the [`FiniteDifferences`](https://github.com/JuliaDiff/FiniteDifferences.jl) package.

@@ -10,14 +10,16 @@ A tensor is a mathematical object that generalizes scalars, vectors, and matrice
 ```math
 T_{V}: \prod_{v \in V} \mathcal{D}_{v} \rightarrow \mathcal{E}.
 ```
-Within the context of probabilistic modeling, the elements in $\mathcal{E}$ are non-negative real numbers, while in other scenarios, they can be of generic types.
+Within the context of probabilistic modeling, the elements in $\mathcal{E}$ are non-negative real numbers, while in other scenarios, they can be of generic types. The diagrammatic representation of a tensor is given by a node with the variables $V$ as labels on its edges, as shown below:
+
+![](../assets/images/tensors.svg)
 
 *Definition* (Tensor Network): A tensor network is a mathematical framework for defining multilinear maps, which can be represented by a triple $\mathcal{N} = (\Lambda, \mathcal{T}, V_0)$, where:
 *  $\Lambda$ is the set of variables present in the network $\mathcal{N}$.
 *  $\mathcal{T} = \{ T_{V_k} \}_{k=1}^{K}$ is the set of input tensors, where each tensor $T_{V_k}$ is associated with the labels $V_k$.
 *  $V_0$ specifies the labels of the output tensor.
 
-Specifically, each tensor $T_{V_k} \in \mathcal{T}$ is labeled by a set of variables $V_k \subseteq \Lambda$, where the cardinality $|V_k|$ equals the rank of $T_{V_k}$. The multilinear map, or the \textbf{contraction}, applied to this triple is defined as
+Specifically, each tensor $T_{V_k} \in \mathcal{T}$ is labeled by a set of variables $V_k \subseteq \Lambda$, where the cardinality $|V_k|$ equals the rank of $T_{V_k}$. The multilinear map, or the **contraction**, applied to this triple is defined as
 ```math
 T_{V_0} = \texttt{contract}(\Lambda, \mathcal{T}, V_0) \overset{\mathrm{def}}{=} \sum_{m \in \mathcal{D}_{\Lambda\setminus V_0}} \prod_{T_V \in \mathcal{T}} T_{V|M=m},
 ```
@@ -96,11 +98,17 @@ In the following example, we demonstrate the einsum notation for matrix multipli
 
     ![](../assets/images/perm.svg)
 
+    ```@repl tensor
+    A, B, C = (randn(2, 2) for i=1:3)
+    ein"ij,jk,ik->"(A, B, C) ≈ ein"jk,ik,ij->"(B, C, A)
+    ein"ij,jk,ik->"(A, B, C) ≈ ein"ik,ij,jk->"(C, A, B)
+    ```
+
 
 ## The spin-glass problem
 The spin-glass problem is a combinatorial optimization problem that is widely used in physics, computer science, and mathematics. The problem is to find the ground state of a spin-glass Hamiltonian, which is a function of the spin configuration. The Hamiltonian is defined as
 ```math
-H(\sigma) = -\sum_{i,j} J_{ij} \sigma_i \sigma_j + \sum_i h_i \sigma_i,
+H(\sigma) = \sum_{i,j} J_{ij} \sigma_i \sigma_j + \sum_i h_i \sigma_i,
 ```
 where $\sigma_i \in \{-1, 1\}$ is the spin variable, $J_{ij}$ is the coupling strength between spins $i$ and $j$, and $h_i$ is the external field acting on spin $i$. The first term is the interaction energy between spins, and the second term is the energy due to the external field. The ground state is the spin configuration that minimizes the Hamiltonian.
 
@@ -123,11 +131,20 @@ The partition function is the normalization constant that ensures the probabilit
 
 The partition function can be expressed as a tensor contraction using the einsum notation. The partition function is a sum over all possible spin configurations, which can be represented as a tensor contraction over the spins. The partition function can be written as
 ```math
-Z = \sum_{\sigma} e^{-\beta H(\sigma)} = \sum_{\sigma} e^{\beta \sum_{i,j} J_{ij} \sigma_i \sigma_j + \sum_i h_i \sigma_i} = \sum_{\sigma} \prod_{i,j} e^{\beta J_{ij} \sigma_i \sigma_j} \prod_i e^{h_i \sigma_i}.
+Z = \sum_{\sigma} e^{-\beta H(\sigma)} = \sum_{\sigma} e^{-\beta \sum_{i,j} J_{ij} \sigma_i \sigma_j + \sum_i h_i \sigma_i} = \sum_{\sigma} \prod_{i,j} e^{-\beta J_{ij} \sigma_i \sigma_j} \prod_i e^{h_i \sigma_i}.
 ```
+
+After converting the spin-glass Hamiltonian into a tensor contraction, the partition function can be computed efficiently using tensor network libraries. The topology of the tensor network is as follows: the spins are the hyper-edges, and the nodes are the tensors.
+
+```@raw html
+<img src="../../assets/images/regular-200_einsum.png" width="400" />
+```
+
+To demonstrate a simpler example, we consider a spin-glass system with three spins arranged in a triangle.
 
 !!! note "Example: Triangle"
     ![](../assets/images/triangle.svg)
+
     Consider a simple example of a spin-glass system with three spins arranged in a triangle. The Hamiltonian is given by
     ```math
     H(\sigma) = J \sigma_1 \sigma_2 + J \sigma_2 \sigma_3 + J \sigma_3 \sigma_1,
@@ -136,6 +153,17 @@ Z = \sum_{\sigma} e^{-\beta H(\sigma)} = \sum_{\sigma} e^{\beta \sum_{i,j} J_{ij
     ```math
     Z = \sum_{\sigma} e^{-\beta H(\sigma)} = \sum_{\sigma} e^{-\beta J \sigma_1 \sigma_2 - \beta J \sigma_2 \sigma_3 - \beta J \sigma_3 \sigma_1}.
     ```
+
+    The diagrammatic representation of the tensor network is shown below:
+    ```@raw html
+    <img src="../../assets/images/regular-3_einsum.png" width="300" />
+    ```
+    where each node is a tensor of rank 2
+    ```math
+    M_{ij} = e^{-\beta \sigma_i \sigma_j}
+    = \left(\begin{matrix}e^{-\beta} & e^{\beta}\\e^{\beta} & e^{-\beta}\end{matrix}\right)
+    ```
+
     The partition function can be expressed as a tensor contraction using the einsum notation.
 
     ```@repl tensor
@@ -171,6 +199,79 @@ Z = \sum_{\sigma} e^{-\beta H(\sigma)} = \sum_{\sigma} e^{\beta \sum_{i,j} J_{ij
     ```@repl tensor
     S_G = Z/exp(-beta * E_G)
     ```
+
+## Ground state finding
+
+The ground state finding problem is to find the spin configuration that minimizes the Hamiltonian.
+```math
+E_{\rm min} = \min_{\sigma} \left(\sum_{i, j} J_{ij} \sigma_i \sigma_j\right)
+```
+
+This is a well-known NP-hard problem, and finding the ground state is computationally intractable for large systems. The ground state can be found approximately using various optimization algorithms, such as simulated annealing. In the following, we introduce the Tropical algorithm for finding the ground state of the spin-glass system exactly.
+
+### Tropical algebra
+
+The tropical algebra is a mathematical structure that generalizes the real numbers. The tropical sum and tropical product are defined as follows:
+```math
+a \oplus b = \max(a, b), \quad a \otimes b = a + b
+```
+
+The tropical zero is $-\infty$, and the tropical one is $0$. The tropical sum is the maximum operation, and the tropical product is the addition operation. The tropical algebra is idempotent, commutative, and associative.
+
+### Tropical tensor network for ground state energy finding
+A tropical tensor network is a tensor network where the tensor elements are tropical numbers, such that the original sum-product network becomes a max-plus network. The tropical algebra can be related to the ground state energy of the spin-glass system, which is given by
+```math
+E_{\rm min} = \lim_{\beta\rightarrow \infty} -\frac{1}{\beta} \log Z = \lim_{\beta\rightarrow \infty} -\frac{1}{\beta} \log \sum_{\sigma} \prod_{i,j} e^{-\beta J_{ij}\sigma_i\sigma_j}
+```
+
+Note that
+```math
+\frac{1}{\beta}\log e^{\beta x}  e^{\beta y} = x+y
+```
+```math
+\frac{1}{\beta}\lim_{\beta \rightarrow \infty}e^{\beta x} + e^{\beta y} = \max(x, y)
+```
+
+We have
+```math
+E_{\rm min} = -\left(\max_{\sigma} \sum_{i,j} -J_{ij}\sigma_i\sigma_j\right)
+```
+which corresponds to the tropical tensor network contraction.
+
+Instead of using regular tensors, we use the following tropical tensors in the tensor network
+```math
+T(J_{ij}) = \left(\begin{matrix} -J_{ij} & J_{ij}\\ J_{ij} & -J_{ij}\end{matrix}\right)
+```
+
+Let $G = (V, E)$ be the graph of the spin-glass system, where $V$ is the set of spins and $E$ is the set of couplings. The corresponding tropical tensor network is given by
+```math
+(\Lambda, \mathcal{T}, V_0) = (\{\sigma_i\mid i\in V\}, \{T(J_{ij})_{\sigma_i\sigma_j}\mid (i,j)\in E\}, \{\})
+```
+The contraction of the above tensor network corresponds to the ground state energy of the spin-glass system.
+
+## Tensor network contraction
+
+Optimizing a tensor network contraction order means reducing the following complexities:
+- **Space complexity**: the number of elements in the largest tensor.
+- Time complexity: the number of operations to contract a tensor network.
+- Read-write complexity: the number of times to read and write tensor elements.
+
+Among which, the space complexity is the most important. However, optimizing which is NP-hard. The following two problems are equivalent (Both are NP-hard to compute):
+
+- Minimum possible tensor rank during the contraction
+- Tree width of the dual graph of the tensor network.
+
+### Tree decomposition
+Give a graph $G = (V, E)$, a tree decomposition of $G$ is a tree $T$ with nodes $X_1, \dots, X_n$, where each $X_i$ is a subset of $V$, satisfying the following properties:
+- The union of all sets $X_i$ equals $V$.
+- If $X_i$ and $X_j$ both contain a vertex $v$, then all nodes $X_k$ of $T$ in the (unique) path between $X_i$ and $X_j$ contain $v$ as well.
+- For every edge $(v, w)$ in the graph, there is a subset $X_i$ that contains both $v$ and $w$.
+
+To reduce the tensor network contraction complexity, we can optimize the tree width of the dual graph of the tensor network. The tree width of a graph is the smallest tree width over all possible tree decompositions of a graph.
+- *Tree width of a tree decomposition*: The largest number of nodes in a clique of a tree decomposition of a graph.
+- *Tree width of a graph*: The smallest tree width over all possible tree decompositions of a graph.
+
+Algorithms for optimizing the tensor network contraction order could be found in the [manual of performance tips](https://queracomputing.github.io/GenericTensorNetworks.jl/dev/performancetips/).
 
 ### Landscape
 

@@ -1,4 +1,5 @@
 # Scientific Computing for Physicists with Julia
+(warning: this book is a work in progress)
 
 Online book is deployed at: <https://book.jinguo-group.science/>
 

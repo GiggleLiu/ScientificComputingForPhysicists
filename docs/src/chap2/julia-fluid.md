@@ -27,9 +27,7 @@ The state of a cell in the lattice is defined by the density of particles moving
 ```
 where $(i, j)$ is the position of the cell in the lattice and $\mathbf{v}$ is the velocity of the particles.
 
-```@raw html
-<img src="../../assets/images/lattice.png" alt="image" width=300 height="auto">
-```
+![](../assets/plots/generated/fig1.svg)
 
 The particles move with different velocities $\mathbf v$ and collide with each other, driving the fluid to reach an equilibrium state,
 where the energy of the particles is governed by the Boltzmann distribution
@@ -45,9 +43,7 @@ The lattice Boltzmann method uses a discrete set of velocities, which is a simpl
 - a 2D lattice, and
 - 9 discrete velocities: $(0,0)$, $(1,0), (0,1), (-1,0), (0,-1)$, $(1,1), (-1,1), (-1,-1), (1,-1)$.
 
-```@raw html
-<img src="../../assets/images/D2Q9.png" alt="image" width=500 height="auto">
-```
+![](../assets/plots/generated/fig2.svg)
 
 Lattice Boltzmann Method (LBM) contains two steps:
 1. Streaming - particles move to neighboring cells
@@ -56,9 +52,7 @@ Lattice Boltzmann Method (LBM) contains two steps:
 
 ### Streaming
 
-```@raw html
-<img src="../../assets/images/stream.png" alt="image" width=500 height="auto">
-```
+![](../assets/plots/generated/fig3.svg)
 
 ### Collision - Bhatnagar-Gross-Krook (BGK) model.
 
@@ -72,9 +66,7 @@ $\rho_0$ is the density before collision, and
 $\rho_{\text{eq}}$ is the equilibrium density
 $\omega = \Delta t/\tau$, where $\tau$ is the (relative) relaxation time
 
-```@raw html
-<img src="../../assets/images/Equilibrium density.png" alt="image" width=500 height="auto">
-```
+![](../assets/plots/generated/fig4.svg)
 
 The BGK model has a nice property that it conserves:
 - total density $\rho$

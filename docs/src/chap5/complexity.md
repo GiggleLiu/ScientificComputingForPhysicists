@@ -1,6 +1,9 @@
 # Computational complexity
 
-This chapter introduces the basic concepts of computational complexity theory. We will discuss the complexity of algorithms and problems and the concept of NP-completeness and the P vs NP problem. We will also discuss several algorithms and techniques for solving hard problems, such as simulated annealing and branch-and-bound algorithms.
+This chapter introduces the basic concepts of computational complexity theory. We will discuss the complexity of algorithms and problems and the concept of NP-completeness and the P vs NP problem. We will also discuss several algorithms and techniques for solving hard problems, such as simulated annealing and branch-and-bound algorithms. The following two books are highly recommended for further reading:
+- [The Nature of Computation](https://books.google.com/books?hl=zh-CN&lr=&id=jnGKbpMV8xoC&oi=fnd&pg=PT8&dq=the+nature+of+computation&ots=9_Kzg7K6f1&sig=kiFuaFuPQvtWYFCNsVAsG0DRWmE) by Moore and Mertens[^Moore2011]
+- [Exact Exponential Algorithms](https://dl.acm.org/doi/fullHtml/10.1145/2428556.2428575) by Fomin and Kaski[^Fomin2013].
+- Github repo: [Deep Learning and Quantum Programming: A Spring School](https://github.com/QuantumBFS/SSSS)
 
 ## Problems that can be verified in polynomial time
 
@@ -72,15 +75,18 @@ In the following, we will discuss a well known NP-complete problem, the **spin-g
 ## Problem reduction
 
 !!! example "Circuit SAT to Spin-glass"
-    Please check the demo package: https://github.com/GiggleLiu/ScientificComputingDemos/tree/main/Spinglass
+    Please check the demo package: https://github.com/GiggleLiu/ScientificComputingDemos/tree/main/Spinglass [^Glover2019].
+
+!!! example "Circuit SAT to Hard-core lattice gas"
+    Please check the Ref.[^Nguyen2023].
 
 ## Algorithm: Tropical tensor network
 
-(WIP)
+(WIP)[^Liu2021][^Liu2023]
 
 ## Algorithm: Branching and bounding
 
-The branching algorithm is a general algorithm for solving optimization problems. It works by recursively dividing the search space into smaller subspaces and solving each subspace separately. The algorithm starts with the entire search space and divides it into smaller subspaces using a branching rule. It then solves each subspace separately and combines the solutions to find the optimal solution for the entire search space. The algorithm uses a bounding rule to determine when to stop dividing the search space and when to combine the solutions.
+The branching algorithm[^Fomin2013] is a general algorithm for solving optimization problems. It works by recursively dividing the search space into smaller subspaces and solving each subspace separately. The algorithm starts with the entire search space and divides it into smaller subspaces using a branching rule. It then solves each subspace separately and combines the solutions to find the optimal solution for the entire search space. The algorithm uses a bounding rule to determine when to stop dividing the search space and when to combine the solutions.
 
 Let us use the independent set problem as an example, which is a well-known NP-complete problem. The independent set problem is to find a set of vertices in a graph such that no two vertices are adjacent. The goal is to find the largest independent set in the graph.
 
@@ -115,7 +121,7 @@ The algorithm works by dividing the search space into smaller subspaces by remov
 
 ## Algorithm: Simulated Annealing
 
-Simulated annealing is a probabilistic optimization algorithm that is used to find the global minimum of an energy function. It is inspired by the process of annealing in metallurgy, where a material is heated and then slowly cooled to increase its strength and reduce its defects. The algorithm starts with a thermal state, where the temperature is high and the system is in a random state. It then gradually cools the system, reducing the temperature and allowing the system to settle into a low-energy state. The algorithm uses a probabilistic acceptance criterion, usually based on the Metropolis-Hastings algorithm, to accept or reject moves that increase the energy of the system. This allows the algorithm to escape local minima and explore the energy landscape more effectively.
+Simulated annealing[^Cain2023] is a probabilistic optimization algorithm that is used to find the global minimum of an energy function. It is inspired by the process of annealing in metallurgy, where a material is heated and then slowly cooled to increase its strength and reduce its defects. The algorithm starts with a thermal state, where the temperature is high and the system is in a random state. It then gradually cools the system, reducing the temperature and allowing the system to settle into a low-energy state. The algorithm uses a probabilistic acceptance criterion, usually based on the Metropolis-Hastings algorithm, to accept or reject moves that increase the energy of the system. This allows the algorithm to escape local minima and explore the energy landscape more effectively.
 
 For the spin-glass problem, the energy function is given by
 ```math
@@ -132,3 +138,12 @@ The algorithm repeats this process for a fixed number of steps or until the syst
 ## Hands-on
 The following demo package contains the code for solving the spin-glass problem using the different approaches:
 https://github.com/GiggleLiu/ScientificComputingDemos/tree/main/Spinglass
+
+## References
+[^Moore2011]: Moore, Cristopher, and Stephan Mertens. The nature of computation. OUP Oxford, 2011.
+[^Fomin2013]: Fomin, Fedor V., and Petteri Kaski. "Exact exponential algorithms." Communications of the ACM 56.3 (2013): 80-88.
+[^Liu2021]: Liu, Jin-Guo, Lei Wang, and Pan Zhang. [Tropical tensor network for ground states of spin glasses.](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.126.090506) Physical Review Letters 126.9 (2021): 090506.
+[^Liu2023]: Liu, Jin-Guo, et al. [Computing solution space properties of combinatorial optimization problems via generic tensor networks.](https://epubs.siam.org/doi/abs/10.1137/22M1501787) SIAM Journal on Scientific Computing 45.3 (2023): A1239-A1270.
+[^Cain2023]: Cain, M., et al. "Quantum speedup for combinatorial optimization with flat energy landscapes (2023)." arXiv preprint arXiv:2306.13123.
+[^Nguyen2023]: Nguyen, Minh-Thi, et al. "Quantum optimization with arbitrary connectivity using Rydberg atom arrays." PRX Quantum 4.1 (2023): 010316.
+[^Glover2019]: Glover, Fred, Gary Kochenberger, and Yu Du. "Quantum Bridge Analytics I: a tutorial on formulating and using QUBO models." 4or 17.4 (2019): 335-371.

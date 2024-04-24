@@ -40,6 +40,7 @@ makedocs(;
         #     "chap4/combinatorial.md",
             "chap4/optimization.md",
             "chap4/ad.md",
+            "chap5/complexity.md",
         ],
         "Randomness" => [
             "chap5/montecarlo.md",

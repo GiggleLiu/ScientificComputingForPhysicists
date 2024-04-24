@@ -69,7 +69,16 @@ In the following, we will discuss a well known NP-complete problem, the **spin-g
 !!! example "Proving a theorem"
     Given a statement and a proof of the statement, it is easy to verify that the proof is correct. However, finding the proof in the first place can be very difficult. This is an example of a problem that can be verified in polynomial time, but may not be solvable in polynomial time.
 
-## Branching and bounding
+## Problem reduction
+
+!!! example "Circuit SAT to Spin-glass"
+    Please check the demo package: https://github.com/GiggleLiu/ScientificComputingDemos/tree/main/Spinglass
+
+## Algorithm: Tropical tensor network
+
+(WIP)
+
+## Algorithm: Branching and bounding
 
 The branching algorithm is a general algorithm for solving optimization problems. It works by recursively dividing the search space into smaller subspaces and solving each subspace separately. The algorithm starts with the entire search space and divides it into smaller subspaces using a branching rule. It then solves each subspace separately and combines the solutions to find the optimal solution for the entire search space. The algorithm uses a bounding rule to determine when to stop dividing the search space and when to combine the solutions.
 
@@ -104,7 +113,7 @@ The branching algorithm for the independent set problem is as follows:
 
 The algorithm works by dividing the search space into smaller subspaces by removing a vertex $v$ and its neighbors from the graph. It then solves each subspace separately and combines the solutions to find the largest independent set in the original graph. The algorithm uses a bounding rule to determine when to stop dividing the search space and when to combine the solutions.
 
-## Simulated Annealing
+## Algorithm: Simulated Annealing
 
 Simulated annealing is a probabilistic optimization algorithm that is used to find the global minimum of an energy function. It is inspired by the process of annealing in metallurgy, where a material is heated and then slowly cooled to increase its strength and reduce its defects. The algorithm starts with a thermal state, where the temperature is high and the system is in a random state. It then gradually cools the system, reducing the temperature and allowing the system to settle into a low-energy state. The algorithm uses a probabilistic acceptance criterion, usually based on the Metropolis-Hastings algorithm, to accept or reject moves that increase the energy of the system. This allows the algorithm to escape local minima and explore the energy landscape more effectively.
 
@@ -120,5 +129,6 @@ P(\sigma \to \sigma') = \exp(-\Delta E / T)
 ```
 The algorithm repeats this process for a fixed number of steps or until the system reaches thermal equilibrium. The temperature is then reduced according to a cooling schedule, and the process is repeated until the system converges to a low-energy state.
 
-A simulated annealing algorithm for the spin-glass problem is as follows:
+## Hands-on
+The following demo package contains the code for solving the spin-glass problem using the different approaches:
 https://github.com/GiggleLiu/ScientificComputingDemos/tree/main/Spinglass

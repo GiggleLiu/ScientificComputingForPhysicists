@@ -30,23 +30,22 @@ makedocs(;
             "chap3/linalg-impl.md",
             "chap3/fft.md",
             "chap3/sensitivity.md",
-            "chap3/sparse.md",
+        ],
+        "Sparse Matrices" => [
+            "chap4/sparse.md",
+            # "chap4/compressedsensing.md",
         ],
         "Tensors and Tensor Networks" => [
-            "chap3/tensors.md",
+            "chap5/tensors.md",
         ],
         "Optimization" => [
-        #     "chap4/combinatorial.md",
-            "chap4/optimization.md",
-            "chap4/ad.md",
-            "chap5/complexity.md",
+            "chap6/optimization.md",
+            "chap6/ad.md",
+            "chap6/complexity.md",
         ],
         "Randomness" => [
-            "chap5/montecarlo.md",
+            "chap7/montecarlo.md",
         ],
-        # "Sparsity (×)" => [
-        #     "chap6/compressedsensing.md",
-        # ],
         # "High Performance Computing" => [
         #     "chap7/hpc.md",
         #     "chap7/cuda.md",

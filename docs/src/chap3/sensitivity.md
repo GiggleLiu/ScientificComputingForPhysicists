@@ -133,3 +133,12 @@ maximum(spectrum)/minimum(spectrum)  # the same as the condition number
     scatter!(ax, conds, errors; label="samples")
     fig
     ```
+
+## Issue: The Condition-Squaring Effect
+
+The conditioning of a square linear system $Ax = b$ depends only on the matrix, while the conditioning of a least squares problem $Ax \approx b$ depends on both $A$ and $b$.
+
+```math
+A = \left(\begin{matrix}1 & 1\\ \epsilon & 0 \\ 0 & \epsilon \end{matrix}\right)
+```
+

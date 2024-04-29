@@ -1,5 +1,7 @@
 # Matrix Computation
 
+In this chapter, we will discuss the fundamental operations in linear algebra, including matrix multiplication, solving a system of linear equations, the LU decomposition, the QR decomposition, the least squares problem, eigenvalues and eigenvectors, matrix functions, the singular value decomposition, and the Cholesky decomposition. We will also provide examples to illustrate the applications of these operations. A good reference for matrix computation is the book by Golub[^Golub2016].
+
 ## Matrix multiplication
 Matrix multiplication is a fundamental operation in linear algebra. Given two matrices $A\in \mathbb{C}^{m\times n}$ and $B\in \mathbb{C}^{n\times p}$, the product $C = AB$ is defined as
 ```math
@@ -75,6 +77,8 @@ To summarize, the algorithm to solve a linear equation contains following steps:
 3. Solve for y in $Ly = b$ by [Forward-substitution](@ref). This involves substituting the values of $y$ into the equation one at a time, starting with the first row and working downwards.
 
 4. Solve for $x$ in $Ux = y$ by [Back-substitution](@ref) (link TBA). This involves substituting the values of $x$ into the equation one at a time, starting with the last row and working upwards.
+
+Please check [LU Factorization](@ref) for more details.
 
 ## Least Squares Problem and QR Decomposition
 
@@ -164,6 +168,8 @@ qr(A)
     ```@repl linalg
     LinearAlgebra.pinv(A) * (y)  # an alternative way
     ```
+
+Please check [QR Factorization](@ref) for more details.
 
 ## Eigenvalues and Eigenvectors
 The eigenvalues and eigenvectors of a matrix $A\in \mathbb{C}^{n\times n}$ are the solutions to the equation
@@ -304,3 +310,8 @@ In Julia, we can find the Cholesky decomposition of a matrix using the `cholesky
 A = [2 1; 1 3]
 cholesky(A)
 ```
+
+Please check [Cholesky Decomposition (Implementation)](@ref) for more details.
+
+## References
+[^Golub2016]: Golub, G.H., 2016. Matrix Computation 25, 228–234. https://doi.org/10.4037/ajcc2016979

@@ -1,6 +1,6 @@
 JL = julia --project=docs
 
-default: init build serve
+default: init serve
 
 init:
 	$(JL) -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
@@ -14,4 +14,4 @@ serve:
 clean:
 	rm -rf docs/build
 
-.PHONY: init build serve
+.PHONY: init update serve clean

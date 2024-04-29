@@ -27,8 +27,7 @@ makedocs(;
         ],
         "Linear Algebra" => [
             "chap3/linalg.md",
-            "chap3/lu.md",
-            "chap3/qr.md",
+            "chap3/linalg-impl.md",
             "chap3/fft.md",
             "chap3/sensitivity.md",
             "chap3/sparse.md",

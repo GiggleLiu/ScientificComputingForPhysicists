@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Sparse Matrices and Graphs · Scientific Computing For Physicists</title><meta name="title" content="Sparse Matrices and Graphs · Scientific Computing For Physicists"/><meta property="og:title" content="Sparse Matrices and Graphs · Scientific Computing For Physicists"/><meta property="twitter:title" content="Sparse Matrices and Graphs · Scientific Computing For Physicists"/><meta name="description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:description" content="Documentation for Scientific Computing For Physicists."/><meta property="twitter:description" content="Documentation for Scientific Computing For Physicists."/><meta property="og:url" content="https://book.jinguo-group.science/chap4/sparse/"/><meta property="twitter:url" content="https://book.jinguo-group.science/chap4/sparse/"/><link rel="canonical" href="https://book.jinguo-group.science/chap4/sparse/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Scientific Computing For Physicists</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Become an Open-source Developer</span><ul><li><a class="tocitem" href="../../chap1/terminal/">Get a Terminal!</a></li><li><a class="tocitem" href="../../chap1/git/">Maintainability - Version Control</a></li><li><a class="tocitem" href="../../chap1/ci/">Correctness - Unit Tests</a></li></ul></li><li><span class="tocitem">Julia Programming Language</span><ul><li><a class="tocitem" href="../../chap2/julia-setup/">Setup Julia</a></li><li><a class="tocitem" href="../../chap2/julia-why/">Why Julia?</a></li><li><a class="tocitem" href="../../chap2/julia-type/">Types and Multiple-dispatch</a></li><li><a class="tocitem" href="../../chap2/julia-array/">Array and Broadcasting</a></li><li><a class="tocitem" href="../../chap2/julia-release/">My First Package</a></li><li><a class="tocitem" href="../../chap2/julia-fluid/">Project: Fluid dynamics</a></li></ul></li><li><span class="tocitem">Linear Algebra</span><ul><li><a class="tocitem" href="../../chap3/linalg/">Matrix Computation</a></li><li><a class="tocitem" href="../../chap3/linalg-impl/">Matrix Computation (Implementation)</a></li><li><a class="tocitem" href="../../chap3/fft/">Fast Fourier transform</a></li><li><a class="tocitem" href="../../chap3/sensitivity/">Sensitivity Analysis</a></li></ul></li><li><span class="tocitem">Sparse Matrices</span><ul><li class="is-active"><a class="tocitem" href>Sparse Matrices and Graphs</a><ul class="internal"><li><a class="tocitem" href="#Sparse-Matrices"><span>Sparse Matrices</span></a></li><li><a class="tocitem" href="#COOrdinate-(COO)-format"><span>COOrdinate (COO) format</span></a></li><li><a class="tocitem" href="#Compressed-Sparse-Column-(CSC)-format"><span>Compressed Sparse Column (CSC) format</span></a></li><li><a class="tocitem" href="#Dominant-eigenvalue-problem"><span>Dominant eigenvalue problem</span></a></li><li><a class="tocitem" href="#The-Krylov-subspace-method"><span>The Krylov subspace method</span></a></li><li><a class="tocitem" href="#The-Lanczos-algorithm"><span>The Lanczos algorithm</span></a></li><li><a class="tocitem" href="#The-Arnoldi-algorithm"><span>The Arnoldi algorithm</span></a></li><li><a class="tocitem" href="#Graphs"><span>Graphs</span></a></li></ul></li></ul></li><li><span class="tocitem">Tensors and Tensor Networks</span><ul><li><a class="tocitem" href="../../chap5/tensors/">Tensor Operations</a></li></ul></li><li><span class="tocitem">Optimization</span><ul><li><a class="tocitem" href="../../chap6/optimization/">Optimization</a></li><li><a class="tocitem" href="../../chap6/ad/">Automatic Differentiation</a></li><li><a class="tocitem" href="../../chap6/complexity/">Computational complexity (WIP)</a></li></ul></li><li><span class="tocitem">Randomness</span><ul><li><a class="tocitem" href="../../chap7/montecarlo/">Markov Chain Monte Carlo</a></li></ul></li><li><span class="tocitem">Appendix</span><ul><li><a class="tocitem" href="../../append/plotting/">Plotting recipes with CairoMakie</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Sparse Matrices</a></li><li class="is-active"><a href>Sparse Matrices and Graphs</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Sparse Matrices and Graphs</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/GiggleLiu/ScientificComputingForPhysicists/blob/main/docs/src/chap4/sparse.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Sparse-Matrices-and-Graphs"><a class="docs-heading-anchor" href="#Sparse-Matrices-and-Graphs">Sparse Matrices and Graphs</a><a id="Sparse-Matrices-and-Graphs-1"></a><a class="docs-heading-anchor-permalink" href="#Sparse-Matrices-and-Graphs" title="Permalink"></a></h1><h2 id="Sparse-Matrices"><a class="docs-heading-anchor" href="#Sparse-Matrices">Sparse Matrices</a><a id="Sparse-Matrices-1"></a><a class="docs-heading-anchor-permalink" href="#Sparse-Matrices" title="Permalink"></a></h2><p>Matrices are often sparse. Consider the matrix that we used in the <a href="../../chap3/linalg/#Eigenvalues-and-Eigenvectors">spring chain example</a>, the stiffness matrix is tridiagonal and has only <span>$3n-2$</span> nonzero elements.</p><p class="math-container">\[\begin{align*}
+A = \begin{pmatrix}
+-C &amp; C &amp; 0 &amp; \ldots &amp; 0\\
+C &amp; -2C &amp; C &amp; \ldots &amp; 0\\
+0 &amp; C &amp; -2C &amp; \ldots &amp; 0\\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; 0 &amp; C &amp; -C
+\end{pmatrix}
+\end{align*}\]</p><p>Storing such a matrix in a dense format requires <span>$n^2$</span> elements, which is very memory inefficient since it has only <span>$3n-2$</span> nonzero elements.</p><h2 id="COOrdinate-(COO)-format"><a class="docs-heading-anchor" href="#COOrdinate-(COO)-format">COOrdinate (COO) format</a><a id="COOrdinate-(COO)-format-1"></a><a class="docs-heading-anchor-permalink" href="#COOrdinate-(COO)-format" title="Permalink"></a></h2><p>The coordinate format means storing nonzero matrix elements into triples</p><p class="math-container">\[\begin{align*}
+&amp;(i_1, j_1, v_1)\\
+&amp;(i_2, j_2, v_2)\\
+&amp;\vdots\\
+&amp;(i_k, j_k, v_k)
+\end{align*}\]</p><p>To store the stiffness matrix in COO format, we only need to store <span>$3n-2$</span> triples.</p><p>To implement a COO matrix in Julia, we need to define a new data type and implement the <a href="https://docs.julialang.org/en/v1/manual/interfaces/#man-interface-array"><code>AbstractArray</code></a> interface.</p><ul><li><code>size</code>: return the size of the matrix</li><li><code>getindex</code>: return the element at the given index</li></ul><p>Let the number of nonzero elements in a COO matrix <span>$A$</span> be <span>${\rm nnz}(A)$</span>. The indexing operation requires enumerating over all <span>${\rm nnz}(A)$</span> elements.</p><pre><code class="language-julia hljs">using LinearAlgebra
+
+struct COOMatrix{Tv, Ti} &lt;: AbstractArray{Tv, 2}   # Julia does not have a COO data type
+    m::Ti                   # number of rows
+    n::Ti                 # number of columns
+    colval::Vector{Ti}   # column indices
+    rowval::Vector{Ti}   # row indices
+    nzval::Vector{Tv}        # values
+    function COOMatrix(m::Ti, n::Ti, colval::Vector{Ti}, rowval::Vector{Ti}, nzval::Vector{Tv}) where {Tv, Ti}
+        @assert length(colval) == length(rowval) == length(nzval)
+        new{Tv, Ti}(m, n, colval, rowval, nzval)
+    end
+end
+
+Base.size(coo::COOMatrix) = (coo.m, coo.n)
+Base.size(coo::COOMatrix, i::Int) = getindex((coo.m, coo.n), i)
+# the number of non-zero elements
+nnz(coo::COOMatrix) = length(coo.nzval)
+
+# implement get index for CSC matrix, call with A[i, j]
+function Base.getindex(coo::COOMatrix{Tv}, i::Integer, j::Integer) where Tv
+    @boundscheck checkbounds(coo, i, j)
+    v = zero(Tv)
+    for (i2, j2, v2) in zip(coo.rowval, coo.colval, coo.nzval)
+        if i == i2 &amp;&amp; j == j2
+            v += v2  # accumulate the value, since repeated indices are allowed.
+        end
+    end
+    return v
+end
+
+function Base.:(*)(A::COOMatrix{T1}, B::COOMatrix{T2}) where {T1, T2}
+    @assert size(A, 2) == size(B, 1)
+    rowval = Int[]
+    colval = Int[]
+    nzval = promote_type(T1, T2)[]
+    for (i, j, v) in zip(A.rowval, A.colval, A.nzval)
+        for (i2, j2, v2) in zip(B.rowval, B.colval, B.nzval)
+            if j == i2
+                push!(rowval, i)
+                push!(colval, j2)
+                push!(nzval, v * v2)
+            end
+        end
+    end
+    return COOMatrix(size(A, 1), size(B, 2), colval, rowval, nzval)
+end</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Test</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; stiffmatrix = COOMatrix(3, 3, [1, 1, 2, 2, 2, 3, 3], [1, 2, 1, 2, 3, 2, 3], [-1.0, 1, 1, -2, 1, 1, -1])</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Main.COOMatrix{Float64, Int64}:
+ -1.0   1.0   0.0
+  1.0  -2.0   1.0
+  0.0   1.0  -1.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; size(stiffmatrix)</code><code class="nohighlight hljs ansi" style="display:block;">(3, 3)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; nnz(stiffmatrix)</code><code class="nohighlight hljs ansi" style="display:block;">7</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dense_matrix = Matrix(stiffmatrix)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+ -1.0   1.0   0.0
+  1.0  -2.0   1.0
+  0.0   1.0  -1.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; @test stiffmatrix * stiffmatrix ≈ dense_matrix ^ 2</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr32"><span class="sgr1">Test Passed</span></span></code></pre><p>Most operations on COO matrices are computational expensive. For example, multiplying two COO matrices requires <span>$O({\rm nnz}(A)^2)$</span> computing time.</p><h2 id="Compressed-Sparse-Column-(CSC)-format"><a class="docs-heading-anchor" href="#Compressed-Sparse-Column-(CSC)-format">Compressed Sparse Column (CSC) format</a><a id="Compressed-Sparse-Column-(CSC)-format-1"></a><a class="docs-heading-anchor-permalink" href="#Compressed-Sparse-Column-(CSC)-format" title="Permalink"></a></h2><p>A CSC format sparse matrix can be constructed with the <code>SparseArrays.sparse</code> function. However, here we will implement a simple CSC matrix from scratch.</p><pre><code class="language-julia hljs">struct CSCMatrix{Tv,Ti} &lt;: AbstractMatrix{Tv}
+    m::Int
+    n::Int
+    colptr::Vector{Ti}
+    rowval::Vector{Ti}
+    nzval::Vector{Tv}
+    function CSCMatrix(m::Int, n::Int, colptr::Vector{Ti}, rowval::Vector{Ti}, nzval::Vector{Tv}) where {Tv, Ti}
+        @assert length(colptr) == n + 1
+        @assert length(rowval) == length(nzval) == colptr[end] - 1
+        new{Tv, Ti}(m, n, colptr, rowval, nzval)
+    end
+end
+Base.size(A::CSCMatrix) = (A.m, A.n)
+Base.size(A::CSCMatrix, i::Int) = getindex((A.m, A.n), i)
+# the number of non-zero elements
+nnz(csc::CSCMatrix) = length(csc.nzval)
+
+# convert a COO matrix to a CSC matrix
+function CSCMatrix(coo::COOMatrix{Tv, Ti}) where {Tv, Ti}
+    m, n = size(coo)
+    # sort the COO matrix by column
+    order = sortperm(1:nnz(coo); by=i-&gt;coo.rowval[i] + m * (coo.colval[i]-1))
+    colptr, rowval, nzval = similar(coo.rowval, n+1), similar(coo.rowval), similar(coo.nzval)
+    k = 0
+    ipre, jpre = 0, 0
+    colptr[1] = 1
+    for idx in order
+        i, j, v = coo.rowval[idx], coo.colval[idx], coo.nzval[idx]
+        # values with the same indices are accumulated
+        if i == ipre &amp;&amp; j == jpre
+            nzval[k] += v
+        else
+            k += 1
+            if j != jpre
+                # a new column starts
+                colptr[jpre+1:j+1] .= k
+            end
+            rowval[k] = i
+            nzval[k] = v
+            ipre, jpre = i, j
+        end
+    end
+    colptr[jpre+1:end] .= k + 1
+    resize!(rowval, k)
+    resize!(nzval, k)
+    return CSCMatrix(m, n, colptr, rowval, nzval)
+end
+
+# implement get index for CSC matrix, call with A[i, j]
+function Base.getindex(A::CSCMatrix{T}, i::Int, j::Int) where T
+    @boundscheck checkbounds(A, i, j)
+    for k in nzrange(A, j)
+        if A.rowval[k] == i
+            return A.nzval[k]
+        end
+    end
+    return zero(T)
+end
+
+function Base.:*(A::CSCMatrix{T1}, B::CSCMatrix{T2}) where {T1, T2}
+    T = promote_type(T1, T2)
+    @assert size(A, 2) == size(B, 1)
+    rowval, colval, nzval = Int[], Int[], T[]
+    for j2 in 1:size(B, 2)  # enumerate the columns of B
+        for k2 in nzrange(B, j2)  # enumerate the rows of B
+            v2 = B.nzval[k2]
+            for k1 in nzrange(A, B.rowval[k2])  # enumerate the rows of A
+                push!(rowval, A.rowval[k1])
+                push!(colval, j2)
+                push!(nzval, A.nzval[k1] * v2)
+            end
+        end
+    end
+    return CSCMatrix(COOMatrix(size(A, 1), size(B, 2), colval, rowval, nzval))
+end
+
+# return the range of non-zero elements in the j-th column
+nzrange(A::CSCMatrix, j::Int) = A.colptr[j]:A.colptr[j+1]-1</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">nzrange (generic function with 1 method)</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; coo_matrix = COOMatrix(5, 4, [1, 1, 2, 2, 4, 4], [2, 3, 1, 4, 3, 4], [1, 2, 3, 4, 5, 6])</code><code class="nohighlight hljs ansi" style="display:block;">5×4 Main.COOMatrix{Int64, Int64}:
+ 0  3  0  0
+ 1  0  0  0
+ 2  0  0  5
+ 0  4  0  6
+ 0  0  0  0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; csc_matrix = CSCMatrix(coo_matrix)</code><code class="nohighlight hljs ansi" style="display:block;">5×4 Main.CSCMatrix{Int64, Int64}:
+ 0  3  0  0
+ 1  0  0  0
+ 2  0  0  5
+ 0  4  0  6
+ 0  0  0  0</code></pre><p>The <code>csc_matrix</code> has type <code>CSCMatrix</code>, which contains 5 fields</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; fieldnames(csc_matrix |&gt; typeof)</code><code class="nohighlight hljs ansi" style="display:block;">(:m, :n, :colptr, :rowval, :nzval)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; csc_matrix.m, csc_matrix.n</code><code class="nohighlight hljs ansi" style="display:block;">(5, 4)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; csc_matrix.colptr</code><code class="nohighlight hljs ansi" style="display:block;">5-element Vector{Int64}:
+ 1
+ 3
+ 5
+ 5
+ 7</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; csc_matrix.rowval</code><code class="nohighlight hljs ansi" style="display:block;">6-element Vector{Int64}:
+ 2
+ 3
+ 1
+ 4
+ 3
+ 4</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; csc_matrix.nzval</code><code class="nohighlight hljs ansi" style="display:block;">6-element Vector{Int64}:
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6</code></pre><p><img src="../../assets/images/csc.png" alt/></p><p>The <code>m</code>, <code>n</code>, <code>rowval</code> and <code>nzval</code> have the same meaning as those in the COO format. <code>colptr</code> is an integer vector of size <span>$n+1$</span>, where <code>colptr[j]</code> is the index in <code>rowval</code> and <code>nzval</code> of the first nonzero element in the <span>$j$</span>-th column, and <code>colptr[j+1]</code> is the index of the first nonzero element in the <span>$(j+1)$</span>-th column. Hence the <span>$j$</span>-th column of the matrix is stored in <code>rowval[colptr[j]:colptr[j+1]-1]</code> and <code>nzval[colptr[j]:colptr[j+1]-1]</code>.</p><p>The number of operations required to index an element in the <span>$j$</span>-th column of a CSC matrix is linear to the nonzero elements in the <span>$j$</span>-th column. To get an element from the 2nd row and 3rd column of a CSC matrix, we can use the following code</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; csc_matrix[2, 3]</code><code class="nohighlight hljs ansi" style="display:block;">0</code></pre><p>The row indices and values of nonzero elements in the 3rd column can be obtained by</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; rows3 = csc_matrix.rowval[csc_matrix.colptr[3]:csc_matrix.colptr[4]-1]</code><code class="nohighlight hljs ansi" style="display:block;">Int64[]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; val3 = csc_matrix.nzval[csc_matrix.colptr[3]:csc_matrix.colptr[4]-1]</code><code class="nohighlight hljs ansi" style="display:block;">Int64[]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; csc_matrix.rowval[nzrange(csc_matrix, 3)] # or equivalently, we can use `nzrange`</code><code class="nohighlight hljs ansi" style="display:block;">Int64[]</code></pre><p>Multiplying two CSC matrices is much faster than multiplying two COO matrices. The time complexity of multiplying two CSC matrices <span>$A$</span> and <span>$B$</span> is <span>$O({\rm nnz}(A){\rm nnz}(B)/n)$</span>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; csc_matrix2 = CSCMatrix(COOMatrix(coo_matrix.n, coo_matrix.m, coo_matrix.rowval, coo_matrix.colval, coo_matrix.nzval))  # transpose</code><code class="nohighlight hljs ansi" style="display:block;">4×5 Main.CSCMatrix{Int64, Int64}:
+ 0  1  2  0  0
+ 3  0  0  4  0
+ 0  0  0  0  0
+ 0  0  5  6  0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; @test Matrix(csc_matrix) * Matrix(csc_matrix2) ≈ csc_matrix * csc_matrix2</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr32"><span class="sgr1">Test Passed</span></span></code></pre><h2 id="Dominant-eigenvalue-problem"><a class="docs-heading-anchor" href="#Dominant-eigenvalue-problem">Dominant eigenvalue problem</a><a id="Dominant-eigenvalue-problem-1"></a><a class="docs-heading-anchor-permalink" href="#Dominant-eigenvalue-problem" title="Permalink"></a></h2><p>Given a matrix <span>$A \in \mathbb{R}^{n \times n}$</span>, the dominant eigenvalue problem is to find the largest eigenvalue <span>$\lambda_1$</span> and its corresponding eigenvector <span>$x_1$</span> such that</p><p class="math-container">\[A x_1 = \lambda_1 x_1.\]</p><p>The power method is a simple iterative algorithm to solve the dominant eigenvalue problem. The algorithm starts with a random vector <span>$v_0$</span> and repeatedly multiplies it with the matrix <span>$A$</span>.</p><p class="math-container">\[v_k = A^k v_0\]</p><p>By representing the initial vector <span>$v_0$</span> as a linear combination of eigenvectors of <span>$A$</span>, i.e. <span>$v_0 = \sum_{i=1}^n c_i x_i$</span>, we have</p><p class="math-container">\[v_k = \sum_{i=1}^n \lambda_i^k c_i x_i\]</p><p>where <span>$\lambda_1 &gt; \lambda_2 \geq \ldots \geq \lambda_n$</span> are the eigenvalues of <span>$A$</span> and <span>$x_i$</span> are the corresponding eigenvectors. The power method converges to the eigenvector corresponding to the largest eigenvalue as <span>$k \rightarrow \infty$</span>. The rate of convergence is dedicated by <span>$|\lambda_2/\lambda_1|^k$</span>. The Julia code for the power method is as follows.</p><pre><code class="language-julia hljs">function power_method(A::AbstractMatrix{T}, n::Int) where T
+    n = size(A, 2)
+    x = normalize!(randn(n))
+    for i=1:n
+        x = A * x
+        normalize!(x)
+    end
+    return x&#39; * A * x&#39;, x
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">power_method (generic function with 1 method)</code></pre><p>By inverting the sign, <span>$A\rightarrow -A$</span>, we can use the same method to obtain the smallest eigenvalue.</p><h2 id="The-Krylov-subspace-method"><a class="docs-heading-anchor" href="#The-Krylov-subspace-method">The Krylov subspace method</a><a id="The-Krylov-subspace-method-1"></a><a class="docs-heading-anchor-permalink" href="#The-Krylov-subspace-method" title="Permalink"></a></h2><p>Let <span>$A \in \mathbb{C}^{n \times n}$</span> be a large sparse matrix, the Arnoldi and Lanczos algorithms can be used to obtain its largest/smallest eigenvalue, with much faster convergence speed comparing with the power method.</p><p>The key idea of these algorithms is to generate an orthogonal matrix <span>$Q \in \mathbb{C}^{n\times k}$</span>, <span>$Q^\dagger Q = I$</span>, such that</p><p class="math-container">\[Q^\dagger A Q = B.\]</p><p>We have the following property</p><p class="math-container">\[\lambda_1(B) \leq \lambda_1(A),\]</p><p>where <span>$\lambda_1(A)$</span> is the largest eigenvalue of <span>$A$</span>. By chooing <span>$Q$</span> carefully, such that <span>${\rm span}(Q)$</span> contains the dominant eigenvectors of <span>$A$</span>, then <span>$\lambda_1(B) = \lambda_1(A)$</span>. When the equality holds, we have</p><p class="math-container">\[By_1 = \lambda_1(B)y_1\]</p><p>where <span>$y_i$</span> is the <span>$i$</span>-th eigenvector of <span>$B$</span>. By multiplying <span>$y^\dagger$</span> on the left, we have</p><p class="math-container">\[y_1^\dagger Q^\dagger A Q y_1 = \lambda_1(B)\]</p><p>Hence, the eigenvectors of <span>$B$</span> are related to the eigenvectors of <span>$A$</span> by the orthogonal matrix <span>$Q$</span>.</p><p>Inspired by the power method, we can define the <span>$Q$</span> as the <em>Krylov subspace</em> that generated from a random initial vector <span>$q_1$</span>.</p><p class="math-container">\[\mathcal{K}(A, q_1, k) = {\rm span}\{q_1, Aq_1, A^2q_1, \ldots, A^{k-1}q_1\}\]</p><p>The Arnoldi and Lanczos algorithm are two special cases of the Krylov subspace method. The Arnoldi algorithm is used to solve the eigenvalue problem, while the Lanczos algorithm is used to solve the symmetric eigenvalue problem.</p><h3 id="KrylovKit.jl"><a class="docs-heading-anchor" href="#KrylovKit.jl">KrylovKit.jl</a><a id="KrylovKit.jl-1"></a><a class="docs-heading-anchor-permalink" href="#KrylovKit.jl" title="Permalink"></a></h3><p>The Julia package <a href="https://github.com/Jutho/KrylovKit.jl"><code>KrylovKit.jl</code></a> contains many Krylov space based algorithms. <code>KrylovKit.jl</code> accepts general functions or callable objects as linear maps, and general Julia objects with vector like behavior (as defined in the docs) as vectors. The high level interface of KrylovKit is provided by the following functions:</p><ul><li><code>linsolve</code>: solve linear systems</li><li><code>eigsolve</code>: find a few eigenvalues and corresponding eigenvectors</li><li><code>geneigsolve</code>: find a few generalized eigenvalues and corresponding vectors</li><li><code>svdsolve</code>: find a few singular values and corresponding left and right singular vectors</li><li><code>exponentiate</code>: apply the exponential of a linear map to a vector</li><li><code>expintegrator</code>: <a href="https://en.wikipedia.org/wiki/Exponential_integrator">exponential integrator</a>   for a linear non-homogeneous ODE, computes a linear combination of the <code>ϕⱼ</code> functions which generalize <code>ϕ₀(z) = exp(z)</code>.</li></ul><h2 id="The-Lanczos-algorithm"><a class="docs-heading-anchor" href="#The-Lanczos-algorithm">The Lanczos algorithm</a><a id="The-Lanczos-algorithm-1"></a><a class="docs-heading-anchor-permalink" href="#The-Lanczos-algorithm" title="Permalink"></a></h2><p>The Lanczos algorithm is used to solve the symmetric eigenvalue problem. Given a symmetric matrix <span>$A \in \mathbb{R}^{n \times n}$</span>, the Lanczos algorithm generates an orthogonal matrix <span>$Q \in \mathbb{R}^{n \times k}$</span>, such that</p><p class="math-container">\[Q^T A Q = T\]</p><p>where <span>$T$</span> is a tridiagonal matrix</p><p class="math-container">\[T = \left(\begin{matrix}
+\alpha_1 &amp; \beta_1 &amp; 0 &amp; \ldots &amp; 0\\
+\beta_1 &amp; \alpha_2 &amp; \beta_2 &amp; \ldots &amp; 0\\
+0 &amp; \beta_2 &amp; \alpha_3 &amp; \ldots &amp; 0\\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; 0 &amp; \beta_{k-1} &amp; \alpha_k
+\end{matrix}\right),\]</p><p>Let <span>$Q = [q_1 | q_2 | \ldots | q_n],$</span> and <span>${\rm span}(\{q_1, q_2, \ldots, q_k\}) = \mathcal{K}(A, q_1, k)$</span>. We have <span>$Aq_k = \beta_{k-1}q_{k-1} + \alpha_k q_k + \beta_k q_{k+1}$</span>, or equivalently in the recursive style</p><p class="math-container">\[q_{k+1} = (Aq_k - \beta_{k-1}q_{k-1} - \alpha_k q_k)/\beta_k.\]</p><p>By multiplying <span>$q_k^T$</span> on the left, we have</p><p class="math-container">\[\alpha_k  = q_k^T A q_k.\]</p><p>Since <span>$q_{k+1}$</span> is normalized, we have</p><p class="math-container">\[\beta_k = \|Aq_k - \beta_{k-1}q_{k-1} - \alpha_k q_k\|_2\]</p><p>If at any moment, <span>$\beta_k = 0$</span>, the interation stops due to convergence of a subspace. We have the following reducible form</p><p class="math-container">\[T(\beta_2 = 0) = \left(\begin{array}{cc|ccc}
+\alpha_1 &amp; \beta_1 &amp; 0 &amp; \ldots &amp; 0\\
+\beta_1 &amp; \alpha_2 &amp; 0 &amp; \ldots &amp; 0\\
+\hline
+0 &amp; 0 &amp; \alpha_3 &amp; \ldots &amp; 0\\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; 0 &amp; \beta_{k-1} &amp; \alpha_k
+\end{array}\right),\]</p><h3 id="A-Julia-implementation"><a class="docs-heading-anchor" href="#A-Julia-implementation">A Julia implementation</a><a id="A-Julia-implementation-1"></a><a class="docs-heading-anchor-permalink" href="#A-Julia-implementation" title="Permalink"></a></h3><pre><code class="language-julia hljs">function lanczos(A, q1::AbstractVector{T}; abstol, maxiter) where T
+    # normalize the input vector
+    q1 = normalize(q1)
+    # the first iteration
+    q = [q1]
+    Aq1 = A * q1
+    α = [q1&#39; * Aq1]
+    rk = Aq1 .- α[1] .* q1
+    β = [norm(rk)]
+    for k = 2:min(length(q1), maxiter)
+        # the k-th orthonormal vector in Q
+        push!(q, rk ./ β[k-1])
+        Aqk = A * q[k]
+        # compute the diagonal element as αₖ = qₖᵀ A qₖ
+        push!(α, q[k]&#39; * Aqk)
+        rk = Aqk .- α[k] .* q[k] .- β[k-1] * q[k-1]
+        # compute the off-diagonal element as βₖ = |rₖ|
+        nrk = norm(rk)
+        # break if βₖ is smaller than abstol or the maximum number of iteration is reached
+        if abs(nrk) &lt; abstol || k == length(q1)
+            break
+        end
+        push!(β, nrk)
+    end
+    # returns T and Q
+    return SymTridiagonal(α, β), hcat(q...)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">lanczos (generic function with 1 method)</code></pre><h3 id="Reorthogonalization"><a class="docs-heading-anchor" href="#Reorthogonalization">Reorthogonalization</a><a id="Reorthogonalization-1"></a><a class="docs-heading-anchor-permalink" href="#Reorthogonalization" title="Permalink"></a></h3><p>Let <span>$r_0, \ldots, r_{k-1} \in \mathbb{C}_n$</span> be linearly independent vectors and the corresponding Householder matrices <span>$H_0, \ldots, H_{k-1}$</span> such that <span>$(H_0\ldots H_{k- 1})^T [r_0\mid\ldots\mid r_{k-1}]$</span> is an upper triangular matrix. Let <span>$[q_1 \mid \ldots \mid q_k ]$</span> denote the first <span>$k$</span> columns of the Householder product <span>$(H_0 \ldots H_{k-1})$</span>, then <span>$q_1, \ldots, q_k$</span> are orthonormal vectors up to machine precision. The Lanczos algorithm with complete reorthogonalization is as follows:</p><pre><code class="language-julia hljs">function lanczos_reorthogonalize(A, q1::AbstractVector{T}; abstol, maxiter) where T
+    n = length(q1)
+    # normalize the input vector
+    q1 = normalize(q1)
+    # the first iteration
+    q = [q1]
+    Aq1 = A * q1
+    α = [q1&#39; * Aq1]
+    rk = Aq1 .- α[1] .* q1
+    β = [norm(rk)]
+    householders = [householder_matrix(q1)]
+    for k = 2:min(n, maxiter)
+        # reorthogonalize rk: 1. compute the k-th householder matrix
+        for j = 1:k-1
+            left_mul!(view(rk, j:n), householders[j])
+        end
+        push!(householders, householder_matrix(view(rk, k:n)))
+        # reorthogonalize rk: 2. compute the k-th orthonormal vector in Q
+        qk = zeros(T, n); qk[k] = 1  # qₖ = H₁H₂…Hₖeₖ
+        for j = k:-1:1
+            left_mul!(view(qk, j:n), householders[j])
+        end
+        push!(q, qk)
+        Aqk = A * q[k]
+        # compute the diagonal element as αₖ = qₖᵀ A qₖ
+        push!(α, q[k]&#39; * Aqk)
+        rk = Aqk .- α[k] .* q[k] .- β[k-1] * q[k-1]
+        # compute the off-diagonal element as βₖ = |rₖ|
+        nrk = norm(rk)
+        # break if βₖ is smaller than abstol or the maximum number of iteration is reached
+        if abs(nrk) &lt; abstol || k == n
+            break
+        end
+        push!(β, nrk)
+    end
+    return SymTridiagonal(α, β), hcat(q...)
+end
+struct HouseholderMatrix{T} &lt;: AbstractArray{T, 2}
+    v::Vector{T}
+    β::T
+end
+
+# the `mul!` interfaces can take two extra factors.
+function left_mul!(B, A::HouseholderMatrix)
+    B .-= (A.β .* A.v) * (A.v&#39; * B)
+    return B
+end
+
+function householder_matrix(v::AbstractVector{T}) where T
+    v = copy(v)
+    v[1] -= norm(v, 2)
+    return HouseholderMatrix(v, 2/norm(v, 2)^2)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">householder_matrix (generic function with 1 method)</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Graphs</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; n = 1000</code><code class="nohighlight hljs ansi" style="display:block;">1000</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; graph = random_regular_graph(n, 3)</code><code class="nohighlight hljs ansi" style="display:block;">{1000, 1500} undirected simple Int64 graph</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = laplacian_matrix(graph)</code><code class="nohighlight hljs ansi" style="display:block;">1000×1000 SparseArrays.SparseMatrixCSC{Int64, Int64} with 4000 stored entries:
+⎡⠑⢄⢑⠣⣐⡴⣄⠛⡔⣕⢔⠐⠒⢗⠄⣊⠵⠖⠩⡖⠃⣀⡔⣠⢤⣲⡢⠫⡅⠤⢢⠠⠸⡛⣄⢜⢖⠀⠀⡫⎤
+⎢⠵⡐⠱⢆⢟⣬⠓⡰⠣⠠⠰⢀⠊⣕⠔⡤⡖⡀⢙⢙⣦⠎⢝⠳⠀⣌⣵⠡⠊⠈⣅⢬⢄⠑⡦⡷⡀⠎⠑⣏⎥
+⎢⢐⡼⡛⣵⣑⢜⣣⡂⠡⡉⡬⢢⡨⡐⢀⡸⡃⠔⡢⠐⢐⢜⢚⠬⠀⣽⡒⣔⠋⠂⠮⠖⡟⡈⣱⠡⠦⠱⣕⠆⎥
+⎢⣤⠙⢙⡠⠩⠺⡑⢌⡠⡤⠀⠖⠩⠑⢌⠑⠂⢜⡠⡸⢒⣹⢹⣂⢡⠚⢡⡤⡑⢢⠺⠊⠖⢜⣠⠤⠁⠭⡣⠕⎥
+⎢⢔⢭⠉⡂⡅⠢⠀⡮⡻⣮⡝⢒⣚⡄⡈⠮⡸⠤⠚⡔⡒⡡⡄⢄⢓⢂⣈⠃⢶⣨⠤⣑⠡⢔⣃⢵⠮⠛⢘⠀⎥
+⎢⢐⠑⠐⢂⠢⣋⢠⠄⢳⢉⢟⢕⠀⢸⠀⢠⣛⣄⣉⣅⡳⢚⠌⠹⢴⢤⢀⠀⠅⣃⠥⡥⣑⠕⠮⠥⠨⣕⢆⠉⎥
+⎢⢼⢄⢎⢤⢂⠪⢇⠂⠚⠼⣀⣀⠛⢄⢽⠪⢁⠂⠄⢑⠚⢘⢕⠒⢆⠏⢏⡒⡄⡪⠉⡷⢱⡸⣅⠉⢐⠮⠀⣂⎥
+⎢⡠⢡⠐⡥⣀⡰⢆⠑⡢⡌⠀⣀⡳⡓⡱⣮⢏⡬⡊⣰⠴⠆⣕⡡⠑⠋⡅⣃⠐⠀⡙⢡⣸⡥⠈⠐⠞⢁⠞⢗⎥
+⎢⢱⠇⠘⠩⢉⠌⣈⢄⠒⡎⠛⢼⠡⠐⡋⡵⢱⣶⡃⠂⠧⡶⣈⢆⢄⠌⣀⡉⢜⡱⢂⢮⠀⢀⠄⢬⣓⠂⢇⠦⎥
+⎢⢣⠦⣗⢐⢈⠊⣀⡪⢚⠤⠇⢼⢄⢁⢊⣨⠩⠈⠕⢅⠆⢉⠘⠔⣈⢈⣪⡸⡢⠇⠷⣊⣲⣑⡛⠈⣉⠬⡴⣟⎥
+⎢⠉⢠⡨⠟⣐⢔⣜⣰⠜⡨⣹⢊⣚⢀⠰⠇⢩⡧⡌⢁⠛⣤⠡⡌⠥⠀⡮⡐⢀⡘⢤⠋⡠⣌⠘⡃⠰⡞⣏⡂⎥
+⎢⠐⣩⢷⡑⡚⡔⠳⢲⠀⢍⣆⡁⢱⠑⠕⡹⠢⢜⢒⠄⡁⠦⠵⢇⡽⠔⣥⠊⡁⢐⠮⠀⢤⡈⠐⢽⡘⠂⠌⠀⎥
+⎢⢠⣳⡀⢤⣄⣤⣡⠒⠹⢐⠐⣗⡬⠕⡵⠀⡀⠕⡂⢘⠁⠃⢓⠏⢑⣴⡁⠴⡽⠏⣘⢊⡏⢣⠀⡇⡔⠙⠀⠀⎥
+⎢⡬⡊⠕⡛⢘⢬⠁⡶⠦⠘⠀⠐⢫⠱⠥⢩⡄⠸⣊⡺⢊⠫⡡⠛⢁⡌⠑⣤⢆⡙⢶⢆⠣⠦⢟⠤⡇⡰⢰⡕⎥
+⎢⠁⡍⡊⠀⠫⠀⠱⣈⡘⣳⠥⢡⡠⡩⠐⠀⢖⡱⠬⠎⣀⠰⢁⢈⡷⠏⣌⠱⢻⣶⠨⡂⠓⣙⡃⠨⡬⡒⠯⡒⎥
+⎢⠈⡒⡁⣝⢪⠇⡺⠂⢄⢣⠅⡧⢧⡤⠗⣈⡨⣔⡹⢣⡤⠓⠊⠃⡲⢘⠸⢗⠢⠢⡑⢌⢕⡱⠥⡘⣠⢡⠦⢀⎥
+⎢⣶⠢⢄⠑⡛⠩⣘⢅⢁⢆⢕⠜⣑⡲⠖⡾⠀⢀⢜⢺⡀⢮⡀⠳⠯⣉⠩⡆⣝⢠⢕⡱⠑⣤⣊⢏⡀⡉⠠⠠⎥
+⎢⣀⢝⢬⡯⠕⡚⠀⡞⢍⣜⠎⡇⡅⠙⢂⠀⡀⣅⡛⠈⠶⠠⣔⣄⠤⠤⠛⡕⡉⡈⣁⠣⡮⢜⢛⢔⣔⡱⡙⠀⎥
+⎢⠘⠑⡠⠌⢌⡃⡅⡄⣮⠃⢆⢦⡰⡔⠞⢁⠹⠘⡃⡜⣰⠦⠲⠈⣔⠉⢉⡩⢢⠫⠄⣚⡄⠨⢔⡹⢵⢗⡕⢂⎥
+⎣⡤⡠⡵⢤⠱⠝⢍⠎⠒⠐⡌⠑⠠⢠⢾⢅⠩⡕⣴⢯⠫⠹⠂⠁⠀⠀⢔⠶⢫⠣⠈⢃⠀⡂⠓⠈⠱⢉⡑⢌⎦</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; q1 = randn(n)</code><code class="nohighlight hljs ansi" style="display:block;">1000-element Vector{Float64}:
+ -0.7565950095170791
+ -0.5334608805546822
+  1.2741389666523837
+ -0.5417053301266747
+ -0.12572509019202335
+  0.20153863083945558
+ -0.3026650052539492
+ -0.12598764360346076
+  0.5441030721010311
+ -1.2197248492960444
+  ⋮
+  0.2996869238497831
+ -0.6377691477354183
+ -0.4337257837625247
+ -0.876673899142687
+ -0.005511942203211267
+  0.6678018014767586
+  0.635878798667419
+  0.8106256076486729
+  1.2606927975579834</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; tr, Q = lanczos_reorthogonalize(A, q1; abstol=1e-5, maxiter=100)</code><code class="nohighlight hljs ansi" style="display:block;">([3.038011221363306 1.6873747036801845 … 0.0 0.0; 1.6873747036801845 3.0063132606081333 … 0.0 0.0; … ; 0.0 0.0 … 3.005838170128373 1.4148770962630037; 0.0 0.0 … 1.4148770962630037 3.007129209038603], [-0.023780325018723337 0.06590292466975402 … 0.030490917102816078 -0.03974876300481871; -0.016767058948038597 -0.021811630778574807 … -0.008722729384734292 0.010463772734407979; … ; 0.025478545557271998 -0.04706985028189959 … 0.007450160762153856 0.0437511377461063; 0.0396244808617333 -0.04945725624359085 … 0.01855735105993058 -0.030229504943893398])</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; eigen(tr)</code><code class="nohighlight hljs ansi" style="display:block;">LinearAlgebra.Eigen{Float64, Float64, Matrix{Float64}, Vector{Float64}}
+values:
+100-element Vector{Float64}:
+ 2.6645352591003757e-15
+ 0.16966128105890466
+ 0.18297629058452497
+ 0.18746446400397976
+ 0.19900345610074233
+ 0.20946866686136545
+ 0.22836699782120284
+ 0.248594659574775
+ 0.2659919519445957
+ 0.2937891799293775
+ ⋮
+ 5.70571776216396
+ 5.734038129399987
+ 5.751157616010608
+ 5.769302543776512
+ 5.780661134090686
+ 5.797089408816458
+ 5.804241194397438
+ 5.81411301873751
+ 5.820258741424692
+vectors:
+100×100 Matrix{Float64}:
+ -0.0176483     0.00252952   0.0500473   …  -0.0386502    0.0352375
+  0.0317747    -0.0042999   -0.0846799      -0.0635881    0.0581017
+ -0.0458864     0.00553403   0.107924       -0.0790943    0.0726111
+  0.0635926    -0.00656559  -0.126245       -0.0895163    0.0827545
+ -0.0825293     0.00694142   0.130773       -0.0997169    0.0930523
+  0.11628      -0.00763851  -0.139947    …  -0.108053     0.102069
+ -0.160633      0.00818145   0.145128       -0.122365     0.117127
+  0.221536     -0.00864529  -0.147663       -0.128256     0.124593
+ -0.288802      0.00828009   0.134529       -0.137703     0.136093
+  0.34891      -0.00693366  -0.104741       -0.142219     0.14313
+  ⋮                                      ⋱
+  4.69117e-13   0.0124484   -0.0302174       0.00957223   0.00185682
+ -3.23006e-13  -0.0105375    0.0261992       0.00791976   0.00152062
+  2.1773e-13    0.00870219  -0.0221261       0.0067511    0.00128383
+ -1.50168e-13  -0.00725996   0.0188264       0.00562001   0.00106019
+  1.06579e-13   0.00612665  -0.016156    …   0.00427958   0.00080155
+ -6.97933e-14  -0.00463569   0.0123874       0.00336932   0.000627031
+  4.46612e-14   0.00336524  -0.00909233      0.0024997    0.000462777
+ -2.7068e-14   -0.00224009   0.0061          0.00169219   0.000312132
+  1.27357e-14   0.001117    -0.00305605      0.000852957  0.000156988</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using KrylovKit</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; eigsolve(A, q1, 2, :SR)</code><code class="nohighlight hljs ansi" style="display:block;">([3.3591097530824266e-15, 0.1696554816222834], [[0.03162277660168377, 0.03162277660168377, 0.03162277660168401, 0.03162277660168403, 0.031622776601683604, 0.03162277660168397, 0.031622776601683736, 0.03162277660168389, 0.03162277660168387, 0.03162277660168417  …  0.03162277660168355, 0.03162277660168381, 0.03162277660168382, 0.03162277660168369, 0.031622776601683986, 0.03162277660168373, 0.03162277660168374, 0.031622776601683895, 0.03162277660168392, 0.03162277660168367], [0.03473616603717041, -0.03657257985602176, 0.0189158546056809, -0.027159930181359145, -0.033997167946555544, -0.001670690908669111, 0.0415903210951403, -0.0005526070954935667, -0.053745900803150615, -0.0054374128270928395  …  0.026188258617941683, 0.043622545683493864, -0.03440027950633539, -0.007450190595133641, 0.029598570042164717, -0.047361715868198, -0.006689228496832829, -0.041525006843101855, 0.02219919751429585, 0.0008673995414909977]], ConvergenceInfo: 2 converged values after 18 iterations and 234 applications of the linear map;
+norms of residuals are given by (2.422647638784856e-35, 6.557286843273929e-13).
+)</code></pre><h3 id="Notes-on-Lanczos"><a class="docs-heading-anchor" href="#Notes-on-Lanczos">Notes on Lanczos</a><a id="Notes-on-Lanczos-1"></a><a class="docs-heading-anchor-permalink" href="#Notes-on-Lanczos" title="Permalink"></a></h3><p>A sophisticated Lanczos implementation should consider the following aspects:</p><ol><li>In practice, storing all <span>$q$</span> vectors is not necessary.</li><li>Blocking technique can be used to improve the solution, especially when the matrix has degenerate eigenvalues.</li><li>Restarting technique can be used to improve the solution without increasing the memory usage.</li></ol><p>These techniques could be found in Ref.<sup class="footnote-reference"><a id="citeref-Golub2013" href="#footnote-Golub2013">[Golub2013]</a></sup>.</p><h2 id="The-Arnoldi-algorithm"><a class="docs-heading-anchor" href="#The-Arnoldi-algorithm">The Arnoldi algorithm</a><a id="The-Arnoldi-algorithm-1"></a><a class="docs-heading-anchor-permalink" href="#The-Arnoldi-algorithm" title="Permalink"></a></h2><p>If <span>$A$</span> is not symmetric, then the orthogonal tridiagonalization <span>$Q^T A Q = T$</span> does not exist in general. The Arnoldi approach involves the column by column generation of an orthogonal <span>$Q$</span> such that <span>$Q^TAQ = H$</span> is a Hessenberg matrix.</p><p class="math-container">\[H = \left(\begin{matrix}
+h_{11} &amp; h_{12} &amp; h_{13} &amp; \ldots &amp; h_{1k}\\
+h_{21} &amp; h_{22} &amp; h_{23} &amp; \ldots &amp; h_{2k}\\
+0 &amp; h_{32} &amp; h_{33} &amp; \ldots &amp; h_{3k}\\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; 0 &amp; \ldots &amp; h_{kk}
+\end{matrix}\right)\]</p><p>That is, <span>$h_{ij} = 0$</span> for <span>$i&gt;j+1$</span>.</p><pre><code class="language-julia hljs">function arnoldi_iteration(A::AbstractMatrix{T}, x0::AbstractVector{T}; maxiter) where T
+    h = Vector{T}[]
+    q = [normalize(x0)]
+    n = length(x0)
+    @assert size(A) == (n, n)
+    for k = 1:min(maxiter, n)
+        u = A * q[k]    # generate next vector
+        hk = zeros(T, k+1)
+        for j = 1:k # subtract from new vector its components in all preceding vectors
+            hk[j] = q[j]&#39; * u
+            u = u - hk[j] * q[j]
+        end
+        hkk = norm(u)
+        hk[k+1] = hkk
+        push!(h, hk)
+        if abs(hkk) &lt; 1e-8 || k &gt;=n # stop if matrix is reducible
+            break
+        else
+            push!(q, u ./ hkk)
+        end
+    end
+
+    # construct `h`
+    kmax = length(h)
+    H = zeros(T, kmax, kmax)
+    for k = 1:length(h)
+        if k == kmax
+            H[1:k, k] .= h[k][1:k]
+        else
+            H[1:k+1, k] .= h[k]
+        end
+    end
+    return H, hcat(q...)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">arnoldi_iteration (generic function with 1 method)</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; import SparseArrays</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; n = 100</code><code class="nohighlight hljs ansi" style="display:block;">100</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = SparseArrays.sprand(n, n, 0.1)</code><code class="nohighlight hljs ansi" style="display:block;">100×100 SparseArrays.SparseMatrixCSC{Float64, Int64} with 992 stored entries:
+⎡⡀⡊⢀⠰⠢⡄⠁⠀⠂⢅⠀⠄⠀⡀⡂⡆⡐⡁⠂⢀⠈⠀⠀⠢⠀⢠⠨⠐⠘⠐⠀⡀⠀⡀⠠⡁⠀⠀⠠⠀⎤
+⎢⠄⠀⠢⣄⠢⢄⠄⡤⠆⠆⠄⠄⠈⠀⠈⠁⠄⡆⠡⠠⠀⡀⠀⡀⢠⠀⠀⠀⠭⠀⢄⠀⠀⠂⠴⠠⠄⠆⠌⢁⎥
+⎢⠈⠀⠐⠄⠀⠀⠀⡠⠀⠀⠁⠄⠄⠥⠂⠀⠄⢔⠳⠄⠀⣍⠈⠀⠀⠀⠈⠂⠨⢰⠀⠀⠀⠀⠄⠠⠡⠀⠀⢀⎥
+⎢⠂⡂⠀⠄⠀⡄⠥⣅⠀⠀⠄⠀⠁⠄⠉⠀⠀⠀⠀⠀⠀⠀⠀⠐⡩⠆⠐⠠⢀⠀⠁⠄⠨⠄⠐⠄⡠⠀⠐⠠⎥
+⎢⢡⡂⠃⠀⢄⢢⡀⠱⠨⠀⠀⠄⠀⠅⠀⠍⠀⠜⠀⢠⣈⠈⢠⠠⠄⠀⠡⠀⡀⡄⠤⠀⢩⠄⠀⢀⢀⠀⠀⠈⎥
+⎢⠀⢄⠀⡠⠂⠄⠰⢐⠔⠋⠀⠨⠀⠂⠀⠉⠀⡄⡀⠤⠠⠡⠜⠀⠠⠀⠀⠈⠐⠂⠀⠐⠀⠠⠈⢅⠉⠄⠦⠆⎥
+⎢⠐⠌⠀⠎⡉⠕⠀⢄⠤⢀⠀⠀⠀⢠⠀⠐⠀⠕⠠⢁⠌⠈⠠⠄⡈⠂⢸⠂⠕⠠⠀⢠⠠⠂⠀⠁⡤⠀⠐⠔⎥
+⎢⠀⠀⠀⠈⠀⡅⠁⠄⠄⠁⠀⠀⠠⠊⡀⡁⠀⠀⠀⢄⠐⠌⠄⢈⠨⠀⠀⠠⠐⠄⠄⠠⠡⠠⠀⢀⠠⠃⠂⠄⎥
+⎢⠀⠀⢀⡁⢈⡈⠀⠤⠤⠈⠁⠀⠐⠄⠆⠀⠀⠠⢀⠂⠀⠠⠠⠈⢀⠤⣀⠀⠠⠄⠈⠀⠠⠄⠠⠈⢨⡁⠀⠁⎥
+⎢⠠⡡⢈⠄⢀⠢⢈⢐⠀⢦⠀⠤⡀⠄⠄⠤⠠⠀⠀⠒⠠⠀⠩⠀⢀⠀⠐⠤⠤⠀⠀⠸⠀⠄⠠⡀⠠⠅⠀⠀⎥
+⎢⢒⠂⠰⠀⠀⠈⠀⠂⠀⠂⡐⠒⠀⠂⠀⠁⢁⠤⠀⠀⢂⠀⠰⠀⠀⠐⠐⠀⠀⠀⠀⠐⠀⠄⢐⠔⢠⠐⠠⡀⎥
+⎢⠐⠀⠈⡀⠀⢟⢀⡠⡀⡂⡀⠁⢀⠆⡤⠀⠐⠃⠈⠀⠰⠠⠀⠒⠈⠀⠠⠐⠨⠀⠀⠠⠰⠠⡐⠀⠁⢐⢃⠀⎥
+⎢⡊⡀⢐⠨⢀⠂⢀⣀⠀⠂⠀⠁⣊⠃⠂⠄⠀⠂⠈⠂⡐⠄⠀⠢⠂⠁⠀⠐⠺⠐⠠⠀⠌⠐⠐⠆⢚⠂⠠⡂⎥
+⎢⠀⠠⡮⠀⠀⠨⠀⡀⡀⠐⡀⠈⠠⠐⠐⡵⠀⡌⢀⠘⠐⠐⠈⠠⠀⠔⠀⠀⡀⠀⠌⢄⢆⠒⠀⠀⠀⠐⠈⠂⎥
+⎢⠈⠑⠀⠀⡐⢀⠠⠀⢒⡂⠀⡊⠀⠆⠠⡀⠀⠔⠡⠒⠠⠀⠈⠐⢀⠐⠐⢈⢀⠘⠋⠠⠀⠂⢠⠄⡀⢀⠐⠀⎥
+⎢⢀⠐⠀⠀⢐⠄⠘⡀⠀⡁⠐⠐⠀⡂⡈⡒⡐⠀⢁⢜⠀⠇⠈⠂⢘⠲⣀⠀⢂⠂⡐⠂⠸⠀⢀⠅⠈⠢⢘⠄⎥
+⎢⠂⢠⢋⠄⠈⠔⠀⡐⠈⠊⡑⠀⠃⠁⣀⠀⠀⠄⠐⡤⠨⠀⢀⠀⠀⠈⠂⢐⠀⢀⢤⠀⠀⠀⠐⠐⠀⠐⠀⠀⎥
+⎢⠃⠃⠂⠂⡀⡀⠐⢑⠀⠀⠐⡐⠐⠀⠀⠐⠀⢀⠐⠀⠀⡀⢀⢀⠀⠓⢑⠐⠠⠁⣊⠂⠑⠆⠔⠲⠘⠀⠉⠐⎥
+⎢⠈⢇⠀⠄⠢⠠⡀⡁⠀⠂⠀⠅⠂⡐⠀⠀⢀⢕⠑⠓⠈⠀⡂⢂⠐⢀⡁⠂⢀⡌⠐⡃⠈⠲⠐⠐⠒⢀⠐⠀⎥
+⎣⠁⠁⠠⠀⢄⠁⠀⠠⠀⠠⠀⠂⠁⠈⠁⠒⠐⢎⠐⠖⠀⠀⠉⠀⢠⠀⠐⡀⠐⠈⠨⠀⢠⠲⠑⢠⠨⠀⠬⡐⎦</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; q1 = randn(n)</code><code class="nohighlight hljs ansi" style="display:block;">100-element Vector{Float64}:
+ -1.4607309611489672
+ -0.2163493823970867
+ -0.43360538549625344
+  0.3261204244222435
+  0.004579519739451094
+  0.2718688646571158
+  0.43472274474762673
+  0.6471412317758033
+  1.0780954304658728
+ -0.3105933856894622
+  ⋮
+  0.12563939209872432
+ -0.3874963630005137
+ -1.0058693800370802
+ -0.2548142547285187
+  1.2771940354083051
+ -0.3309545032465025
+ -0.14440098435850532
+ -0.7940771296137762
+  1.2267083363564688</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; h, q = arnoldi_iteration(A, q1; maxiter=20)</code><code class="nohighlight hljs ansi" style="display:block;">([0.24381680550740945 -0.01372315972552104 … 0.07805180726219814 0.25748569429860063; 1.6642943714913594 -0.04069058851509521 … -0.013326877162535482 0.33312966396866894; … ; 0.0 0.0 … -0.06352003965046751 -0.1181578957645648; 0.0 0.0 … 1.5483265760373994 -0.011866105597966893], [-0.1450981550693992 -0.09683038864983147 … 0.0465088065911176 -0.008746348425850394; -0.021490539374567172 0.13399741277726776 … -0.15021804092398972 -0.10887353279114098; … ; -0.07887771913805071 0.12186653219211128 … -0.03458509040353011 -0.07396701539934089; 0.1218520871725561 -0.09025364437147092 … 0.017034517933372084 0.03341858730889789])</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; eigen(h).values   # naive implementation</code><code class="nohighlight hljs ansi" style="display:block;">20-element Vector{ComplexF64}:
+   -1.890332510695581 + 0.0im
+   -1.503918819699455 - 0.41214741046882175im
+   -1.503918819699455 + 0.41214741046882175im
+  -1.2769774893990495 + 0.0im
+   -1.133370339896465 - 1.1513142320341065im
+   -1.133370339896465 + 1.1513142320341065im
+  -0.3718427396393156 - 1.5929225867255798im
+  -0.3718427396393156 + 1.5929225867255798im
+ -0.28395348777324764 + 0.0im
+ -0.07614097116046581 - 1.1136353571030102im
+ -0.07614097116046581 + 1.1136353571030102im
+   0.5338306145556556 - 0.9965203877858291im
+   0.5338306145556556 + 0.9965203877858291im
+   1.1090547559590098 - 1.4848353262902751im
+   1.1090547559590098 + 1.4848353262902751im
+   1.4658873747642112 - 0.8570954453258988im
+   1.4658873747642112 + 0.8570954453258988im
+   1.7121321225138226 - 0.32571988672072294im
+   1.7121321225138226 + 0.32571988672072294im
+    4.853416358825211 + 0.0im</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; eigsolve(A, q1, 2, :LR)  # KrylovKit.eigsolve</code><code class="nohighlight hljs ansi" style="display:block;">(ComplexF64[4.85341636837755 + 0.0im, 1.7933862553460609 + 0.328092262921969im, 1.7933862553460609 - 0.328092262921969im], Vector{ComplexF64}[[0.03770360777767268 + 0.0im, 0.133116148403354 + 0.0im, 0.02655225931716699 + 0.0im, 0.05269482621331278 + 0.0im, 0.15010932825046547 + 0.0im, 0.054030516617397745 + 0.0im, 0.09796597677290547 + 0.0im, 0.1061210160371091 + 0.0im, 0.1725946672944405 + 0.0im, 0.10291866027532551 + 0.0im  …  0.13319129887743175 + 0.0im, 0.17862631769507886 + 0.0im, 0.09582297025078379 + 0.0im, 0.0775784493836259 + 0.0im, 0.14399767939524874 + 0.0im, 0.20401958208263019 + 0.0im, 0.0834549058966381 + 0.0im, 0.07687591482398105 + 0.0im, 0.13875494090397666 + 0.0im, 0.07530815647209953 + 0.0im], [0.016621443355047803 + 0.06543252285992884im, -0.16996317841048963 - 0.0026429089944230194im, -0.03475565788378298 + 0.018518776284088802im, 0.003282399630603743 - 0.02955330680941775im, 0.07777406116233457 + 0.07261820623027597im, -0.05629042983318979 + 0.027731762768330104im, -0.014295537566620487 - 0.05136227019447483im, 0.040339371667229756 + 0.10691105582882678im, 0.014654274213905584 - 0.030629165905140233im, -0.06149723955838486 + 0.04442135942603799im  …  0.03738452548248959 - 0.07628761843272835im, 0.20665668118244845 - 0.007070014023871829im, 0.02709862395518067 - 0.11108099017330143im, -0.046006038016576274 - 0.0686448701766519im, 0.23311147859949946 + 0.04766137632637522im, -0.07220408635396255 - 0.00786495948519437im, -0.042931660661397975 - 0.01013552491873763im, -0.022295077146809335 + 0.04210543625748031im, -0.04662516759640649 - 0.0071936071452586604im, 0.06716889177375047 - 0.01446839539646087im], [0.016621443355047803 - 0.06543252285992884im, -0.16996317841048963 + 0.0026429089944230194im, -0.03475565788378298 - 0.018518776284088802im, 0.003282399630603743 + 0.02955330680941775im, 0.07777406116233457 - 0.07261820623027597im, -0.05629042983318979 - 0.027731762768330104im, -0.014295537566620487 + 0.05136227019447483im, 0.040339371667229756 - 0.10691105582882678im, 0.014654274213905584 + 0.030629165905140233im, -0.06149723955838486 - 0.04442135942603799im  …  0.03738452548248959 + 0.07628761843272835im, 0.20665668118244845 + 0.007070014023871829im, 0.02709862395518067 + 0.11108099017330143im, -0.046006038016576274 + 0.0686448701766519im, 0.23311147859949946 - 0.04766137632637522im, -0.07220408635396255 + 0.00786495948519437im, -0.042931660661397975 + 0.01013552491873763im, -0.022295077146809335 - 0.04210543625748031im, -0.04662516759640649 + 0.0071936071452586604im, 0.06716889177375047 + 0.01446839539646087im]], ConvergenceInfo: 3 converged values after 7 iterations and 98 applications of the linear map;
+norms of residuals are given by (0.0, 2.664956231673819e-14, 2.664956231673819e-14).
+)</code></pre><h2 id="Graphs"><a class="docs-heading-anchor" href="#Graphs">Graphs</a><a id="Graphs-1"></a><a class="docs-heading-anchor-permalink" href="#Graphs" title="Permalink"></a></h2><p>A graph is a pair <span>$G = (V, E)$</span>, where <span>$V$</span> is a set of vertices and <span>$E$</span> is a set of edges. In Julia, the package <a href="https://github.com/JuliaGraphs/Graphs.jl"><code>Graphs.jl</code></a> provides a simple graph data structure. The following code creates a simple graph with 10 vertices.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Graphs</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; g = SimpleGraph(10)  # create an empty graph with 10 vertices</code><code class="nohighlight hljs ansi" style="display:block;">{10, 0} undirected simple Int64 graph</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; add_vertex!(g)  # add a vertex</code><code class="nohighlight hljs ansi" style="display:block;">true</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; add_edge!(g, 3, 11)  # add an edge between vertex 3 and 11</code><code class="nohighlight hljs ansi" style="display:block;">true</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; has_edge(g, 3, 11)  # check if there is an edge between vertex 3 and 11</code><code class="nohighlight hljs ansi" style="display:block;">true</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; rem_vertex!(g, 7)  # remove vertex 7</code><code class="nohighlight hljs ansi" style="display:block;">true</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; has_edge(g, 3, 11)</code><code class="nohighlight hljs ansi" style="display:block;">false</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; has_edge(g, 3, 7)  # vertex number 11 &quot;renamed&quot; to vertex number 7</code><code class="nohighlight hljs ansi" style="display:block;">true</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; neighbors(g, 3)   # get the neighbors of vertex 3</code><code class="nohighlight hljs ansi" style="display:block;">1-element Vector{Int64}:
+ 7</code></pre><p>A graph can be represented by an adjacency matrix <span>$A \in \mathbb{R}^{n \times n}$</span>, where <span>$n$</span> is the number of vertices. The element <span>$A_{ij}$</span> is 1 if there is an edge between vertex <span>$i$</span> and vertex <span>$j$</span>, and 0 otherwise.</p><p>For example, the adjacency matrix of the Petersen graph is</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Graphs</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; graph = smallgraph(:petersen)</code><code class="nohighlight hljs ansi" style="display:block;">{10, 15} undirected simple Int64 graph</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; adj_matrix = adjacency_matrix(graph)</code><code class="nohighlight hljs ansi" style="display:block;">10×10 SparseArrays.SparseMatrixCSC{Int64, Int64} with 30 stored entries:
+ ⋅  1  ⋅  ⋅  1  1  ⋅  ⋅  ⋅  ⋅
+ 1  ⋅  1  ⋅  ⋅  ⋅  1  ⋅  ⋅  ⋅
+ ⋅  1  ⋅  1  ⋅  ⋅  ⋅  1  ⋅  ⋅
+ ⋅  ⋅  1  ⋅  1  ⋅  ⋅  ⋅  1  ⋅
+ 1  ⋅  ⋅  1  ⋅  ⋅  ⋅  ⋅  ⋅  1
+ 1  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  1  1  ⋅
+ ⋅  1  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  1  1
+ ⋅  ⋅  1  ⋅  ⋅  1  ⋅  ⋅  ⋅  1
+ ⋅  ⋅  ⋅  1  ⋅  1  1  ⋅  ⋅  ⋅
+ ⋅  ⋅  ⋅  ⋅  1  ⋅  1  1  ⋅  ⋅</code></pre><p><img src="../../assets/images/petersen.png" alt/></p><p>The Laplacian matrix <span>$L_{n\times n}$</span> of a graph <span>$G$</span> is defined as <span>$L = D - A$</span>, where <span>$D$</span> is the degree matrix of the graph. The degree matrix is a diagonal matrix, where the diagonal element <span>$D_{ii}$</span> is the degree of vertex <span>$i$</span>. The Laplacian matrix is symmetric and positive semidefinite.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; lap_matrix = laplacian_matrix(graph)</code><code class="nohighlight hljs ansi" style="display:block;">10×10 SparseArrays.SparseMatrixCSC{Int64, Int64} with 40 stored entries:
+  3  -1   ⋅   ⋅  -1  -1   ⋅   ⋅   ⋅   ⋅
+ -1   3  -1   ⋅   ⋅   ⋅  -1   ⋅   ⋅   ⋅
+  ⋅  -1   3  -1   ⋅   ⋅   ⋅  -1   ⋅   ⋅
+  ⋅   ⋅  -1   3  -1   ⋅   ⋅   ⋅  -1   ⋅
+ -1   ⋅   ⋅  -1   3   ⋅   ⋅   ⋅   ⋅  -1
+ -1   ⋅   ⋅   ⋅   ⋅   3   ⋅  -1  -1   ⋅
+  ⋅  -1   ⋅   ⋅   ⋅   ⋅   3   ⋅  -1  -1
+  ⋅   ⋅  -1   ⋅   ⋅  -1   ⋅   3   ⋅  -1
+  ⋅   ⋅   ⋅  -1   ⋅  -1  -1   ⋅   3   ⋅
+  ⋅   ⋅   ⋅   ⋅  -1   ⋅  -1  -1   ⋅   3</code></pre><h3 id="The-spectral-graph-theory"><a class="docs-heading-anchor" href="#The-spectral-graph-theory">The spectral graph theory</a><a id="The-spectral-graph-theory-1"></a><a class="docs-heading-anchor-permalink" href="#The-spectral-graph-theory" title="Permalink"></a></h3><p><em>Theorem</em>: The number of connected components in the graph is the dimension of the nullspace of the Laplacian and the algebraic multiplicity of the 0 eigenvalue.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; graphsize = 1000</code><code class="nohighlight hljs ansi" style="display:block;">1000</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; graph = random_regular_graph(graphsize, 3)</code><code class="nohighlight hljs ansi" style="display:block;">{1000, 1500} undirected simple Int64 graph</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lmat = laplacian_matrix(graph)</code><code class="nohighlight hljs ansi" style="display:block;">1000×1000 SparseArrays.SparseMatrixCSC{Int64, Int64} with 4000 stored entries:
+⎡⠱⣦⡧⠖⢚⢱⡇⠴⠜⢈⡎⠡⡂⣜⠬⠠⡐⠘⠢⡭⡲⡁⠤⣠⡂⠈⠡⠁⡃⠂⣤⢐⠀⡡⣂⢶⢣⢠⡃⣐⎤
+⎢⢩⠏⠛⢄⢘⡁⠎⠁⡠⢀⢂⢧⠬⡚⣖⢂⠨⢊⢡⡴⢖⣾⡫⢎⣚⡦⠬⠊⠣⢋⠒⡒⢀⡬⠋⢡⠀⡇⢔⠂⎥
+⎢⢞⣐⠖⠰⠑⢄⠈⠒⠚⣴⡀⡭⠡⢠⡚⢈⣎⡀⢻⠀⡳⢭⠸⠢⡔⣯⠋⡝⡠⢬⢑⡁⢙⢓⢤⢵⢠⣡⡝⡅⎥
+⎢⢉⡍⠎⠁⢢⠀⣑⣼⡒⡠⣙⠖⠌⢋⡜⠸⣶⡁⢠⢅⠅⠔⠼⡯⢑⡆⡐⣈⡦⠦⡛⢤⠠⠸⡀⠢⣑⠨⠐⡁⎥
+⎢⡒⢁⠀⢊⢚⣤⠘⡨⣕⢝⢢⠋⠱⡜⣠⡒⠰⡾⡳⣌⡘⣈⢢⡤⠧⡠⡏⠲⡅⠆⡂⢨⢅⡄⡺⣈⢷⣡⠃⢡⎥
+⎢⠎⡉⠬⣔⡄⡬⢳⠜⡬⠒⠑⢄⡨⢄⡡⢄⢦⣨⠻⢰⡺⡕⠒⡃⠁⢨⢖⠐⣱⣀⡉⣂⢫⠠⠘⡑⢍⠈⡤⠰⎥
+⎢⣈⢬⣢⠣⠁⣂⡦⢁⣑⠦⠂⢎⠕⢅⡸⡃⢂⠮⠹⠊⡀⠊⠐⠨⡱⠊⠫⢰⡶⡮⠲⣻⠭⠞⡢⡙⣀⡄⡪⢈⎥
+⎢⠂⡃⠸⢙⡚⢈⣒⡉⢠⠺⠁⢎⠶⠪⡕⢍⣔⡀⢢⢕⠈⢤⡃⠍⠁⢬⣨⠆⢊⠎⡀⠆⡽⡁⠎⢤⡼⡆⢩⢣⎥
+⎢⣐⠈⡢⢂⠊⠹⠜⠻⣰⡦⡈⣳⡨⡔⠐⠹⠟⣥⡡⠪⢵⠈⣁⡀⣒⡺⠈⡄⣓⠢⢬⠴⡅⠂⣊⢆⠶⣜⢤⠡⎥
+⎢⡌⡦⢁⡶⠛⠒⠄⢖⡙⢮⢛⣂⡳⠂⢌⢖⡡⡊⡛⣬⢾⡄⠊⠔⡡⠢⢁⣃⢏⡈⠥⢬⢈⢜⡠⡨⢴⣀⡁⠂⎥
+⎢⠜⠪⣸⣵⡝⣎⢁⠅⡒⢨⢞⠮⡠⠈⠂⣄⡑⠓⠚⠷⣕⢝⡀⠅⡠⢤⡥⠃⢔⠸⡌⢈⣋⢄⠠⣈⡗⠻⢄⣄⎥
+⎢⠀⣣⡫⢎⠲⡂⡶⡧⠈⡶⠼⠠⡐⡀⡍⠌⠁⠸⢊⠄⠄⠌⡛⣬⠿⡙⣹⢘⡉⠷⣎⡽⢗⣢⢨⢂⠃⡔⠁⢝⎥
+⎢⡈⠈⠺⡼⡴⣭⠱⠴⠉⡣⡁⣀⡱⠊⡁⣄⣸⡸⠡⡊⠀⣎⣟⠣⠑⢄⠳⢔⢂⠠⡶⠄⢖⣖⡃⢃⡨⠉⣋⠁⎥
+⎢⠅⠂⡢⠃⣏⠤⡐⢨⢫⡉⢘⠑⢋⣂⠢⠞⠂⠤⠥⢰⠥⠋⣓⢚⢙⢆⠛⣤⠰⣝⡝⠦⠡⡔⣏⣣⠠⢃⠨⣀⎥
+⎢⠩⠈⡭⢂⡀⣎⠨⡏⠡⠍⠑⢺⡸⡯⡪⠔⠹⡘⡋⠱⣐⡑⢧⡌⠈⡐⣔⢦⢱⢖⠪⡠⢪⡔⣁⡖⢁⣊⠎⡂⎥
+⎢⢀⢛⢸⠠⠕⠰⠛⣌⡈⣈⠣⢨⣼⣢⠠⠌⢂⡗⡁⣇⡂⢉⣎⡽⠘⠏⠳⡍⠊⡢⠿⢇⡟⢰⠰⡌⠨⠆⠉⠀⎥
+⎢⠄⡠⡀⡴⢷⢐⣀⡂⠁⠵⠋⡒⣣⠇⠗⠫⠡⠉⣂⢔⠋⢜⠹⣱⢸⢵⢁⠦⢊⠶⢛⣉⠑⣤⣪⢜⢕⣆⣺⡊⎥
+⎢⢨⣜⠏⣀⢄⣗⠠⡈⡚⢪⢖⠠⣌⠪⠊⣅⠪⢜⡀⡪⡀⢢⠢⢒⠭⢈⠯⣹⢡⠼⡐⠦⣊⢞⡕⣭⡈⠲⠜⡁⎥
+⎢⠉⣒⠤⠤⠄⣲⡑⡘⠝⣳⡃⠑⠀⠼⠲⠯⣘⢧⠐⢳⣽⡉⢉⠤⡆⠊⠤⢂⡡⢰⠢⠆⠱⢵⢢⡈⠑⢄⢈⡁⎥
+⎣⢉⢨⠰⠑⠗⠭⠔⠠⠍⣀⢀⡋⡊⢊⠧⣒⠄⡓⠡⠈⠀⢵⣅⢄⠏⠘⠂⢢⠪⠡⠃⠀⡺⠺⠖⠡⠆⠰⠟⢅⎦</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; q1 = randn(graphsize)</code><code class="nohighlight hljs ansi" style="display:block;">1000-element Vector{Float64}:
+  2.1435292676401425
+ -0.2517256589145878
+  1.695997910203073
+  0.7784535749153879
+  0.7636526817695574
+  2.237236563303719
+ -0.6846885669084709
+ -0.18046425281742912
+ -0.5002447517625763
+ -1.1377080202929182
+  ⋮
+ -0.07884696023535981
+  1.7764073490300025
+  0.5294607713661564
+  0.05816013983917611
+  0.0019425632345466922
+  0.8492440990637878
+  0.7399228419126876
+ -1.0686660662896044
+  0.4715934597196183</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; tri, Q = lanczos(lmat, q1; abstol=1e-8, maxiter=100)</code><code class="nohighlight hljs ansi" style="display:block;">([2.9613035179546143 1.702182984435394 … 0.0 0.0; 1.702182984435394 2.939887450688188 … 0.0 0.0; … ; 0.0 0.0 … 2.9922262770047183 1.4259039318946698; 0.0 0.0 … 1.4259039318946698 3.145670420889853], [0.06700899938765911 0.02206254670752138 … 0.02764706966414366 -0.0049886947423374624; -0.007869211201690714 0.053064416428256794 … -0.04714328411193535 -0.011225515948065494; … ; -0.03340763518496271 -0.06417655779571524 … 0.022299646200610833 0.009427243263117502; 0.014742511954766155 -0.029573109128262318 … 0.08115544156287868 -0.04073073838214303])</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; -eigen(-tri).values  # the eigenvalues of the tridiagonal matrix</code><code class="nohighlight hljs ansi" style="display:block;">100-element Vector{Float64}:
+ 5.817478506992566
+ 5.8155703155307545
+ 5.804960498163696
+ 5.797797308303622
+ 5.788935661105147
+ 5.777316410501278
+ 5.751150718257297
+ 5.729056838946998
+ 5.7081767496017966
+ 5.68272212277422
+ ⋮
+ 0.2810007277948561
+ 0.2608371071407385
+ 0.2369599341239086
+ 0.2238411239746867
+ 0.210722139835549
+ 0.20195913990185144
+ 0.19338514260233897
+ 0.17822758029210028
+ 2.6645352591003757e-15</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; Q&#39; * Q             # the orthogonality of the Krylov vectors</code><code class="nohighlight hljs ansi" style="display:block;">100×100 Matrix{Float64}:
+  1.0           9.85323e-16   3.46945e-16  …   1.30926e-5   -1.84971e-5
+  9.85323e-16   1.0          -1.23209e-15     -2.27773e-5    3.21796e-5
+  3.46945e-16  -1.23209e-15   1.0              3.08585e-5   -4.35966e-5
+ -2.51188e-15   2.84495e-16   1.06452e-15     -4.02841e-5    5.6913e-5
+  4.14599e-16  -7.19043e-16   1.94723e-16      6.02864e-5   -8.51721e-5
+  1.62804e-15   3.14202e-16  -2.59222e-15  …  -8.3058e-5     0.000117344
+ -1.6263e-16    1.30104e-17   4.26742e-16      0.000118419  -0.000167301
+ -1.56732e-15  -3.70797e-17   2.08514e-15     -0.000155747   0.000220037
+  2.76255e-16   2.47198e-16  -5.42968e-16      0.000217181  -0.000306831
+  1.88304e-15  -2.25514e-16  -2.28333e-15     -0.00030932    0.000437004
+  ⋮                                        ⋱
+ -8.5026e-7     1.47921e-6   -2.00402e-6      -5.06886e-15   1.18308e-15
+  1.30162e-6   -2.26443e-6    3.06784e-6       1.52439e-15   2.15843e-15
+ -1.90251e-6    3.30982e-6   -4.48411e-6       4.78523e-15   2.10248e-15
+  2.87609e-6   -5.00356e-6    6.77878e-6       1.19089e-15  -1.85962e-15
+ -4.25318e-6    7.3993e-6    -1.00245e-5   …  -4.95957e-15   1.05818e-15
+  6.38813e-6   -1.11135e-5    1.50565e-5       2.23595e-15   1.02349e-15
+ -9.28596e-6    1.61549e-5   -2.18865e-5       2.86837e-15   1.99884e-15
+  1.30926e-5   -2.27773e-5    3.08585e-5       1.0          -2.51882e-15
+ -1.84971e-5    3.21796e-5   -4.35966e-5      -2.51882e-15   1.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; eigsolve(lmat, q1, 2, :SR)  # using function `KrylovKit.eigsolve`</code><code class="nohighlight hljs ansi" style="display:block;">([4.27915075867439e-15, 0.17822755665433318], [[-0.03162277660168389, -0.031622776601683986, -0.03162277660168374, -0.031622776601683916, -0.03162277660168385, -0.03162277660168383, -0.031622776601683604, -0.0316227766016839, -0.03162277660168383, -0.031622776601684374  …  -0.03162277660168355, -0.03162277660168373, -0.031622776601683805, -0.03162277660168339, -0.03162277660168398, -0.0316227766016839, -0.031622776601683666, -0.03162277660168399, -0.031622776601683694, -0.03162277660168331], [-0.0899236334168499, -0.03987476974608073, -0.07287975293563018, -0.051213347375854194, 0.021283658167144653, 0.037349993688018744, 0.006237850346092349, -0.0033315325697402167, 0.019045422367270606, 0.010687885063576265  …  -0.025780027189061385, -0.0019448322062947606, 0.023718005129912123, -0.023576669723225776, 0.02353302494389709, 0.031098499110378604, 0.007213393161063654, -0.02786983328546693, -0.03034128013431334, 0.03576705105192888]], ConvergenceInfo: 2 converged values after 18 iterations and 234 applications of the linear map;
+norms of residuals are given by (1.512560727757266e-35, 4.0706046940149627e-13).
+)</code></pre><p>NOTE: with larger <code>graph_size</code>, you should see some &quot;ghost&quot; eigenvalues </p><h3 id="Graph-layout-and-clustering"><a class="docs-heading-anchor" href="#Graph-layout-and-clustering">Graph layout and clustering</a><a id="Graph-layout-and-clustering-1"></a><a class="docs-heading-anchor-permalink" href="#Graph-layout-and-clustering" title="Permalink"></a></h3><p>Given a graph, we can use the spectral graph theory to detect the number of connected components and the clustering of the graph. What if we are interested in the clustering of the graph? The spectral clustering algorithm is a popular method to partition a graph into clusters<sup class="footnote-reference"><a id="citeref-Ng2001" href="#footnote-Ng2001">[Ng2001]</a></sup>. The algorithm is as follows:</p><p>Given a set of points <span>$S = \{s_1, \ldots,s_n\}$</span> in <span>$\mathbb{R^l}$</span> that we want to cluster into k subsets:</p><ol><li>Form the affinity matrix <span>$A \in \mathbb{R}^{n\times n}$</span> defined by <span>$A_{ij} = \exp(-\|s_i -s_j\|_2/2\sigma^2)$</span> if <span>$i \neq j$</span>, and <span>$A_{ii} = 0$</span>.</li><li>Define <span>$D$</span> to be the diagonal matrix whose <span>$(i, i)$</span>-element is the sum of <span>$A$</span>&#39;s <span>$i$</span>-th row, and construct the matrix <span>$L = D^{-1/2}AD^{-1/2}$</span>.</li><li>Find <span>$x_1 , x_2, \ldots ,x_k$</span>, the <span>$k$</span> largest eigenvectors of <span>$L$</span> (chosen to be orthogonal to each other in the case of repeated eigenvalues), and form the matrix <span>$X = [x_1x_2\ldots x_k] \in \mathbb{R}^{n\times n}$</span> by stacking the eigenvectors in columns.</li><li>Form the matrix <span>$Y$</span> from <span>$X$</span> by renormalizing each of <span>$X$</span>&#39;s rows to have unit length (i.e. <span>$Y_{ij} = X_{ij}/(\sum_j X_{i,j}^2)^{1/2}$</span>).</li><li>Treating each row of <span>$Y$</span> as a point in <span>$\mathbb{R}^k$</span>, cluster them into <span>$k$</span> clusters via K-means or any other algorithm (that attempts to minimize distortion).</li><li>Finally, assign the original point <span>$S_i$</span> to cluster <span>$j$</span> if and only if row <span>$i$</span> of the matrix <span>$Y$</span> was assigned to cluster <span>$j$</span>.</li></ol><p>Here, the scaling parameter <span>$\sigma^2$</span> controls how rapidly the affinity <span>$A_{ij}$</span> falls off with the distance between <span>$s_i$</span> and <span>$s_j$</span>, and we will later describe a method for choosing it automatically.</p><p>For an implementation of the spectral clustering algorithm, please check the <a href="https://github.com/GiggleLiu/ScientificComputingDemos/tree/main/GraphClustering">demo</a>.</p><section class="footnotes is-size-7"><ul><li class="footnote" id="footnote-Golub2013"><a class="tag is-link" href="#citeref-Golub2013">Golub2013</a>Golub, Gene H., and Charles F. Van Loan. Matrix computations. JHU press, 2013.</li><li class="footnote" id="footnote-Ng2001"><a class="tag is-link" href="#citeref-Ng2001">Ng2001</a>Ng, Andrew, Michael Jordan, and Yair Weiss. &quot;On spectral clustering: Analysis and an algorithm.&quot; Advances in neural information processing systems 14 (2001).</li></ul></section></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../chap3/sensitivity/">« Sensitivity Analysis</a><a class="docs-footer-nextpage" href="../../chap5/tensors/">Tensor Operations »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.4.0 on <span class="colophon-date" title="Monday 29 April 2024 03:22">Monday 29 April 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

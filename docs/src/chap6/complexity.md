@@ -141,6 +141,22 @@ By solving the ground state of the composed model, the MISs of the composed grap
 
 !!! example "Circuit SAT to Spin-glass"
     Please check the demo package: https://github.com/GiggleLiu/ScientificComputingDemos/tree/main/Spinglass [^Glover2019].
+    We first formulate the logic gates into QUBO penalty functions:
+    ```math
+    \begin{align*}
+    &z = \neg x & \Leftrightarrow & \;2xy - x - z +1\\
+    &z = x_1 \lor x_2 & \Leftrightarrow & \;x_1x_2 + (x_1 + x_2)(1-2z) + z\\
+    &z = x_1 \land x_2 & \Leftrightarrow & \;x_1x_2 - 2(x_1 + x_2)z + 3z
+    \end{align*}
+    ```
+    Each variable can have boolean values $0$ or $1$. The ground state of the QUBO model corresponds to the solution of the original logic gates. The boolean variables can be mapped to spin variables $s_i = 1-2x_i$. The QUBO penalty functions can be mapped to the Ising model:
+    ```math
+    \begin{align*}
+    &z = \neg x & \Leftrightarrow & \;s_1s_2\\
+    &z = x_1 \lor x_2 & \Leftrightarrow & \;s_1s_2 - (s_1 + s_2)(2s_z - 1) - 2s_z\\
+    &z = x_1 \land x_2 & \Leftrightarrow & \;s_1s_2 - (s_1 + s_2)(2s_z + 1) + 2s_z
+    \end{align*}
+    ```
 
 !!! example "Circuit SAT to Hard-core lattice gas"
     In Ref.[^Nguyen2023], a universal set of weighted MIS gadgets are designed, which enables us to encode any Boolean constraint satisfaction problem to a weighted MIS problem.

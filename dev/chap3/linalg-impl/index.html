@@ -59,7 +59,7 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
     # The Julia&#39;s standard library `LinearAlgebra` contains a native implementation.
     x_native = LowerTriangular(l) \ b
     @test l * x_native ≈ b
-end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;back substitution&quot;, Any[], 2, false, false, true, 1.714360821388701e9, 1.714360821532491e9, false, &quot;linalg-impl.md&quot;)</code></pre><h2 id="LU-Factorization-with-Gaussian-Elimination"><a class="docs-heading-anchor" href="#LU-Factorization-with-Gaussian-Elimination">LU Factorization with Gaussian Elimination</a><a id="LU-Factorization-with-Gaussian-Elimination-1"></a><a class="docs-heading-anchor-permalink" href="#LU-Factorization-with-Gaussian-Elimination" title="Permalink"></a></h2><p>LU decomposition is a method for solving linear equations that involves breaking down a matrix into lower and upper triangular matrices. The <span>$LU$</span> decomposition of a matrix <span>$A$</span> is represented as <span>$A = LU$</span>, where <span>$L$</span> is a lower triangular matrix and <span>$U$</span> is an upper triangular matrix.</p><h3 id="The-elementary-elimination-matrix"><a class="docs-heading-anchor" href="#The-elementary-elimination-matrix">The elementary elimination matrix</a><a id="The-elementary-elimination-matrix-1"></a><a class="docs-heading-anchor-permalink" href="#The-elementary-elimination-matrix" title="Permalink"></a></h3><p>An elementary elimination matrix is a matrix that is used in the process of Gaussian elimination to transform a system of linear equations into an equivalent system that is easier to solve. It is a square matrix that is obtained by performing a single elementary row operation on the identity matrix.</p><p class="math-container">\[(M_k)_{ij} = \begin{cases}
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;back substitution&quot;, Any[], 2, false, false, true, 1.714382304796008e9, 1.714382304944341e9, false, &quot;linalg-impl.md&quot;)</code></pre><h2 id="LU-Factorization-with-Gaussian-Elimination"><a class="docs-heading-anchor" href="#LU-Factorization-with-Gaussian-Elimination">LU Factorization with Gaussian Elimination</a><a id="LU-Factorization-with-Gaussian-Elimination-1"></a><a class="docs-heading-anchor-permalink" href="#LU-Factorization-with-Gaussian-Elimination" title="Permalink"></a></h2><p>LU decomposition is a method for solving linear equations that involves breaking down a matrix into lower and upper triangular matrices. The <span>$LU$</span> decomposition of a matrix <span>$A$</span> is represented as <span>$A = LU$</span>, where <span>$L$</span> is a lower triangular matrix and <span>$U$</span> is an upper triangular matrix.</p><h3 id="The-elementary-elimination-matrix"><a class="docs-heading-anchor" href="#The-elementary-elimination-matrix">The elementary elimination matrix</a><a id="The-elementary-elimination-matrix-1"></a><a class="docs-heading-anchor-permalink" href="#The-elementary-elimination-matrix" title="Permalink"></a></h3><p>An elementary elimination matrix is a matrix that is used in the process of Gaussian elimination to transform a system of linear equations into an equivalent system that is easier to solve. It is a square matrix that is obtained by performing a single elementary row operation on the identity matrix.</p><p class="math-container">\[(M_k)_{ij} = \begin{cases}
     \delta_{ij} &amp; i= j,\\
     - a_{ik}/a_{kk} &amp; i &gt; j \land j = k, \\
     0 &amp; {\rm otherwise}.
@@ -126,7 +126,7 @@ lufact_naive!(copy(A3))
     A = [1 2 2; 4 4 2; 4 6 4]
     L, U = lufact_naive!(copy(A))
     @test L * U ≈ A
-end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;naive LU factorization&quot;, Any[], 1, false, false, true, 1.714360822041e9, 1.714360822823296e9, false, &quot;linalg-impl.md&quot;)</code></pre><p>The above implementation has time complexity <span>$O(n^4)$</span> since we did not use the sparsity of elimentary elimination matrix. A better implementation that gives <span>$O(n^3)$</span> time complexity is as follows.</p><pre><code class="language-julia hljs">function lufact!(a::AbstractMatrix)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;naive LU factorization&quot;, Any[], 1, false, false, true, 1.714382305461667e9, 1.714382306265524e9, false, &quot;linalg-impl.md&quot;)</code></pre><p>The above implementation has time complexity <span>$O(n^4)$</span> since we did not use the sparsity of elimentary elimination matrix. A better implementation that gives <span>$O(n^3)$</span> time complexity is as follows.</p><pre><code class="language-julia hljs">function lufact!(a::AbstractMatrix)
     n = size(a, 1)
     @assert size(a, 2) == n &quot;size mismatch&quot;
     m = zero(a)
@@ -159,27 +159,27 @@ lufact(a::AbstractMatrix) = lufact!(copy(a))
     @test istril(L)
     @test istriu(U)
     @test L * U ≈ a
-end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;LU factorization&quot;, Any[], 3, false, false, true, 1.714360822833264e9, 1.714360823490539e9, false, &quot;linalg-impl.md&quot;)</code></pre><p>We can test the performance of our implementation.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; A4 = randn(4, 4)</code><code class="nohighlight hljs ansi" style="display:block;">4×4 Matrix{Float64}:
-  0.144615  -0.967211   0.552253   0.0154101
-  1.61431   -1.19269   -0.233122   0.471664
- -0.297497  -1.4676     0.492644  -0.311091
-  0.22838   -0.193843   0.329656   0.47246</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lufact(A4)</code><code class="nohighlight hljs ansi" style="display:block;">([1.0 0.0 0.0 0.0; 11.162820008573895 1.0 0.0 0.0; -2.0571703316576935 -0.3599828521333939 1.0 0.0; 1.579229772678315 0.13885778068931168 -0.5129261313012417 1.0], [0.1446146211184703 -0.9672109917949645 0.5522527062224153 0.015410147845151885; 0.0 9.604109914834188 -6.397819562422747 0.2996431759658875; 0.0 0.0 -0.6743831063107879 -0.171523682891278; 0.0 0.0 0.0 0.31853730915569656])</code></pre><p>Julia language has a much better implementation in the standard library <code>LinearAlgebra</code>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia_lures = lu(A4, NoPivot())  # the version we implemented above has no pivot</code><code class="nohighlight hljs ansi" style="display:block;">LinearAlgebra.LU{Float64, Matrix{Float64}, Vector{Int64}}
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;LU factorization&quot;, Any[], 3, false, false, true, 1.714382306275491e9, 1.71438230693452e9, false, &quot;linalg-impl.md&quot;)</code></pre><p>We can test the performance of our implementation.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; A4 = randn(4, 4)</code><code class="nohighlight hljs ansi" style="display:block;">4×4 Matrix{Float64}:
+  0.897759   -2.15279    1.18993   -0.247813
+ -2.36847    -0.683268  -1.83512   -0.581775
+  0.0220755   0.332306  -0.592658   0.589756
+ -2.9631     -0.680586  -0.542837  -0.713306</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lufact(A4)</code><code class="nohighlight hljs ansi" style="display:block;">([1.0 0.0 0.0 0.0; -2.638204596914282 1.0 0.0 0.0; 0.024589629267600527 -0.0605462987561217 1.0 0.0; -3.300553906196713 1.223678874449246 -3.2944017612152168 1.0], [0.8977585019504888 -2.1527898350609886 1.1899277226309366 -0.2478126544698392; 0.0 -6.362768015206671 1.3041563990724125 -1.235555436318963; 0.0 0.0 -0.5429558309804762 0.5210412331595067; 0.0 0.0 0.0 1.697216760003853])</code></pre><p>Julia language has a much better implementation in the standard library <code>LinearAlgebra</code>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia_lures = lu(A4, NoPivot())  # the version we implemented above has no pivot</code><code class="nohighlight hljs ansi" style="display:block;">LinearAlgebra.LU{Float64, Matrix{Float64}, Vector{Int64}}
 L factor:
 4×4 Matrix{Float64}:
-  1.0       0.0        0.0       0.0
- 11.1628    1.0        0.0       0.0
- -2.05717  -0.359983   1.0       0.0
-  1.57923   0.138858  -0.512926  1.0
+  1.0         0.0         0.0     0.0
+ -2.6382      1.0         0.0     0.0
+  0.0245896  -0.0605463   1.0     0.0
+ -3.30055     1.22368    -3.2944  1.0
 U factor:
 4×4 Matrix{Float64}:
- 0.144615  -0.967211   0.552253   0.0154101
- 0.0        9.60411   -6.39782    0.299643
- 0.0        0.0       -0.674383  -0.171524
- 0.0        0.0        0.0        0.318537</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia_lures.U</code><code class="nohighlight hljs ansi" style="display:block;">4×4 Matrix{Float64}:
- 0.144615  -0.967211   0.552253   0.0154101
- 0.0        9.60411   -6.39782    0.299643
- 0.0        0.0       -0.674383  -0.171524
- 0.0        0.0        0.0        0.318537</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; typeof(julia_lures)</code><code class="nohighlight hljs ansi" style="display:block;">LinearAlgebra.LU{Float64, Matrix{Float64}, Vector{Int64}}</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; fieldnames(julia_lures |&gt; typeof)</code><code class="nohighlight hljs ansi" style="display:block;">(:factors, :ipiv, :info)</code></pre><h2 id="Pivoting-technique"><a class="docs-heading-anchor" href="#Pivoting-technique">Pivoting technique</a><a id="Pivoting-technique-1"></a><a class="docs-heading-anchor-permalink" href="#Pivoting-technique" title="Permalink"></a></h2><div class="admonition is-info"><header class="admonition-header">How to handle small diagonal entries?</header><div class="admonition-body"><p>The above Gaussian elimination process is not stable if any diagonal entry in <span>$A$</span> has a value that close to zero.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; small_diagonal_matrix = [1e-8 1; 1 1]</code><code class="nohighlight hljs ansi" style="display:block;">2×2 Matrix{Float64}:
+ 0.897759  -2.15279   1.18993   -0.247813
+ 0.0       -6.36277   1.30416   -1.23556
+ 0.0        0.0      -0.542956   0.521041
+ 0.0        0.0       0.0        1.69722</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia_lures.U</code><code class="nohighlight hljs ansi" style="display:block;">4×4 Matrix{Float64}:
+ 0.897759  -2.15279   1.18993   -0.247813
+ 0.0       -6.36277   1.30416   -1.23556
+ 0.0        0.0      -0.542956   0.521041
+ 0.0        0.0       0.0        1.69722</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; typeof(julia_lures)</code><code class="nohighlight hljs ansi" style="display:block;">LinearAlgebra.LU{Float64, Matrix{Float64}, Vector{Int64}}</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; fieldnames(julia_lures |&gt; typeof)</code><code class="nohighlight hljs ansi" style="display:block;">(:factors, :ipiv, :info)</code></pre><h2 id="Pivoting-technique"><a class="docs-heading-anchor" href="#Pivoting-technique">Pivoting technique</a><a id="Pivoting-technique-1"></a><a class="docs-heading-anchor-permalink" href="#Pivoting-technique" title="Permalink"></a></h2><div class="admonition is-info"><header class="admonition-header">How to handle small diagonal entries?</header><div class="admonition-body"><p>The above Gaussian elimination process is not stable if any diagonal entry in <span>$A$</span> has a value that close to zero.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; small_diagonal_matrix = [1e-8 1; 1 1]</code><code class="nohighlight hljs ansi" style="display:block;">2×2 Matrix{Float64}:
  1.0e-8  1.0
  1.0     1.0</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; lures = lufact(small_diagonal_matrix)</code><code class="nohighlight hljs ansi" style="display:block;">([1.0 0.0; 1.0e8 1.0], [1.0e-8 1.0; 0.0 -9.9999999e7])</code></pre><p>This issue is can be resolved by permuting the rows of <span>$A$</span> before factorizing it. For example:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; lufact(small_diagonal_matrix[end:-1:1, :])</code><code class="nohighlight hljs ansi" style="display:block;">([1.0 0.0; 1.0e-8 1.0], [1.0 1.0; 0.0 0.99999999])</code></pre><p>This technique is called pivoting.</p></div></div><h3 id="Partial-pivoting"><a class="docs-heading-anchor" href="#Partial-pivoting">Partial pivoting</a><a id="Partial-pivoting-1"></a><a class="docs-heading-anchor-permalink" href="#Partial-pivoting" title="Permalink"></a></h3><p>LU factoriazation (or Gaussian elimination) with row pivoting is defined as</p><p class="math-container">\[P A = L U\]</p><p>where <span>$P$</span> is a permutation matrix. Pivoting in Gaussian elimination is the process of selecting a pivot element in a matrix and then using it to eliminate other elements in the same column or row. The pivot element is chosen as the largest absolute value in the column, and its row is swapped with the row containing the current element being eliminated if necessary. This is done to avoid division by zero or numerical instability, and to ensure that the elimination process proceeds smoothly. Pivoting is an important step in Gaussian elimination, as it ensures that the resulting matrix is in reduced row echelon form and that the solution to the system of equations is accurate.</p><p>Let <span>$A=(a_{ij})$</span> be a square matrix of size <span>$n\times n$</span>. The Gaussian elimination process with partial pivoting can be represented as</p><p class="math-container">\[M_{n-1}P_{n-1}\ldots M_2P_2M_1P_1 A = U\]</p><p>Here we emphsis that <span>$P_{k}$</span> and <span>$M_{j&lt;k}$</span> commute.</p><h3 id="Complete-pivoting"><a class="docs-heading-anchor" href="#Complete-pivoting">Complete pivoting</a><a id="Complete-pivoting-1"></a><a class="docs-heading-anchor-permalink" href="#Complete-pivoting" title="Permalink"></a></h3><p>The complete pivoting also allows permuting columns. The LU factorization with complete pivoting is defined as</p><p class="math-container">\[P A Q = L U.\]</p><p>Complete pivoting produces better numerical stability but is also harder to implement. In most practical using cases, partial pivoting is good enough.</p><h2 id="Code:-LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting"><a class="docs-heading-anchor" href="#Code:-LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting">Code: LU Factoriazation by Gaussian Elimination with Partial Pivoting</a><a id="Code:-LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting-1"></a><a class="docs-heading-anchor-permalink" href="#Code:-LU-Factoriazation-by-Gaussian-Elimination-with-Partial-Pivoting" title="Permalink"></a></h2><p>A Julia implementation of the Gaussian elimination with partial pivoting is</p><pre><code class="language-julia hljs">function lufact_pivot!(a::AbstractMatrix)
     n = size(a, 1)
@@ -233,7 +233,7 @@ end
     @test L ≈ lu(A).L
     @test U ≈ lu(A).U
     @test pmat * A ≈ L * U
-end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;lufact with pivot&quot;, Any[], 3, false, false, true, 1.714360823810765e9, 1.714360824861619e9, false, &quot;linalg-impl.md&quot;)</code></pre><p>The performance of our implementation is as follows.</p><pre><code class="language-julia-repl hljs">julia&gt; using BenchmarkTools
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test.DefaultTestSet(&quot;lufact with pivot&quot;, Any[], 3, false, false, true, 1.714382307254926e9, 1.714382308313793e9, false, &quot;linalg-impl.md&quot;)</code></pre><p>The performance of our implementation is as follows.</p><pre><code class="language-julia-repl hljs">julia&gt; using BenchmarkTools
 
 julia&gt; n = 200
 200
@@ -309,7 +309,7 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
            @test H&#39; * H ≈ I
        end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr1">Test Summary:        | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
 householder property | <span class="sgr32">   3  </span><span class="sgr36">    3  </span>0.7s
-Test.DefaultTestSet(&quot;householder property&quot;, Any[], 3, false, false, true, 1.714360824877317e9, 1.71436082552897e9, false, &quot;REPL[2]&quot;)</code></pre><p>Let us define a function to compute the Householder matrix that projects a vector to <span>$e_1$</span>.</p><pre><code class="language-julia hljs">function householder_e1(v::AbstractVector{T}) where T
+Test.DefaultTestSet(&quot;householder property&quot;, Any[], 3, false, false, true, 1.714382308329414e9, 1.714382308996207e9, false, &quot;REPL[2]&quot;)</code></pre><p>Let us define a function to compute the Householder matrix that projects a vector to <span>$e_1$</span>.</p><pre><code class="language-julia hljs">function householder_e1(v::AbstractVector{T}) where T
     v = copy(v)
     v[1] -= norm(v, 2)
     return HouseholderMatrix(v, 2/norm(v, 2)^2)
@@ -345,13 +345,13 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
            @info R
            @test Q * R ≈ A
            @test Q&#39; * Q ≈ I
-       end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr36"><span class="sgr1">[ Info: </span></span>[1.0339444448948087 0.4251369191795472 -1.510502370242453; 0.0 0.8899620322362469 -0.6865773496765298; 0.0 1.1796119636642288e-16 -0.3659340062726676]
+       end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr36"><span class="sgr1">[ Info: </span></span>[3.2692844905199427 -0.14725158946335168 0.8074414981893574; 5.551115123125783e-17 1.974943346460992 0.1936353353376712; 4.440892098500626e-16 1.6375789613221059e-15 1.1331504303235345]
 <span class="sgr1">Test Summary:  | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
 householder QR | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>3.2s
-Test.DefaultTestSet(&quot;householder QR&quot;, Any[], 2, false, false, true, 1.714360826134072e9, 1.714360829304419e9, false, &quot;REPL[1]&quot;)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = randn(3, 3)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
- -0.10494  -0.290872  -0.777233
- -1.68108  -0.996969  -0.599415
-  1.20441  -0.474903  -0.201761</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; g = givens_matrix(A, 2, 3)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `givens_matrix` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; left_mul!(copy(A), g)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `g` not defined</code></pre><h2 id="Givens-Rotations"><a class="docs-heading-anchor" href="#Givens-Rotations">Givens Rotations</a><a id="Givens-Rotations-1"></a><a class="docs-heading-anchor-permalink" href="#Givens-Rotations" title="Permalink"></a></h2><p class="math-container">\[G = \left(\begin{matrix}
+Test.DefaultTestSet(&quot;householder QR&quot;, Any[], 2, false, false, true, 1.714382309598754e9, 1.714382312781231e9, false, &quot;REPL[1]&quot;)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = randn(3, 3)</code><code class="nohighlight hljs ansi" style="display:block;">3×3 Matrix{Float64}:
+ 1.01931   -0.0928347  -0.394995
+ 1.11316   -1.04086    -0.936534
+ 0.893274   0.704807    1.70607</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; g = givens_matrix(A, 2, 3)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `givens_matrix` not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; left_mul!(copy(A), g)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: `g` not defined</code></pre><h2 id="Givens-Rotations"><a class="docs-heading-anchor" href="#Givens-Rotations">Givens Rotations</a><a id="Givens-Rotations-1"></a><a class="docs-heading-anchor-permalink" href="#Givens-Rotations" title="Permalink"></a></h2><p class="math-container">\[G = \left(\begin{matrix}
 \cos\theta &amp; -\sin\theta\\
 \sin\theta &amp; \cos\theta
 \end{matrix}\right)\]</p><pre><code class="language-julia hljs">rotation_matrix(angle) = [cos(angle) -sin(angle); sin(angle) cos(angle)]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">rotation_matrix (generic function with 1 method)</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; angle = π/4</code><code class="nohighlight hljs ansi" style="display:block;">0.7853981633974483</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; initial_vector = [1.0, 0.0]</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
@@ -360,10 +360,10 @@ Test.DefaultTestSet(&quot;householder QR&quot;, Any[], 2, false, false, true, 1.
        # eliminating the y element</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
  0.7071067811865476
  0.7071067811865475</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; atan(0.1, 0.5)</code><code class="nohighlight hljs ansi" style="display:block;">0.19739555984988078</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; initial_vector = randn(2)</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
- 0.12371505350927012
- 0.44226431183411197</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; angle = atan(initial_vector[2], initial_vector[1])</code><code class="nohighlight hljs ansi" style="display:block;">1.2980370526716902</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; final_vector = rotation_matrix(-angle) * initial_vector</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
-  0.45924191444913015
- -2.7755575615628914e-17</code></pre><p class="math-container">\[\left(
+  0.4391911640690489
+ -1.3005460964861437</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; angle = atan(initial_vector[2], initial_vector[1])</code><code class="nohighlight hljs ansi" style="display:block;">-1.245123179130958</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; final_vector = rotation_matrix(-angle) * initial_vector</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Float64}:
+  1.3727013614336048
+ -1.6653345369377348e-16</code></pre><p class="math-container">\[\left(
 \begin{matrix}
 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
 0 &amp; c &amp; 0 &amp; s &amp; 0\\
@@ -446,10 +446,10 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
            @test Q * R ≈ A
            @test Q * Q&#39; ≈ I
            @info R
-       end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr36"><span class="sgr1">[ Info: </span></span>[1.033944444894809 0.4251369191795473 -1.5105023702424532; 0.0 0.8899620322362469 -0.6865773496765302; 0.0 -5.551115123125783e-17 -0.3659340062726676]
+       end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr36"><span class="sgr1">[ Info: </span></span>[3.2692844905199427 -0.14725158946335165 0.8074414981893574; 0.0 1.9749433464609922 0.19363533533767216; 0.0 0.0 1.1331504303235342]
 <span class="sgr1">Test Summary: | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
 givens QR     | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>0.8s
-Test.DefaultTestSet(&quot;givens QR&quot;, Any[], 2, false, false, true, 1.714360829402729e9, 1.714360830185859e9, false, &quot;REPL[1]&quot;)</code></pre><h2 id="Gram-Schmidt-Orthogonalization"><a class="docs-heading-anchor" href="#Gram-Schmidt-Orthogonalization">Gram-Schmidt Orthogonalization</a><a id="Gram-Schmidt-Orthogonalization-1"></a><a class="docs-heading-anchor-permalink" href="#Gram-Schmidt-Orthogonalization" title="Permalink"></a></h2><p>The Gram-Schmidt orthogonalization is a method to compute the QR factorization of a matrix <span>$A$</span> by constructing an orthogonal matrix <span>$Q$</span> and an upper triangular matrix <span>$R$</span>.</p><p class="math-container">\[q_k = \left(a_k - \sum_{i=1}^{k-1} r_{ik}q_i\right)/r_{kk}\]</p><pre><code class="language-julia hljs">function classical_gram_schmidt(A::AbstractMatrix{T}) where T
+Test.DefaultTestSet(&quot;givens QR&quot;, Any[], 2, false, false, true, 1.714382312881475e9, 1.714382313666443e9, false, &quot;REPL[1]&quot;)</code></pre><h2 id="Gram-Schmidt-Orthogonalization"><a class="docs-heading-anchor" href="#Gram-Schmidt-Orthogonalization">Gram-Schmidt Orthogonalization</a><a id="Gram-Schmidt-Orthogonalization-1"></a><a class="docs-heading-anchor-permalink" href="#Gram-Schmidt-Orthogonalization" title="Permalink"></a></h2><p>The Gram-Schmidt orthogonalization is a method to compute the QR factorization of a matrix <span>$A$</span> by constructing an orthogonal matrix <span>$Q$</span> and an upper triangular matrix <span>$R$</span>.</p><p class="math-container">\[q_k = \left(a_k - \sum_{i=1}^{k-1} r_{ik}q_i\right)/r_{kk}\]</p><pre><code class="language-julia hljs">function classical_gram_schmidt(A::AbstractMatrix{T}) where T
     m, n = size(A)
     Q = zeros(T, m, n)
     R = zeros(T, n, n)
@@ -516,36 +516,36 @@ end</code></pre><h1 id="Eigenvalue/Singular-value-decomposition-problem"><a clas
     end
     return x
 end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">power_method (generic function with 1 method)</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; matsize = 10</code><code class="nohighlight hljs ansi" style="display:block;">10</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A10 = randn(matsize, matsize); A10 += A10&#39;  # random symmetric matrix</code><code class="nohighlight hljs ansi" style="display:block;">10×10 Matrix{Float64}:
-  4.18235   -2.78621   -2.07551   …   0.428836   1.37371   -1.59814
- -2.78621   -1.68005    0.134577     -0.308271  -1.85981    2.85057
- -2.07551    0.134577  -0.747573      0.518828  -1.78088   -1.11929
- -0.310286   4.74089    1.0708       -0.859795   1.76946   -0.926629
- -0.313691   0.356751   0.964901      0.210219  -0.741687   0.223962
- -0.394444   0.793607   0.615402  …  -0.115224  -0.522702  -0.73649
-  1.31509   -0.642011   0.72945       0.642373   1.43067    0.558017
-  0.428836  -0.308271   0.518828      1.37536    2.42515    1.96066
-  1.37371   -1.85981   -1.78088       2.42515    2.66978   -0.739794
- -1.59814    2.85057   -1.11929       1.96066   -0.739794   2.13339</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; vmax = eigen(A10).vectors[:,end]  # exact eigenvector</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
- -0.6524111295950616
-  0.4245641156760691
-  0.21159017277019385
-  0.17140591497149557
-  0.13088174342738945
-  0.04081584908536057
- -0.15361094604429057
- -0.13879394622988067
- -0.42927499628793875
-  0.27206905698500633</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; x = power_method(A10, 20)  # 20 iterations of power method</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
- -0.3207687602144367
- -0.49297839962457624
- -0.09828607614040945
-  0.6488792020975245
-  0.03425452217911438
-  0.1497676300295795
-  0.06507714978844313
-  0.022988098537398895
- -0.36354251231635576
-  0.25068898388571054</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; 1-abs2(x&#39; * vmax)  # the error</code><code class="nohighlight hljs ansi" style="display:block;">0.9026117061913053</code></pre><h2 id="Rayleigh-Quotient-Iteration"><a class="docs-heading-anchor" href="#Rayleigh-Quotient-Iteration">Rayleigh Quotient Iteration</a><a id="Rayleigh-Quotient-Iteration-1"></a><a class="docs-heading-anchor-permalink" href="#Rayleigh-Quotient-Iteration" title="Permalink"></a></h2><p>The Rayleigh Quotient Iteration (RQI) is an iterative method to find the eigenvalue of a matrix. The RQI is defined as</p><p class="math-container">\[x_{k+1} = \frac{(A - \sigma_k I)^{-1} x_k}{\|(A - \sigma_k I)^{-1} x_k\|}\]</p><p>where <span>$\sigma_k = x_k^T A x_k$</span>. The RQI converges to the eigenvector corresponding to the eigenvalue closest to <span>$\sigma_k$</span>. The following is an implementation of the RQI.</p><pre><code class="language-julia hljs">function rayleigh_quotient_iteration(A::AbstractMatrix, k::Int)
+ -0.332798  -2.64579   -1.06457   …  -1.87588     0.274707   1.16752
+ -2.64579   -0.170511   0.622339      1.60307     0.879856  -1.51845
+ -1.06457    0.622339  -0.885442      1.94719    -0.11873    1.42443
+ -2.7247    -1.02882    1.2989       -0.519567    0.232768  -2.28584
+  0.789068  -1.10919   -0.394854      0.738742    0.821133  -0.587346
+ -0.217467   1.82341   -1.25465   …  -0.0782477   2.32244   -0.942595
+  3.18985   -0.379839  -1.04527      -0.375616   -0.348287  -0.418554
+ -1.87588    1.60307    1.94719       1.36924    -0.356568  -1.60999
+  0.274707   0.879856  -0.11873      -0.356568   -1.45908    1.02005
+  1.16752   -1.51845    1.42443      -1.60999     1.02005   -1.10313</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; vmax = eigen(A10).vectors[:,end]  # exact eigenvector</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
+ -0.5191839343662336
+  0.41290752515430973
+  0.18900976195257552
+  0.05301664868717321
+  0.10780601866014639
+  0.24756613968745333
+ -0.4530652114821484
+  0.43536213182125594
+  0.07554879266899484
+ -0.2190729099715404</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; x = power_method(A10, 20)  # 20 iterations of power method</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
+ -0.7027666284029243
+  0.15774345188000985
+  0.31163726791694263
+ -0.24806155797310336
+  0.11201646891799118
+  0.30878291865663776
+ -0.16132135149576585
+  0.2686866474542615
+  0.10801303072585856
+ -0.3237364022707397</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; 1-abs2(x&#39; * vmax)  # the error</code><code class="nohighlight hljs ansi" style="display:block;">0.30541584892273266</code></pre><h2 id="Rayleigh-Quotient-Iteration"><a class="docs-heading-anchor" href="#Rayleigh-Quotient-Iteration">Rayleigh Quotient Iteration</a><a id="Rayleigh-Quotient-Iteration-1"></a><a class="docs-heading-anchor-permalink" href="#Rayleigh-Quotient-Iteration" title="Permalink"></a></h2><p>The Rayleigh Quotient Iteration (RQI) is an iterative method to find the eigenvalue of a matrix. The RQI is defined as</p><p class="math-container">\[x_{k+1} = \frac{(A - \sigma_k I)^{-1} x_k}{\|(A - \sigma_k I)^{-1} x_k\|}\]</p><p>where <span>$\sigma_k = x_k^T A x_k$</span>. The RQI converges to the eigenvector corresponding to the eigenvalue closest to <span>$\sigma_k$</span>. The following is an implementation of the RQI.</p><pre><code class="language-julia hljs">function rayleigh_quotient_iteration(A::AbstractMatrix, k::Int)
     @assert issymmetric(A) &quot;A must be a symmetric matrix&quot;
     x = normalize!(randn(size(A, 2)))
     for _ = 1:k
@@ -555,36 +555,36 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
     end
     return x
 end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">rayleigh_quotient_iteration (generic function with 1 method)</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; x = rayleigh_quotient_iteration(A10, 5)  # 5 iterations of RQI</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
- -0.3376690651324271
- -0.1309440255612895
-  0.4666781855651808
-  0.010751207779594952
-  0.3384447283410575
-  0.3582038159896002
-  0.20121275303930877
-  0.31481263155193906
-  0.32642047121618584
- -0.40240582791578994</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; U = eigen(A10).vectors</code><code class="nohighlight hljs ansi" style="display:block;">10×10 Matrix{Float64}:
-  0.12334     -0.162696   -0.0291698   …   0.0396202  -0.12546    -0.652411
-  0.658337     0.233047    0.121356       -0.269291    0.179737    0.424564
-  0.172981    -0.414346   -0.464756        0.031598   -0.151027    0.21159
- -0.626688     0.0243913  -0.0131876      -0.656879    0.0796031   0.171406
-  0.00693309   0.0539822   0.00414981      0.130315   -0.0455257   0.130882
- -0.144215    -0.295319    0.354075    …   0.268768   -0.120302    0.0408158
- -0.118995     0.648093   -0.563306        0.218765    0.0915109  -0.153611
- -0.0698007    0.199951    0.451966        0.214924    0.574312   -0.138794
-  0.241661    -0.254998   -0.171656       -0.436712    0.460286   -0.429275
- -0.174478    -0.363022   -0.303004        0.345598    0.596818    0.272069</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; (x&#39; * U)&#39;  # one should see a one-hot vector</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
- -4.6083081794989766e-11
-  7.369362065023921e-11
-  1.4883395765830087e-9
-  1.4253765098781734e-7
-  9.808047868910263e-7
- -4.112696941602212e-5
-  0.9999999991507158
-  2.4811161170590346e-6
- -4.9604198151809165e-8
- -1.9309889798257984e-10</code></pre><h2 id="Symmetric-QR-decomposition"><a class="docs-heading-anchor" href="#Symmetric-QR-decomposition">Symmetric QR decomposition</a><a id="Symmetric-QR-decomposition-1"></a><a class="docs-heading-anchor-permalink" href="#Symmetric-QR-decomposition" title="Permalink"></a></h2><p>The symmetric QR decomposition is an iterative method to decompose a symmetric matrix into a tridiagonal matrix. Let <span>$A$</span> be a symmetric matrix, the symmetric QR decomposition is defined as</p><p class="math-container">\[A = Q T Q^T\]</p><p>where <span>$Q$</span> is an orthogonal matrix and <span>$T$</span> is a tridiagonal matrix. The following is an implementation of the symmetric QR decomposition.</p><pre><code class="language-julia hljs"># Q is an identity matrix
+  0.3627905918053468
+  0.3250475457956593
+ -0.2567648686457516
+ -0.44551593506228965
+  0.02976315104588443
+  0.03889041644123406
+  0.3766767454038162
+  0.537673781018456
+ -0.057589006580464716
+ -0.24823610666435555</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; U = eigen(A10).vectors</code><code class="nohighlight hljs ansi" style="display:block;">10×10 Matrix{Float64}:
+  0.488965   -0.377333    -0.33325     …   0.152504   -0.178951    -0.519184
+  0.337137    0.0652168    0.0881611      -0.0118375   0.0755025    0.412908
+ -0.278938   -0.312038    -0.382925       -0.353461    0.0506528    0.18901
+  0.52779     0.00327104  -0.00370493      0.172784    0.676618     0.0530166
+ -0.0398162   0.179782     0.227258        0.46842    -0.197641     0.107806
+ -0.185403    0.216093    -0.591364    …   0.626456    0.00428407   0.247566
+ -0.392217    0.253917     0.117773        0.0329215   0.576755    -0.453065
+  0.170207    0.119477     0.0220759      -0.253706    0.102583     0.435362
+ -0.0813814  -0.421962     0.561213        0.343817   -0.0824663    0.0755488
+  0.255918    0.648205     0.0620643      -0.162136   -0.335929    -0.219073</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; (x&#39; * U)&#39;  # one should see a one-hot vector</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
+  7.147060721024445e-16
+ -7.216449660063518e-16
+  6.175615574477433e-16
+  4.163336342344337e-16
+ -8.604228440844963e-16
+ -0.9999999999999999
+  4.520689378395559e-15
+  4.822531263215524e-16
+ -3.885780586188048e-16
+  9.020562075079397e-17</code></pre><h2 id="Symmetric-QR-decomposition"><a class="docs-heading-anchor" href="#Symmetric-QR-decomposition">Symmetric QR decomposition</a><a id="Symmetric-QR-decomposition-1"></a><a class="docs-heading-anchor-permalink" href="#Symmetric-QR-decomposition" title="Permalink"></a></h2><p>The symmetric QR decomposition is an iterative method to decompose a symmetric matrix into a tridiagonal matrix. Let <span>$A$</span> be a symmetric matrix, the symmetric QR decomposition is defined as</p><p class="math-container">\[A = Q T Q^T\]</p><p>where <span>$Q$</span> is an orthogonal matrix and <span>$T$</span> is a tridiagonal matrix. The following is an implementation of the symmetric QR decomposition.</p><pre><code class="language-julia hljs"># Q is an identity matrix
 function householder_trid!(Q, a)
     m, n = size(a)
     @assert m==n &amp;&amp; size(Q, 2) == n
@@ -610,7 +610,7 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
            @test Q * T * Q&#39; ≈ a
        end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr1">Test Summary:           | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
 householder tridiagonal | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>1.5s
-Test.DefaultTestSet(&quot;householder tridiagonal&quot;, Any[], 1, false, false, true, 1.714360831526496e9, 1.714360833017275e9, false, &quot;REPL[1]&quot;)</code></pre><p>The symmetric QR decomposition also includes a process to converge the tridiagonal matrix to a diagonal matrix. We refer the reader to Section 8.3 of the book &quot;Matrix Computations&quot; by Golub and Van Loan<sup class="footnote-reference"><a id="citeref-Golub2016" href="#footnote-Golub2016">[Golub2016]</a></sup> for more details.</p><h2 id="The-SVD-algorithm"><a class="docs-heading-anchor" href="#The-SVD-algorithm">The SVD algorithm</a><a id="The-SVD-algorithm-1"></a><a class="docs-heading-anchor-permalink" href="#The-SVD-algorithm" title="Permalink"></a></h2><p>The Singular Value Decomposition (SVD) is an algorithm to decompose a matrix into three matrices. Let <span>$A$</span> be a matrix, the SVD is defined as</p><p class="math-container">\[A = U S V^\dagger\]</p><p>where <span>$U$</span> and <span>$V$</span> are orthogonal matrices, and <span>$S$</span> is a diagonal matrix. The algorithm to compute the SVD is</p><ol><li>Let <span>$C = A^T A$</span>,</li><li>Use the symmetric QR algorithm to compute <span>$V_1^T C V_1 = {\rm diag}(\sigma_i^2)$</span>,</li><li>Apply QR decomposition to <span>$AV_1$</span> obtaining <span>$U^\dagger(AV_1) = R$</span>. Then <span>$V = V_1 R^\dagger {\rm diag}(\sigma_i^{-1})$</span>, and <span>$S = {\rm diag}(\sigma_i)$</span>.</li></ol><p>The following is an implementation of the SVD algorithm.</p><pre><code class="language-julia hljs">function simple_svd(A::AbstractMatrix)
+Test.DefaultTestSet(&quot;householder tridiagonal&quot;, Any[], 1, false, false, true, 1.714382315018834e9, 1.71438231652591e9, false, &quot;REPL[1]&quot;)</code></pre><p>The symmetric QR decomposition also includes a process to converge the tridiagonal matrix to a diagonal matrix. We refer the reader to Section 8.3 of the book &quot;Matrix Computations&quot; by Golub and Van Loan<sup class="footnote-reference"><a id="citeref-Golub2016" href="#footnote-Golub2016">[Golub2016]</a></sup> for more details.</p><h2 id="The-SVD-algorithm"><a class="docs-heading-anchor" href="#The-SVD-algorithm">The SVD algorithm</a><a id="The-SVD-algorithm-1"></a><a class="docs-heading-anchor-permalink" href="#The-SVD-algorithm" title="Permalink"></a></h2><p>The Singular Value Decomposition (SVD) is an algorithm to decompose a matrix into three matrices. Let <span>$A$</span> be a matrix, the SVD is defined as</p><p class="math-container">\[A = U S V^\dagger\]</p><p>where <span>$U$</span> and <span>$V$</span> are orthogonal matrices, and <span>$S$</span> is a diagonal matrix. The algorithm to compute the SVD is</p><ol><li>Let <span>$C = A^T A$</span>,</li><li>Use the symmetric QR algorithm to compute <span>$V_1^T C V_1 = {\rm diag}(\sigma_i^2)$</span>,</li><li>Apply QR decomposition to <span>$AV_1$</span> obtaining <span>$U^\dagger(AV_1) = R$</span>. Then <span>$V = V_1 R^\dagger {\rm diag}(\sigma_i^{-1})$</span>, and <span>$S = {\rm diag}(\sigma_i)$</span>.</li></ol><p>The following is an implementation of the SVD algorithm.</p><pre><code class="language-julia hljs">function simple_svd(A::AbstractMatrix)
     m, n = size(A)
     @assert m &gt;= n &quot;m must be greater than or equal to n&quot;
     C = A&#39; * A
@@ -630,7 +630,7 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
            @test isapprox(V&#39; * V, I; atol=1e-8)
        end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr1">Test Summary: | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
 simple SVD    | <span class="sgr32">   3  </span><span class="sgr36">    3  </span>1.5s
-Test.DefaultTestSet(&quot;simple SVD&quot;, Any[], 3, false, false, true, 1.714360833026117e9, 1.71436083455284e9, false, &quot;REPL[1]&quot;)</code></pre><h1 id="Cholesky-Decomposition-(Implementation)"><a class="docs-heading-anchor" href="#Cholesky-Decomposition-(Implementation)">Cholesky Decomposition (Implementation)</a><a id="Cholesky-Decomposition-(Implementation)-1"></a><a class="docs-heading-anchor-permalink" href="#Cholesky-Decomposition-(Implementation)" title="Permalink"></a></h1><p>Cholesky decomposition is a method of decomposing a positive-definite matrix into a product of a lower triangular matrix and its transpose. It is often used in solving systems of linear equations, computing the inverse of a matrix, and generating random numbers with a given covariance matrix. The Cholesky decomposition is computationally efficient and numerically stable, making it a popular choice in many applications.</p><p>Given a positive definite symmetric matrix <span>$A\in \mathbb{R}^{n\times n}$</span>, the Cholesky decomposition is formally defined as</p><p class="math-container">\[A = LL^T,\]</p><p>where <span>$L$</span> is an upper triangular matrix.</p><p>The implementation of Cholesky decomposition is similar to LU decomposition.</p><pre><code class="language-julia hljs">function chol!(a::AbstractMatrix)
+Test.DefaultTestSet(&quot;simple SVD&quot;, Any[], 3, false, false, true, 1.714382316534786e9, 1.714382318053088e9, false, &quot;REPL[1]&quot;)</code></pre><h1 id="Cholesky-Decomposition-(Implementation)"><a class="docs-heading-anchor" href="#Cholesky-Decomposition-(Implementation)">Cholesky Decomposition (Implementation)</a><a id="Cholesky-Decomposition-(Implementation)-1"></a><a class="docs-heading-anchor-permalink" href="#Cholesky-Decomposition-(Implementation)" title="Permalink"></a></h1><p>Cholesky decomposition is a method of decomposing a positive-definite matrix into a product of a lower triangular matrix and its transpose. It is often used in solving systems of linear equations, computing the inverse of a matrix, and generating random numbers with a given covariance matrix. The Cholesky decomposition is computationally efficient and numerically stable, making it a popular choice in many applications.</p><p>Given a positive definite symmetric matrix <span>$A\in \mathbb{R}^{n\times n}$</span>, the Cholesky decomposition is formally defined as</p><p class="math-container">\[A = LL^T,\]</p><p>where <span>$L$</span> is an upper triangular matrix.</p><p>The implementation of Cholesky decomposition is similar to LU decomposition.</p><pre><code class="language-julia hljs">function chol!(a::AbstractMatrix)
     n = size(a, 1)
     @assert size(a, 2) == n
     for k=1:n
@@ -654,4 +654,4 @@ end</code></pre><pre class="documenter-example-output"><code class="nohighlight 
            # cholesky(a) in Julia
        end</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr1">Test Summary: | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
 cholesky      | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.1s
-Test.DefaultTestSet(&quot;cholesky&quot;, Any[], 1, false, false, true, 1.714360834561133e9, 1.714360834675249e9, false, &quot;REPL[1]&quot;)</code></pre><h2 id="References"><a class="docs-heading-anchor" href="#References">References</a><a id="References-1"></a><a class="docs-heading-anchor-permalink" href="#References" title="Permalink"></a></h2><section class="footnotes is-size-7"><ul><li class="footnote" id="footnote-Golub2016"><a class="tag is-link" href="#citeref-Golub2016">Golub2016</a>Golub, G.H., 2016. Matrix Computation 25, 228–234. https://doi.org/10.4037/ajcc2016979</li></ul></section></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../linalg/">« Matrix Computation</a><a class="docs-footer-nextpage" href="../fft/">Fast Fourier transform »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.4.0 on <span class="colophon-date" title="Monday 29 April 2024 03:22">Monday 29 April 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+Test.DefaultTestSet(&quot;cholesky&quot;, Any[], 1, false, false, true, 1.714382318061295e9, 1.714382318175845e9, false, &quot;REPL[1]&quot;)</code></pre><h2 id="References"><a class="docs-heading-anchor" href="#References">References</a><a id="References-1"></a><a class="docs-heading-anchor-permalink" href="#References" title="Permalink"></a></h2><section class="footnotes is-size-7"><ul><li class="footnote" id="footnote-Golub2016"><a class="tag is-link" href="#citeref-Golub2016">Golub2016</a>Golub, G.H., 2016. Matrix Computation 25, 228–234. https://doi.org/10.4037/ajcc2016979</li></ul></section></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../linalg/">« Matrix Computation</a><a class="docs-footer-nextpage" href="../fft/">Fast Fourier transform »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.4.0 on <span class="colophon-date" title="Monday 29 April 2024 09:20">Monday 29 April 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

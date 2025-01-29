@@ -1,5 +1,6 @@
 # Scientific Computing for Physicists with Julia
-(warning: this book is a work in progress)
+
+Warning: archived, moved to typst site: https://github.com/GiggleLiu/SCFP
 
 Online book is deployed at: <https://book.jinguo-group.science/>
 
